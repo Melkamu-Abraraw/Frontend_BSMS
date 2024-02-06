@@ -8,32 +8,33 @@ const Hero = () => {
       <section className="hero">
         <div className="container">
           <Heading
-            title="Next-Gen Brokerage Management Platform"
-            subtitle="Find new & featured property in you desired area."
+            title="Next-Gen Brokerage Platform"
+            subtitle="Find new and featured property in you desired area."
           />
           <form className="flex">
             <div className="box">
-              <span className=" text-darkBlue">Location</span>
-              <select className="equal-size-select  text-veryDarkBlue">
-                <option value="">All locations</option>
-                <option value="">Addis Abeba</option>
-                <option value="">Hawassa</option>
+              <span className="category">Location</span>
+              <select className="equal-size-select ">
+                <option value="" className="opt">
+                  All locations
+                </option>
+                <option value="">Addis Ababa</option>
                 <option value="">Adama</option>
                 <option value="">Jimma</option>
                 <option value="">Debre Birhan</option>
               </select>
             </div>
             <div className="box">
-              <span className=" text-darkBlue">Property Type</span>
-              <select className="equal-size-select text-veryDarkBlue">
-                <option value="">All</option>
+              <span className="category">Property Type</span>
+              <select className="equal-size-select ">
+                <option value="">All Type</option>
                 <option value="">For Sale</option>
                 <option value="">For Rent</option>
               </select>
             </div>
             <div className="box">
-              <span className=" text-darkBlue">Property Category</span>
-              <select className="equal-size-select text-veryDarkBlue">
+              <span className="category">Property Category</span>
+              <select className="equal-size-select">
                 <option value="">All Properties</option>
                 <option value="">House</option>
                 <option value="">Vehicles</option>
@@ -42,7 +43,7 @@ const Hero = () => {
               </select>
             </div>
             <div className="box">
-              <span className=" text-darkBlue">Price Range</span>
+              <span className="category">Price Range</span>
               <input
                 className=" text-veryDarkBlue"
                 type="text"
@@ -50,7 +51,7 @@ const Hero = () => {
               />
             </div>
             <div className="box">
-              <h4 className=" text-darkBlue">Advance Filter</h4>
+              <h4 className="category">Advance Filter</h4>
             </div>
             <button className="">
               <i className="fa fa-search not-italic text-darkBlue">Search</i>

@@ -8,7 +8,6 @@ import {
   faRestroom,
 } from "@fortawesome/free-solid-svg-icons";
 import PropertyCard from "./proprtyCard";
-import "./Property.css";
 
 const Property = () => {
   return (

@@ -59,7 +59,7 @@ function Navbar() {
             component="a"
             href="#app-bar-with-responsive-menu"
             sx={{
-              mr: 40,
+              mr: 49,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
               fontWeight: 700,
@@ -108,7 +108,6 @@ function Navbar() {
               ))}
             </Menu>
           </Box>
-
           <Typography
             variant="h5"
             noWrap

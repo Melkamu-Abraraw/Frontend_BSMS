@@ -7,7 +7,6 @@ import {
   faBed,
   faRestroom,
 } from "@fortawesome/free-solid-svg-icons";
-import "./Property.css";
 import Rate from "../Rating/Rate";
 
 function PropertyCard() {
@@ -35,7 +34,7 @@ function PropertyCard() {
           loading="lazy"
           fetchPriority="auto"
           ng-img="true"
-          src="/../images/hero/sell.jpeg"
+          src="/../images/hero/h3.png"
         />
 
         <button className="btn bg-brightRed btn-hidden hover:bg-white hover:text-black">

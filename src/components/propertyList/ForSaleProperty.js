@@ -9,7 +9,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import PropertyCard from "./proprtyCard";
 import Button from "@mui/material/Button";
-import "./Property.css";
 
 const Property = () => {
   const signUpBtnStyle = {
