@@ -21,14 +21,14 @@ function Navbar() {
 
   const btnStyle = {
     color: "hsl(228, 39%, 23%)",
-    border: "2px solid hsl(12, 88%, 69%)",
+    border: "2px solid #345ccc",
     marginRight: "6px",
   };
 
   const signUpBtnStyle = {
-    color: "hsl(228, 39%, 23%)",
-    border: "2px solid hsl(12, 88%, 59%)",
-    backgroundColor: "hsl(12, 88%, 69%)",
+    color: "#fff",
+    border: "2px solid #345ccc",
+    backgroundColor: "#345ccc",
   };
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -59,7 +59,7 @@ function Navbar() {
             component="a"
             href="#app-bar-with-responsive-menu"
             sx={{
-              mr: 49,
+              mr: 35,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
               fontWeight: 700,
@@ -155,7 +155,7 @@ function Navbar() {
             <Button
               variant="outlined"
               style={signUpBtnStyle}
-              className="hover:bg-brightRedLight"
+              className="hover:bg-blue"
             >
               Sign Up
             </Button>

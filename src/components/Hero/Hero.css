@@ -77,7 +77,12 @@ form h4 {
   font-size: 14px;
   color: hsl(240, 1%, 23%);
 }
-
+.equal-size-select::placeholder {
+  color: hsl(240, 1%, 23%);
+}
+.equal-size-select:focus {
+  outline: none;
+}
 .opt {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -85,4 +90,8 @@ select:focus {
   outline: none !important;
   border: 1px solid rgba(128, 128, 128) !important;
   box-shadow: none !important;
+}
+
+.input {
+  height: 36px;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import Heading from "../Heading/Heading";
+
 import "./Hero.css";
 
 const Hero = () => {
@@ -7,10 +8,14 @@ const Hero = () => {
     <>
       <section className="hero">
         <div className="container">
-          <Heading
+          <h1 className="text-white text-3xl font-medium">
+            Find <span className="text-lightBlue">Properties</span> <br />
+            That Suits You.
+          </h1>
+          {/* <Heading
             title="Next-Gen Brokerage Platform"
             subtitle="Find new and featured property in you desired area."
-          />
+          /> */}
           <form className="flex">
             <div className="box">
               <span className="category">Location</span>
@@ -43,18 +48,15 @@ const Hero = () => {
               </select>
             </div>
             <div className="box">
-              <span className="category">Price Range</span>
+              <span className="category">Price</span>
               <input
-                className=" text-veryDarkBlue"
-                type="text"
-                placeholder="Price Range"
+                className="equal-size-select input"
+                type="number"
+                placeholder="Price"
               />
             </div>
-            <div className="box">
-              <h4 className="category">Advance Filter</h4>
-            </div>
-            <button className="">
-              <i className="fa fa-search not-italic text-darkBlue">Search</i>
+            <button className="flex items-center justify-center bg-blue rounded h-9 mt-11 pr-2">
+              <span className="ml-2  text-white">Search</span>
             </button>
           </form>
         </div>

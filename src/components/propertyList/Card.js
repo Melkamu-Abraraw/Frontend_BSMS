@@ -24,13 +24,13 @@ const properties = [
 
 const Home = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4 mt-7 ">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  p-4 mt-7 ">
       {properties.map((property) => (
         <div
           key={property.id}
           className="max-w-md mx-auto rounded-md shadow-md overflow-hidden relative card"
         >
-          <div className="relative h-60 w-80 group">
+          <div className="relative h-52 w-80 group">
             <Image
               src={property.image}
               alt={property.name}
@@ -43,12 +43,12 @@ const Home = () => {
             </div>
             <div className="price-overlay ">
               <div className="mx-1">
-                <h2 className="green-color rounded text-brightRed px-2 ">
+                <h2 className="green-color rounded text-blue px-2 ">
                   ETB 45,000,000
                 </h2>
               </div>
             </div>
-            <button className="hidden bg-brightRed btn-hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:block hover:bg-white hover:text-darkBlue p-2 rounded text-white text-sm">
+            <button className="hidden bg-blue btn-hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:block hover:bg-white hover:text-darkBlue p-2 rounded text-white text-sm">
               View Property
             </button>
           </div>
@@ -56,7 +56,7 @@ const Home = () => {
             <h3 className="text-darkBlue ml-4 mb-1">B+G+2</h3>
             <div className="text-sm  text-darkBlue ml-4">
               <FontAwesomeIcon icon={faLocationDot} />
-              <a className="px-0 ml-1 text-brightRedLight">Addis Abeba</a>
+              <a className="px-0 ml-1 text-blue">Addis Abeba</a>
             </div>
           </div>
           <div className="mt-6 bg-slate-200 pt-4">
