@@ -9,13 +9,9 @@ const Hero = () => {
       <section className="hero">
         <div className="container">
           <h1 className="text-white text-3xl font-medium">
-            Find <span className="text-lightBlue">Properties</span> <br />
+            Find <span className="text-green pt-10">Properties </span>
             That Suits You.
           </h1>
-          {/* <Heading
-            title="Next-Gen Brokerage Platform"
-            subtitle="Find new and featured property in you desired area."
-          /> */}
           <form className="flex">
             <div className="box">
               <span className="category">Location</span>
@@ -55,8 +51,8 @@ const Hero = () => {
                 placeholder="Price"
               />
             </div>
-            <button className="flex items-center justify-center bg-blue rounded h-9 mt-11 pr-2">
-              <span className="ml-2  text-white">Search</span>
+            <button className="flex items-center justify-center bg-green rounded h-9 mt-11 pr-2">
+              <span className="ml-2  text-black font-bold">Search</span>
             </button>
           </form>
         </div>

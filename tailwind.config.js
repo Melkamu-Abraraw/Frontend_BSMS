@@ -26,6 +26,8 @@ module.exports = {
         veryLightGray: "hsl(0, 0%, 98%)",
         blue: "#345ccc",
         lightBlue: "#4471eb",
+        green: "rgb(0, 167, 111)",
+        lightGreen: "rgb(10, 221, 183)",
       },
     },
   },

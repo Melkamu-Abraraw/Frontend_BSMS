@@ -11,7 +11,7 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 
-const pages = ["Home", "Listings", "Agents", "Services", "Contact", "About Us"];
+const pages = ["Home", "Listings", "Jobs", "Services", "Contact", "About Us"];
 
 function Navbar() {
   const appBarStyle = {
@@ -20,15 +20,23 @@ function Navbar() {
   };
 
   const btnStyle = {
-    color: "hsl(228, 39%, 23%)",
-    border: "2px solid #345ccc",
+    color: "black",
+    border: "2px solid rgb(0, 167, 111)",
     marginRight: "6px",
+    textTransform: "capitalize",
+    fontWeight: "bold",
   };
 
   const signUpBtnStyle = {
-    color: "#fff",
-    border: "2px solid #345ccc",
-    backgroundColor: "#345ccc",
+    color: "black",
+    border: "2px solid rgb(0, 167, 111)",
+    textTransform: "capitalize",
+    fontWeight: "bold",
+    backgroundColor: "rgb(0, 167, 111)",
+  };
+
+  const listStyle = {
+    textTransform: "capitalize",
   };
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -50,7 +58,7 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="fixed" style={appBarStyle} className="bg-white">
+    <AppBar position="fixed" style={appBarStyle}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -59,7 +67,6 @@ function Navbar() {
             component="a"
             href="#app-bar-with-responsive-menu"
             sx={{
-              mr: 35,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
               fontWeight: 700,
@@ -102,7 +109,11 @@ function Navbar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ textTransform: "capitalize" }}
+                >
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -127,17 +138,26 @@ function Navbar() {
           >
             BSMS
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              marginLeft: { lg: "360px", md: "150px" },
+            }}
+          >
             {pages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
                 sx={{
-                  my: 2,
-                  color: "hsl(228, 39%, 23%)",
+                  color: "black",
                   display: "block",
+                  textTransform: "capitalize",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                  textAlign: "center",
                 }}
-                className="hover:text-veryDarkBlue hover:bg-brightRed"
+                className="hover:text-veryDarkBlue hover:bg-green"
               >
                 {page}
               </Button>
@@ -148,14 +168,14 @@ function Navbar() {
             <Button
               variant="outlined"
               style={btnStyle}
-              className="hover:text-veryDarkBlue"
+              className="hover:bg-slate-100 text-center"
             >
               Log In
             </Button>
             <Button
               variant="outlined"
               style={signUpBtnStyle}
-              className="hover:bg-blue"
+              className="hover:bg-lightGreen text-center"
             >
               Sign Up
             </Button>

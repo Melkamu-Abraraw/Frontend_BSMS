@@ -34,8 +34,9 @@ const Home = () => {
             <Image
               src={property.image}
               alt={property.name}
-              layout="fill"
               objectFit="contain"
+              width={200}
+              height={200}
               className="rounded-t-md box-border"
             />
             <div className="status-overlay">
@@ -86,9 +87,7 @@ const Home = () => {
                     width="20px"
                     height="17px"
                     viewBox="0 0 24 24"
-                    enable-background="new 0 0 24 24"
                     xmlSpace="preserve"
-                    class="rh_svg"
                   >
                     <g>
                       <circle cx="2" cy="2" r="2"></circle>
@@ -121,7 +120,8 @@ const Home = () => {
                 <Image
                   src={property.image}
                   alt={property.name}
-                  layout="fill"
+                  height={200}
+                  width={200}
                   objectFit="contain"
                   className="rounded-full"
                 />
