@@ -8,7 +8,7 @@ const Rate = () => {
   const [hover, sethover] = useState(null);
 
   return (
-    <div className="flex ml-2">
+    <div className="flex  mt-1 mb-1 pr-5 pb-2">
       {[...Array(5)].map((star, index) => {
         const currentRating = index + 1;
 
@@ -24,7 +24,7 @@ const Rate = () => {
             <AiFillStar
               className="star"
               size={20}
-              color={currentRating <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+              color={currentRating <= (hover || rating) ? "#ffc107" : "#C6DCBA"}
               onMouseEnter={() => sethover(currentRating)}
               onMouseLeave={() => sethover(null)}
             />

@@ -8,7 +8,7 @@
 }
 footer {
   background-color: #1d2636;
-  padding: 20px 0;
+  padding: 2px 0;
   color: #fff;
 }
 footer .container {
@@ -24,7 +24,8 @@ footer h2 {
 }
 footer p {
   color: grey;
-  margin: 20px 0;
+  font-size: 15px;
+  margin-bottom: 4px;
 }
 footer input {
   background-color: #fff;
@@ -33,8 +34,8 @@ footer input {
   border-radius: 5px;
 }
 footer h3 {
-  font-weight: 500;
-  margin-bottom: 30px;
+  font-weight: 400;
+  margin-bottom: 10px;
 }
 footer ul {
   display: block;

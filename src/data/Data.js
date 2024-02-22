@@ -1,57 +1,40 @@
 export const featured = [
   {
-    cover: "../images/hero/house.png",
+    cover: "../images/hero/home.jpg",
     name: "House",
-    total: "122 Property",
+    total: "122 Properties",
   },
   {
-    cover: "../images/hero/h7.png",
+    cover: "../images/hero/car2.webp",
     name: "Vehicles",
-    total: "155 Property",
+    total: "155 Properties",
   },
   {
-    cover: "../images/hero/h8.png",
+    cover: "../images/hero/land.png",
     name: "Lands",
-    total: "300 Property",
+    total: "300 Properties",
   },
   {
-    cover: "../images/hero/jobsekeers.jpg",
+    cover: "../images/hero/maid.png",
     name: "Job Seekers",
     total: "80 Job Seekers",
   },
 ];
 export const footer = [
   {
-    title: "LAYOUTS",
+    title: "Layouts",
     text: [
       { list: "Home Page" },
       { list: "About Page" },
       { list: "Service Page" },
-      { list: "Property Page" },
-      { list: "Contact Page" },
-      { list: "Single Blog" },
     ],
   },
   {
-    title: "ALL SECTIONS",
-    text: [
-      { list: "Headers" },
-      { list: "Features" },
-      { list: "Attractive" },
-      { list: "Testimonials" },
-      { list: "Videos" },
-      { list: "Footers" },
-    ],
+    title: "All Sections",
+    text: [{ list: "Headers" }, { list: "Features" }, { list: "Attractive" }],
   },
   {
-    title: "COMPANY",
-    text: [
-      { list: "About" },
-      { list: "Blog" },
-      { list: "Pricing" },
-      { list: "Affiliate" },
-      { list: "Login" },
-      { list: "Changelog" },
-    ],
+    title: "Company",
+    text: [{ list: "About" }, { list: "Blog" }, { list: "Pricing" }],
   },
 ];
