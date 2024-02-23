@@ -6,6 +6,10 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Map from "@/components/Maps/Map";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import AppsIcon from "@mui/icons-material/Apps";
+import Card from "@/components/propertyList/Card";
+import Pagination from "@mui/material/Pagination";
 
 export default function SelectSmall() {
   const btnStyle = {
@@ -147,9 +151,8 @@ export default function SelectSmall() {
         <div
           className={`bg-white flex flex-row justify-start ml-32 overflow-hidden transition-height duration-500 ease-in-out
 ${showInputs ? "max-h-48" : "max-h-0"}`}
-          style={{ overflow: "hidden" }} // Ensure overflow is hidden initially
+          style={{ overflow: "hidden" }}
         >
-          {/* Changed justify-start to justify-center */}
           <div className="mr-2">
             <TextField
               id="outlined-basic"
@@ -206,6 +209,54 @@ ${showInputs ? "max-h-48" : "max-h-0"}`}
           </div>
         </div>
       )}
+      <section className="px-24 mt-5 ">
+        <div className="flex flex-row justify-between items-center">
+          <h1 className="font-normal text-2xl">Search Result</h1>
+          <div>
+            <ViewListIcon />
+            <AppsIcon style={{ height: "20px" }} />
+          </div>
+        </div>
+        <div className="flex flex-row justify-between items-center mt-10">
+          <h1 className="font-semibold text-1xl">25 Results Found</h1>
+          <div className="flex items-center">
+            <span className="mr-1 inline mb-1">sort by:</span>
+            <div className="inline ">
+              <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
+                <InputLabel id="demo-select-small-label">
+                  Default Order
+                </InputLabel>
+                <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={age}
+                  label="Location"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10}>Price</MenuItem>
+                  <MenuItem value={20}>Bedrooms</MenuItem>
+                  <MenuItem value={30}>Bathrooms</MenuItem>
+                  <MenuItem value={30}>Area</MenuItem>
+                  <MenuItem value={30}>Location</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="px-24  mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ml-12">
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+        </div>
+        <div className="flex justify-end">
+          <Pagination count={5} />
+        </div>
+      </section>
     </div>
   );
 }
