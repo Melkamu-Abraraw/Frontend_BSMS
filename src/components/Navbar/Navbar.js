@@ -10,6 +10,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
+import Link from "next/link";
 
 const pages = ["Home", "Listings", "Jobs", "Services", "Contact", "About Us"];
 
@@ -114,7 +115,9 @@ function Navbar() {
                   onClick={handleCloseNavMenu}
                   sx={{ textTransform: "capitalize" }}
                 >
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center">
+                    <Link href={`/${page.toLowerCase()}`}>{page}</Link>
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -159,7 +162,7 @@ function Navbar() {
                 }}
                 className="hover:text-veryDarkBlue hover:bg-green"
               >
-                {page}
+                <Link href={`/${page.toLowerCase()}`}>{page}</Link>
               </Button>
             ))}
           </Box>
