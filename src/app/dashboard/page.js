@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import Header from '@/components/Header/Header';
-import Sidebar from '@/components/Sidebar/Sidebar';
-import Cards from '@/components/Cards/Cards';
+import Header from '@/components/Header';
+import Sidebar from '@/components/Sidebar';
+import Cards from '@/components/Cards';
 import Layout from '@/components/layout';
 
 
