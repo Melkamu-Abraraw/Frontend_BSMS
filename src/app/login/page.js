@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 const Login = () => {
   return (
     <div className="mx-auto w-1/3 my-auto mt-10">
       <form className="grid grid-cols-1 gap-6 p-6 bg-white shadow-lg rounded-lg">
-        <h1 className="text-2xl font-semibold mx-auto">Sign in to BSMS</h1>
+        <h1 className="text-2xl font-semibold mx-auto">Sign In</h1>
         <div className="w-full">
           <div className="mb-3">
             <Label htmlFor="email">Email</Label>
@@ -50,7 +51,10 @@ const Login = () => {
           </Button>
         </div>
         <p className="flex justify-center md:flex-col lg:flex-row ">
-          Don't have an account? <span className="font-bold ml-1"> SignUp</span>
+          Don't have an account?
+          <Link href="/register">
+            <span className="font-bold ml-1 mb-1 text-green"> SignUp</span>
+          </Link>
         </p>
       </form>
     </div>

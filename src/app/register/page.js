@@ -4,55 +4,63 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
-
-const Login = () => {
+import ImageUpload from "@/components/ImageUploader/ImageUploader";
+import Link from "next/link";
+const Register = () => {
   return (
-    <div className="mx-auto w-1/3 my-auto mt-10">
-      <form className="grid grid-cols-1 gap-6 p-6 bg-white shadow-lg rounded-lg">
-        <h1 className="text-2xl font-semibold mx-auto">Sign up to BSMS</h1>
-        <div className="w-full">
-          <div className="mb-1">
-            <Label htmlFor="email">Email</Label>
-          </div>
+    <div className="mx-auto my-auto mb-3" style={{ width: "43%" }}>
+      <form className="grid grid-cols-1 gap-3 p-6 bg-white shadow-lg rounded-lg">
+        <ImageUpload />
+        <div className="grid grid-cols-2 gap-4 ">
+          <div className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="firstname">First Name</Label>
+            </div>
 
-          <Input type="email" id="email" placeholder="Email" />
-        </div>
-        <div className="w-full">
-          <div className="mb-1 inline">
-            <Label htmlFor="email">Email</Label>
+            <Input type="firstname" id="firstname" placeholder="Firstname" />
           </div>
+          <div className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="lastname">Last Name</Label>
+            </div>
 
-          <Input type="email" id="email" placeholder="Email" />
-        </div>
-        <div className="w-full">
-          <div className="mb-1 inline">
-            <Label htmlFor="email">Email</Label>
+            <Input type="text" id="lastname" placeholder="Lastname" />
           </div>
+          <div className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="phonenumber">Phone Number</Label>
+            </div>
 
-          <Input type="email" id="email" placeholder="Email" />
-        </div>
-        <div className="w-full">
-          <div className="mb-1">
-            <Label htmlFor="email">Email</Label>
+            <Input type="text" id="lastname" placeholder="Phonenumber" />
           </div>
+          <div className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="email">Email</Label>
+            </div>
 
-          <Input type="email" id="email" placeholder="Email" />
-        </div>
-        <div className="w-full">
-          <div className="mb-1">
-            <Label htmlFor="email">Email</Label>
+            <Input type="email" id="email" placeholder="Email" />
           </div>
+          <div className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="password">Password</Label>
+            </div>
 
-          <Input type="email" id="email" placeholder="Email" />
-        </div>
-        <div className="w-full">
-          <div className="mb-1 ">
-            <Label htmlFor="email">Password</Label>
+            <Input type="password" id="password" placeholder="Password" />
           </div>
-          <Input type="password" id="password" placeholder="Password" />
+          <div className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="confrimpassword">Confrim Password</Label>
+            </div>
+            <Input
+              type="password"
+              id="confrimpassword"
+              placeholder="Confrimpassword"
+            />
+          </div>
         </div>
+
         <Button variant="login">Sign Up</Button>
-        <div className="flex items-center mt-4">
+        <div className="flex items-center">
           <hr className="w-full border-gray-300" />
           <span className="mx-4 text-gray-500">OR</span>
           <hr className="w-full border-gray-300" />
@@ -78,11 +86,14 @@ const Login = () => {
           </Button>
         </div>
         <p className="flex justify-center md:flex-col lg:flex-row ">
-          Do have an account? <span className="font-bold ml-1"> Login</span>
+          Do have an account?
+          <Link href="/login">
+            <span className="font-bold ml-1 text-green"> Login</span>
+          </Link>
         </p>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default Register;

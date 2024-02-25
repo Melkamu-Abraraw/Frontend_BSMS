@@ -11,10 +11,12 @@ import Listings from "@/components/Listings/Listings";
 export default function Home() {
   return (
     <div style={{ backgroundColor: "#f7f8f9" }}>
+      <Navbar />
       <Hero />
       <Featured />
       <Trending />
       <Listings />
+      <Footer />
     </div>
   );
 }

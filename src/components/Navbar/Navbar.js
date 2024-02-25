@@ -173,18 +173,22 @@ function Navbar() {
               style={btnStyle}
               className=" text-center  hover:bg-green "
             >
-              <span className=" text-black font-bold hover:text-white">
-                Log In
-              </span>
+              <Link href="/login">
+                <span className=" text-black font-bold hover:text-white">
+                  Log In
+                </span>
+              </Link>
             </Button>
             <Button
               variant="outlined"
               style={signUpBtnStyle}
               className="hover:bg-bg-green text-center hover:text-white"
             >
-              <span className=" text-black font-bold hover:text-white">
-                Sign Up
-              </span>
+              <Link href="/register">
+                <span className=" text-black font-bold hover:text-white">
+                  Sign Up
+                </span>
+              </Link>
             </Button>
           </Box>
         </Toolbar>
