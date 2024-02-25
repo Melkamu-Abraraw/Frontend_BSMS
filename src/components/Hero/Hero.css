@@ -36,6 +36,7 @@ input::placeholder {
   font-size: 17px;
   color: black;
 }
+
 form .box {
   padding: 15px;
   border-left: 1px solid rgba(128, 128, 128, 0.2);
@@ -53,6 +54,7 @@ form h4 {
   form {
     display: flex;
     flex-wrap: wrap;
+    margin-bottom: 60px;
   }
   form .box {
     border-left: none;
@@ -61,14 +63,25 @@ form h4 {
     width: 100%;
   }
 }
-.category {
-  color: hsl(228, 39%, 23%);
-}
+
 .equal-size-select {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid rgba(128, 128, 128);
-  border-radius: 0.1rem;
+  border-radius: 0.25rem;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 0.3rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  color: hsl(240, 1%, 23%);
+  font-size: 17px;
+}
+.price-input {
+  width: 45%;
+  padding: 0.5rem;
+  border: 1px solid rgba(128, 128, 128);
+  border-radius: 0.25rem;
   font-family: Arial, Helvetica, sans-serif;
   margin-top: 0.3rem;
   box-sizing: border-box;
@@ -76,6 +89,12 @@ form h4 {
   background-color: #fff;
   font-size: 14px;
   color: hsl(240, 1%, 23%);
+}
+.price-input::placeholder {
+  color: hsl(240, 1%, 23%);
+}
+.price-input:focus {
+  outline: none;
 }
 .equal-size-select::placeholder {
   color: hsl(240, 1%, 23%);
@@ -94,4 +113,8 @@ select:focus {
 
 .input {
   height: 36px;
+}
+option {
+  font-size: 17px;
+  color: black;
 }

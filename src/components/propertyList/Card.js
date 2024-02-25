@@ -7,6 +7,7 @@ import {
   faBed,
   faRestroom,
 } from "@fortawesome/free-solid-svg-icons";
+import Rate from "../Rating/Rate";
 import "./property.css";
 
 const properties = [
@@ -24,19 +25,19 @@ const properties = [
 
 const Home = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  p-4 mt-7 ">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  p-4 mt-7 w-806  gap-1">
       {properties.map((property) => (
         <div
           key={property.id}
-          className="max-w-md mx-auto rounded-md shadow-md overflow-hidden relative card"
+          className="max-w-sm mx-auto rounded-md shadow-md overflow-hidden relative card bg-slate-400"
         >
-          <div className="relative h-52 w-80 group">
+          <div className="relative h-52 w-70 group">
             <Image
               src={property.image}
               alt={property.name}
               objectFit="contain"
-              width={200}
-              height={200}
+              width={400}
+              height={400}
               className="rounded-t-md box-border"
             />
             <div className="status-overlay">
@@ -44,23 +45,26 @@ const Home = () => {
             </div>
             <div className="price-overlay ">
               <div className="mx-1">
-                <h2 className="green-color rounded text-blue px-2 ">
+                <h2 className="green-color rounded text-green px-2 font-bold">
                   ETB 45,000,000
                 </h2>
               </div>
             </div>
-            <button className="hidden bg-blue btn-hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:block hover:bg-white hover:text-darkBlue p-2 rounded text-white text-sm">
+            <button className="hidden bg-green btn-hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:block hover:bg-white hover:text-black p-2 rounded text-white text-sm">
               View Property
             </button>
           </div>
-          <div className="mt-2">
+          <div className="mt-7 text-left ">
             <h3 className="text-darkBlue ml-4 mb-1">B+G+2</h3>
-            <div className="text-sm  text-darkBlue ml-4">
-              <FontAwesomeIcon icon={faLocationDot} />
-              <a className="px-0 ml-1 text-blue">Addis Abeba</a>
+            <div className="text-sm  text-darkBlue ml-4 flex flex-row justify-between ">
+              <div>
+                <FontAwesomeIcon icon={faLocationDot} />
+                <a className="px-0 ml-1 text-green  ">Addis Abeba</a>
+              </div>
+              <Rate />
             </div>
           </div>
-          <div className="mt-6 bg-slate-200 pt-4">
+          <div className="mt-2 bg-slate-200 pt-4">
             <div className="flex flex-row justify-between">
               <div className="flex flex-col text-darkBlue ml-4">
                 <p className="text-gray-600">Bedrooms</p>
@@ -106,12 +110,12 @@ const Home = () => {
                     ></path>
                   </svg>
 
-                  <span className="ml-2 mb-3 pr-2">100 sq/metre</span>
+                  <span className="ml-2 mb-4 pr-2 pb-1">100 sq/metre</span>
                 </div>
               </div>
             </div>
           </div>
-          <div className="mt-10 flex flex-row justify-between">
+          <div className="mt-2 flex flex-row justify-between">
             <p className="ml-4 mt-4 text-darkBlue text-sm">
               Published 2 days ago
             </p>

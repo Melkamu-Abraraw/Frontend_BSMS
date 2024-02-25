@@ -6,9 +6,9 @@ import FeaturedCard from "./FeaturedCard";
 const Featured = () => {
   return (
     <>
-      <section className="featured background mt-10 p-4">
+      <section className="featured background lg:mt-10 p-4  ">
         <div className="text-center ">
-          <h4 className="text-darkBlue text-2xl mb-10">
+          <h4 className="text-black font-normal text-3xl mb-10">
             Featured Property Types and Job Seekers
           </h4>
           <FeaturedCard />

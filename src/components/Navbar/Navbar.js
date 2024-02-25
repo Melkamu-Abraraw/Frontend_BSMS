@@ -10,6 +10,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
+import Link from "next/link";
 
 const pages = ["Home", "Listings", "Jobs", "Services", "Contact", "About Us"];
 
@@ -114,7 +115,9 @@ function Navbar() {
                   onClick={handleCloseNavMenu}
                   sx={{ textTransform: "capitalize" }}
                 >
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center">
+                    <Link href={`/${page.toLowerCase()}`}>{page}</Link>
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -159,7 +162,7 @@ function Navbar() {
                 }}
                 className="hover:text-veryDarkBlue hover:bg-green"
               >
-                {page}
+                <Link href={`/${page.toLowerCase()}`}>{page}</Link>
               </Button>
             ))}
           </Box>
@@ -168,16 +171,24 @@ function Navbar() {
             <Button
               variant="outlined"
               style={btnStyle}
-              className="hover:bg-slate-100 text-center"
+              className=" text-center  hover:bg-green "
             >
-              Log In
+              <Link href="/login">
+                <span className=" text-black font-bold hover:text-white">
+                  Log In
+                </span>
+              </Link>
             </Button>
             <Button
               variant="outlined"
               style={signUpBtnStyle}
-              className="hover:bg-lightGreen text-center"
+              className="hover:bg-bg-green text-center hover:text-white"
             >
-              Sign Up
+              <Link href="/register">
+                <span className=" text-black font-bold hover:text-white">
+                  Sign Up
+                </span>
+              </Link>
             </Button>
           </Box>
         </Toolbar>

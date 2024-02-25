@@ -6,14 +6,16 @@ import Featured from "@/components/Featured/Featured";
 import Trending from "@/components/Trending/Trending";
 import Partners from "@/components/Partners/Partners";
 import Footer from "@/components/Footer/Footer";
+import Listings from "@/components/Listings/Listings";
 
 export default function Home() {
   return (
-    <div className="bg-white">
+    <div style={{ backgroundColor: "#f7f8f9" }}>
       <Navbar />
       <Hero />
       <Featured />
       <Trending />
+      <Listings />
       <Footer />
     </div>
   );
