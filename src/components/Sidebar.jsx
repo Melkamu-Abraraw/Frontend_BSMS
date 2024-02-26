@@ -25,16 +25,15 @@ const Sidebar = ({ children }) => {
 </div>
 
         </Link>
-        <Link href='/customers'>
+        <Link href='/user'>
   <div className='relative'>
     <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer p-4 flex items-center'>
       <RxPerson size={20} />
       <span className="text-xs ml-2">User</span>
     </div>
     <div className='absolute mt-2 w-40 bg-white rounded-lg shadow-lg  '>
-      <a href='/per' className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200 ">Profile</a>
-      <a href='/se' className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">Settings</a>
-      <a href='/lo' className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">Logout</a>
+      <a href='/per' className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200 ">Customers</a>
+      <a href='/se' className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200"> Agents</a>
     </div>
   </div>
 </Link>
@@ -42,14 +41,14 @@ const Sidebar = ({ children }) => {
         <Link href='/orders'>
         <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer p-4  flex items-center'>
   <HiOutlineShoppingBag size={20} />
-  <span className="text-xs ml-2">Orders</span>
+  <span className="text-xs ml-2"> Property</span>
 </div>
 
         </Link>
         <Link href='/'>
         <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer p-4 flex items-center'>
        <FiSettings size={20} />
-        <span className="text-xs ml-2">Settings</span>
+        <span className="text-xs ml-2">Feedback</span>
         </div>
 
         </Link>
