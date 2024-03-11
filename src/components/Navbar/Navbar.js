@@ -59,7 +59,7 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="fixed" style={appBarStyle}>
+    <AppBar position="fixed" style={appBarStyle} className="container">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography

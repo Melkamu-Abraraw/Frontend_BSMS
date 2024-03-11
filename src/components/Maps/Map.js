@@ -36,7 +36,7 @@ function LocationMarker() {
 
 export default function Map() {
   return (
-    <div className="flex justify-center items-center mt-20 mb-5">
+    <div className="flex justify-center items-center mt-10 mb-5">
       <Head>
         <title>Map Example</title>
       </Head>
@@ -44,7 +44,7 @@ export default function Map() {
         center={{ lat: 9.005401, lng: 38.763611 }}
         zoom={13}
         scrollWheelZoom={false}
-        style={{ height: "400px", width: "85%" }}
+        style={{ height: "500px", width: "100%" }}
         className="rounded-md shadow-md"
       >
         <TileLayer
@@ -52,7 +52,7 @@ export default function Map() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Marker icon={ICON} position={{ lat: 9.005401, lng: 38.763611 }}>
-          <Popup>You are her</Popup>
+          <Popup>You are here</Popup>
         </Marker>
         <LocationMarker />
       </MapContainer>
