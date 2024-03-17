@@ -43,7 +43,7 @@ const ImageUpload = () => {
           </div>
         </label>
       </div>
-      <span className="mx-auto"> Upload Profile Image</span>
+      <span className="mx-auto mb-2"> Upload Profile Image</span>
     </>
   );
 };

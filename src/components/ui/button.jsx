@@ -18,8 +18,10 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        login: "bg-green hover:bg-green/90 text-white",
+        login: "bg-green bg-green/90 hover:bg-green text-white",
         void: "bg-white text-black font-light border-0.5 border-red",
+        send: "bg-green text-white hover:bg-green/90",
+        call: " text-green hover:bg-green/90 border border-green hover:text-white",
       },
       size: {
         default: "h-10 px-4 py-2",

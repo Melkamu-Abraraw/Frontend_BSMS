@@ -18,7 +18,7 @@ const Listings = () => {
       </div>
       <Button
         variant="outlined"
-        className="mb-5 px-8 text-black capitalize hover:font-bold"
+        className="mb-7 px-8 text-black capitalize hover:font-bold"
       >
         Load More
       </Button>
