@@ -25,7 +25,7 @@ function Homepage() {
         <div className="flex ">
           <main className="bg-gray-100 min-h-screen flex-grow ml-60">
             <Header />
-            <div className="py-5 px-0 ml-3">
+            <div className="py-5 px-5">
               <h1
                 className="text-xl md:text-xl text-center font-bold py-2 text-gray-800"
                 style={{ fontFamily: "initial" }}
