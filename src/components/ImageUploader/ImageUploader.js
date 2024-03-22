@@ -1,21 +1,19 @@
 "use client";
 import { useState } from "react";
 import { FaCamera } from "react-icons/fa";
+import { loadProfile } from "@/redux/features/auth-slice";
+import { useDispatch } from "react-redux";
 
 const ImageUpload = () => {
+  const dispatch = useDispatch();
   const [image, setImage] = useState(null);
 
   const handleChange = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
+    const imageUrl = URL.createObjectURL(file); // Get URL of the selected file
 
-    reader.onloadend = () => {
-      setImage(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
+    setImage(imageUrl); // Set the image URL in component state
+    dispatch(loadProfile(imageUrl)); // Dispatch the image URL to Redux store
   };
 
   return (

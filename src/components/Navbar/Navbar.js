@@ -13,16 +13,19 @@ import Link from "next/link";
 import Avatar from "@mui/material/Avatar";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
-import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { Box } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { logout } from "@/redux/features/auth-slice";
 
 const pages = ["Home", "Listings", "Jobs", "Contact", "About Us"];
 
 function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.authReducer.value.isLoggedIn);
 
   const appBarStyle = {
     backgroundColor: "white",
@@ -68,8 +71,8 @@ function Navbar() {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -79,7 +82,6 @@ function Navbar() {
   };
   const handleClose = () => {
     setAnchorEl(null);
-    setIsLoggedIn(false);
   };
 
   return (
@@ -391,7 +393,7 @@ function Navbar() {
                   </ListItemIcon>
                   Settings
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleLogout}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>

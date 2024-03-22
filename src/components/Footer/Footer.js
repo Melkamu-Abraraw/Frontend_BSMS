@@ -31,12 +31,12 @@ const Footer = () => {
             </div>
           </div>
 
-          {footer.map((val) => (
-            <div className="box">
+          {footer.map((val, index) => (
+            <div className="box" key={index}>
               <h3 className="capitalize text-1xl">{val.title}</h3>
               <ul>
-                {val.text.map((items) => (
-                  <li> {items.list} </li>
+                {val.text.map((items, index) => (
+                  <li key={index}> {items.list} </li>
                 ))}
               </ul>
             </div>

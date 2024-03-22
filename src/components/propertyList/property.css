@@ -47,7 +47,7 @@
 .status-overlay {
   position: absolute;
   left: 17px;
-  top: 210px;
+  top: 235px;
   z-index: 99;
   cursor: pointer;
   font-size: 16px;
@@ -63,7 +63,7 @@
 .price-overlay {
   position: absolute;
   right: 10px;
-  top: 215px;
+  top: 240px;
   z-index: 99;
   cursor: pointer;
   font-size: 16px;

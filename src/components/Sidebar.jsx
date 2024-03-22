@@ -6,6 +6,8 @@ import { HiOutlineShoppingBag } from "react-icons/hi";
 import { FiSettings } from "react-icons/fi";
 
 const Sidebar = ({ children }) => {
+  const role = false;
+
   return (
     <div className="flex">
       <div className="fixed w-80 h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between">
@@ -22,14 +24,16 @@ const Sidebar = ({ children }) => {
               <span className="text-xs ml-2">Dashboard</span>
             </div>
           </Link>
-          <Link href="/user">
-            <div className="relative">
-              <div className="bg-gray-100 hover:bg-gray-200 cursor-pointer p-4 flex items-center">
-                <RxPerson size={20} />
-                <span className="text-xs ml-2">User</span>
+          {role && (
+            <Link href="/user">
+              <div className="relative">
+                <div className="bg-gray-100 hover:bg-gray-200 cursor-pointer p-4 flex items-center">
+                  <RxPerson size={20} />
+                  <span className="text-xs ml-2">User</span>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          )}
 
           <Link href="/orders">
             <div className="bg-gray-100 hover:bg-gray-200 cursor-pointer p-4  flex items-center">

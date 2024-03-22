@@ -1,14 +1,22 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   value: {
     isLoggedIn: false,
     username: "",
     email: "",
+    token: "",
   },
 };
 
-export const auth = createSlice({
+const initialStateForProfileImage = {
+  value: {
+    url: "",
+    baseUrl: "http://localhost:3001/api/",
+  },
+};
+
+export const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
   reducers: {
@@ -17,14 +25,33 @@ export const auth = createSlice({
     },
     login: (state, action) => {
       return {
+        ...state,
         value: {
-          isLoggedIn: false,
-          username: action.payload,
+          isLoggedIn: true,
+          token: action.payload
         },
       };
     },
   },
 });
 
-export const { logout, login } = auth.actions;
-export default auth.reducer;
+export const authForProfileImageSlice = createSlice({
+  name: "authForProfileImage",
+  initialState: initialStateForProfileImage,
+  reducers: {
+    loadProfile: (state, action) => {
+      return {
+        ...state,
+        value: {
+          url: action.payload,
+        },
+      };
+    },
+  },
+});
+
+export const { logout, login } = authSlice.actions;
+export const { loadProfile } = authForProfileImageSlice.actions;
+
+export const authReducer = authSlice.reducer;
+export const authForProfileImageReducer = authForProfileImageSlice.reducer;
