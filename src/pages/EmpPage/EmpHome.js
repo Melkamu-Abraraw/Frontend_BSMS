@@ -14,7 +14,7 @@ const EmpHome = () => {
   return (
     <div className="py-5 px-5">
       <h1
-        className="text-xl md:text-xl text-center font-bold py-2 text-gray-800 mt-20"
+        className="text-xl md:text-xl text-center font-bold py-2 text-gray-800"
         style={{ fontFamily: "initial" }}
       >
         Job-Seekers Management Page

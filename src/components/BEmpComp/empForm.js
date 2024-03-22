@@ -12,17 +12,10 @@ const formReducer = (state, event) => {
 };
 
 const EmpForm = () => {
-  const f = false;
-  // const [formData, setFormData] = useReducer(formReducer, {});
-  // const formId = useSelector((state) => state.app.client.formId);
+  const f = true;
   return (
     <div className="container mx-auto py-5">
-      {/* {formId
-        ? EmpUpdate({ formId, formData, setFormData })
-        : EmpAdd({ formData, setFormData })} */}
       {f ? <EmpAdd /> : <EmpUpdate />}
-      {/* <EmpAdd />
-       <EmpUpdate /> */}
     </div>
   );
 };
