@@ -19,8 +19,10 @@ function Homepage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <main className="bg-gray-100 h-screen flex-grow">
-          <Header />
+        <main className="bg-gray-100 min-h-screen flex-grow">
+          <div className="ml-7">
+            <Header />
+          </div>
           <div className="ml-4 flex flex-wrap md:gap-2 lg:gap-0 sm:gap-2">
             {/* Display three Cards in a row with equal width */}
             <div className="flex flex-grow justify-center lg:w-1/3 md:w-full sm:w-full ">
