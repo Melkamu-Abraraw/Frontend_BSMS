@@ -70,31 +70,27 @@ const Sidebar = () => {
               </Link>
             </span>
           </div>
-          <button className={collapseIconClasses} onClick={handleSidebarToggle}>
+          <button className={collapseIconClasses} onClick={handleSidebarToggle} style={{ marginBottom: '70px' }}>
             <CollapsIcon />
           </button>
         </div>
         <div className="flex flex-col items-start mt-5">
           {menuItems.map(({ id, title, icon, children }) => (
             <div key={id} className="relative">
-              {title && !toggleCollapse && (
-              <div style={{ marginTop: '20px', marginLeft: '10px' }}>
-              <span className={classNames("text-ml text-gray-800")} style={{ fontWeight: 'bold' }}>{title}</span>
-          </div>
-          
-            
+              {!toggleCollapse && title && (
+                <div style={{ marginTop: '20px', marginLeft: '10px' }}>
+                  <span className={classNames("text-ml text-gray-800")} style={{ fontWeight: 'bold' }}>{title}</span>
+                </div>
               )}
               {children ? (
                 <div className="flex flex-col">
-                {!toggleCollapse &&
-                  children.map(({ id, title, icon, link }) => (
+                  {children.map(({ id, title, icon, link }) => (
                     <div key={id} className="bg-gray-100 hover:bg-gray-200 cursor-pointer my-2 p-3 rounded-lg inline-block flex items-center">
                       {icon}
-                      <span className="ml-2">{title}</span>
+                      {!toggleCollapse && <span className="ml-2">{title}</span>}
                     </div>
                   ))}
-              </div>
-              
+                </div>
               ) : (
                 <div className="flex px-1 items-center cursor-pointer">
                   {icon}
@@ -109,9 +105,10 @@ const Sidebar = () => {
           ))}
         </div>
       </div>
-      
     </div>
   );
+  
+  
 };
 
 export default Sidebar;
