@@ -2,13 +2,24 @@ import classNames from "classnames";
 import Link from "next/link";
 import React, { useState, useRef } from "react";
 import { RxPerson, RxDashboard } from "react-icons/rx";
-import {MdOutlineSupportAgent, MdCarRental, MdOutlineRealEstateAgent,MdOutlineFeedback } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
+import { FaHouseChimney } from "react-icons/fa6";
+import { TbLogout } from "react-icons/tb";
+import {
+  MdOutlineSupportAgent,
+  MdCarRental,
+  MdOutlineRealEstateAgent,
+  MdOutlineFeedback,
+} from "react-icons/md";
 import { FaListOl, FaUser } from "react-icons/fa";
 import { FcApproval } from "react-icons/fc";
 import { CollapsIcon } from "../icons";
+import { CiChat2 } from "react-icons/ci";
+import { CgProfile } from "react-icons/cg";
 
 const Sidebar = () => {
   const [toggleCollapse, setToggleCollapse] = useState(false);
+  const [activeItem, setActiveItem] = useState(null);
   const menuRef = useRef(null);
 
   const menuItems = [
@@ -20,38 +31,54 @@ const Sidebar = () => {
     },
     {
       id: 2,
-      title: "User",
-      children: [
-        { id: 5, title: "Customer", icon:<FaUser size={24} />, link: "/" },
-        { id: 6, title: "Agent", icon: <MdOutlineSupportAgent size={25} />, link: "/" },
-      ],
+      label: "My Properties",
+      icon: <FaHouseChimney size={25} />,
+      link: "/",
     },
     {
       id: 3,
-      title: "Property",
-      children: [
-        { id: 7, title: " Property Add", icon:  <MdOutlineRealEstateAgent size={25} />, link: "/" },
-        { id: 8, title: "Property Approval", icon:  <FcApproval size={25} />, link: "/" },
-        { id: 9, title: " Property List", icon:  <FaListOl size={24} />, link: "/" },
-      ],
+      label: "Post Properties",
+      icon: <FaPlus size={25} />,
+      link: "/",
     },
     {
       id: 4,
-      title: "Feedback",
-      children: [
-        { id: 10, title: " Feedback List", icon:   <MdOutlineFeedback size={25} />, link: "/" }]
+      label: "Conversation",
+      icon: <CiChat2 size={25} />,
+      link: "/",
+    },
+    {
+      id: 5,
+      label: "Profile",
+      icon: <CgProfile size={25} />,
+      link: "/",
+    },
+    {
+      id: 6,
+      label: "Logout",
+      icon: <TbLogout size={25} />,
+      link: "/",
     },
   ];
+  const handleItemClick = (item) => {
+    setActiveItem(item.id);
+  };
 
-  const wrapperClasses = classNames("bg-gray-100 h-screen px-3 pt-10 pb-4 bg-light flex justify-between flex-col border border-gray-300", {
-    "w-70": !toggleCollapse,
-    "w-30": toggleCollapse,
-    "overflow-y-auto": true,
-  });
+  const wrapperClasses = classNames(
+    "bg-gray-100 h-screen px-3 pt-10 pb-4 bg-light flex justify-between flex-col border border-gray-300",
+    {
+      "w-70": !toggleCollapse,
+      "w-30": toggleCollapse,
+      "overflow-y-auto": true,
+    }
+  );
 
-  const collapseIconClasses = classNames("p-4 rounded bg-light-lighter absolute right-0", {
-    "rotate-180": toggleCollapse,
-  });
+  const collapseIconClasses = classNames(
+    "p-4 rounded bg-light-lighter absolute right-0",
+    {
+      "rotate-180": toggleCollapse,
+    }
+  );
 
   const handleSidebarToggle = () => {
     setToggleCollapse(!toggleCollapse);
@@ -60,43 +87,74 @@ const Sidebar = () => {
   return (
     <div className={wrapperClasses} ref={menuRef}>
       <div className="flex flex-col">
-        <div className="flex items-center justify-between relative">
-          <div className="flex items-center pl-2 gap-4">
-            <span className="mt-3 text-lg font-medium text-text">
+        <div className="flex items-center justify-between relative px-3">
+          <div className="flex items-center pl-2 gap-4 mb-2">
+            <span className=" text-lg font-medium text-text">
               <Link href="/">
-                <div className="bg-green text-white p-2 rounded-lg inline-block">
-                  <span className="text-xs">BSMS</span>
+                <div className=" p-2 rounded-lg inline-block">
+                  <span className="text-1xl text-green font-bold">BSMS</span>
                 </div>
               </Link>
             </span>
           </div>
-          <button className={collapseIconClasses} onClick={handleSidebarToggle} style={{ marginBottom: '70px' }}>
+          <button
+            className={collapseIconClasses}
+            onClick={handleSidebarToggle}
+            style={{ marginBottom: "70px" }}
+          >
             <CollapsIcon />
           </button>
         </div>
-        <div className="flex flex-col items-start mt-5">
-          {menuItems.map(({ id, title, icon, children }) => (
+        <div className="flex flex-col items-start mt-5 gap-3">
+          {menuItems.map(({ id, title, icon, children, label }) => (
             <div key={id} className="relative">
               {!toggleCollapse && title && (
-                <div style={{ marginTop: '20px', marginLeft: '10px' }}>
-                  <span className={classNames("text-ml text-gray-800")} style={{ fontWeight: 'bold' }}>{title}</span>
+                <div style={{ marginTop: "40px", marginLeft: "10px" }}>
+                  <span
+                    className={classNames("text-ml text-gray-800")}
+                    style={{ fontWeight: "bold" }}
+                  >
+                    {title}
+                  </span>
                 </div>
               )}
               {children ? (
                 <div className="flex flex-col">
-                  {children.map(({ id, title, icon, link }) => (
-                    <div key={id} className="bg-gray-100 hover:bg-gray-200 cursor-pointer my-2 p-3 rounded-lg inline-block flex items-center">
+                  {children.map(({ id, title, icon, link, label }) => (
+                    <div
+                      key={id}
+                      className="bg-gray-100 hover:bg-gray-200  hover:ml-2 cursor-pointer my-2 p-3 rounded-lg inline-block flex items-center"
+                    >
                       {icon}
                       {!toggleCollapse && <span className="ml-2">{title}</span>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="flex px-1 items-center cursor-pointer">
+                <div
+                  className={classNames({
+                    "flex px-1 items-center cursor-pointer hover:bg-gray-200 hover:rounded-lg":
+                      activeItem !== id,
+                    "flex px-1 items-center cursor-pointer hover:bg-gray-200 hover:rounded-lg  text-green bg-LGreen":
+                      activeItem == id,
+                  })}
+                  onClick={() => handleItemClick({ id })}
+                >
                   {icon}
                   {!toggleCollapse && !title && (
-                    <div className="bg-gray-100 hover:bg-gray-200 cursor-pointer p-4 rounded-lg flex items-center" style={{ width: "8rem" }}>
-                      <span className={classNames("text-sm text-gray-800")}>Dashboard</span>
+                    <div
+                      className=" cursor-pointer p-4 rounded-lg flex items-center "
+                      style={{ width: "12rem" }}
+                    >
+                      <span
+                        className={classNames({
+                          "text-sm text-gray-800 ": activeItem !== id,
+                          "text-sm text-green ": activeItem == id,
+                        })}
+                        onClick={() => handleItemClick({ id })}
+                      >
+                        {label}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -107,8 +165,6 @@ const Sidebar = () => {
       </div>
     </div>
   );
-  
-  
 };
 
 export default Sidebar;
