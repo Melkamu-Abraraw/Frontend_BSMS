@@ -1,7 +1,7 @@
 "use client";
 import Head from "next/head";
-import Header from "@/components/Header";
-import Layout from "@/components/layout";
+import Header from "@/components/DashboardCom/Header";
+import Layout from "@/components/DashboardCom/layout";
 import EmpTable from "@/components/BEmpComp/empTable";
 import EmpForm from "@/components/BEmpComp/empForm";
 import { BiUserPlus } from "react-icons/bi";

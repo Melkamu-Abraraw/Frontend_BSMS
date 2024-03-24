@@ -1,10 +1,11 @@
 "use client";
 import Head from "next/head";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import Cards from "@/components/Cards";
-import Layout from "@/components/layout";
+import Header from "@/components/DashboardCom/Header";
+import Sidebar from "@/components/DashboardCom/Sidebar";
+import Cards from "@/components/DashboardCom/Cards";
+import Layout from "@/components/DashboardCom/layout";
+import RecentActivities from "@/components/DashboardCom/RecentActivities";
 
 function Homepage() {
   return (
@@ -16,14 +17,17 @@ function Homepage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <div className="flex">
-          <main className="bg-gray-100 min-h-screen flex-grow ml-60">
+          <main className="bg-gray-100 min-h-screen flex-grow">
             <Header />
-            <div className="ml-4 flex flex-col">
+            <div className="bg-gray-100 ml-4 flex flex-col">
               <Cards />
+              <div className="mt-4">
+              <RecentActivities />
+            </div>
+           
             </div>
           </main>
-        </div>
+        
       </Layout>
     </>
   );
