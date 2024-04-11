@@ -34,17 +34,14 @@ function LocationMarker() {
   );
 }
 
-export default function Map() {
+export default function Map({ width, height }) {
   return (
-    <div className="flex justify-center items-center mt-10 mb-5">
-      <Head>
-        <title>Map Example</title>
-      </Head>
+    <div className="flex justify-center items-center mt-8 mb-5">
       <MapContainer
         center={{ lat: 9.005401, lng: 38.763611 }}
         zoom={13}
         scrollWheelZoom={false}
-        style={{ height: "500px", width: "100%" }}
+        style={{ height: height, width: width }}
         className="rounded-md shadow-md"
       >
         <TileLayer

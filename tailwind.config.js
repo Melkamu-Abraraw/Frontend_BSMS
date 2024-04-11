@@ -20,6 +20,10 @@ module.exports = {
       transitionProperty: {
         height: "height",
       },
+      aspectRatio: {
+        "4/3": "5 / 3",
+        "5/3": "4 / 3",
+      },
       colors: {
         brightRed: "hsl(15, 88%, 59%)",
         veryBrightRed: "hsl(11, 88%, 60%)",
@@ -88,6 +92,15 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      gridTemplateColumns: {
+        custom: "14.0rem, 1fr",
+      },
+      gridTemplateRows: {
+        custom: "auto, 1fr",
+      },
+      gridRow: {
+        custom: "1 / -1",
       },
     },
   },

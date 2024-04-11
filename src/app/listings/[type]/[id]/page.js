@@ -1,29 +1,104 @@
 "use client";
 import React from "react";
-import Carousel from "@/components/carousel/Carousel";
 import Map from "@/components/Maps/Map";
 import Card from "@/components/propertyList/Card";
 import { Button } from "@/components/ui/button";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+import { useParams } from "next/navigation";
 
 const Detail = () => {
+  const [propertyDetail, setPropertyDetail] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const params = useParams();
+
+  React.useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3030/api/${params.type}/${params.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        setPropertyDetail(data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error:", error);
+        setLoading(false);
+      }
+    };
+    fetchDetail();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col w-full items-center mt-24">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="animate-spin mx-auto w-12 h-12"
+        >
+          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+        <h4 className="mx-auto items-center text-2xl pl-2 mb-80 mt-6">
+          Loading...
+        </h4>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-row">
       <div className="">
         <div className="  mt-20  container">
           <section className=" flex justify-between mx-6">
             <div className="flex flex-col">
-              <h1 className="font-normal text-2xl">
-                Bole Olompia, Furnished 3 Bedrooms House For Rent, Addis Ababa.
-              </h1>
+              <h1 className="font-normal text-2xl">{propertyDetail.Title}</h1>
               <h6 className="bg-green rounded-sm mt-2 text-white w-20 pl-2 ">
-                For Rent
+                {propertyDetail.ContractType}
               </h6>
             </div>
-            <div className=" text-green text-2xl font-bold">2000 ETB/month</div>
+            <div className=" text-green text-2xl font-bold">
+              {propertyDetail.Price}
+              <span className="ml-1"> ETB/month</span>
+            </div>
           </section>
         </div>
         <div className="container flex flex-row">
-          <Carousel />
+          <Carousel width="59%">
+            <div className="h-80">
+              <img src="/../images/hero/house.png" className="object-cover" />
+            </div>
+            <div className="h-80">
+              <img src="/../images/hero/house.png" className="object-cover" />
+            </div>
+            <div className="h-80">
+              <img src="/../images/hero/house.png" className="object-cover" />
+            </div>
+            <div className="h-80">
+              <img src="/../images/hero/house.png" className="object-cover" />
+            </div>
+            <div className="h-80">
+              <img src="/../images/hero/house.png" className="object-cover" />
+            </div>
+          </Carousel>
           <div className="container   p-2 bg-white rounded shadow-lg">
             <h1 className="text-2xl font-normal mb-4 text-center mx-auto mt-2">
               Agent Information
@@ -64,15 +139,7 @@ const Detail = () => {
         <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
           <h5 className="mt-5 mb-6">Description</h5>
           <hr className="mt-5 mb-6" />
-          <p className="text-black leading-9">
-            Summit, 3 bedroom furnished apartment for rent, Addis Ababa. The
-            apartment is located in safe residential compound and it is on the
-            4th floor. It has living and dinning room with balcony, kitchen,
-            master bedroom with it’s own shower room, two bedrooms with common
-            shower room and garage for one car. The building comes with elevator
-            and terrace on roof top. The rate is 1,600 USD or 160,000 Birr per
-            month and negotiable.
-          </p>
+          <p className="text-black leading-9">{propertyDetail.Description}</p>
         </section>
         <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
           <h5 className="mt-5 mb-6">Details</h5>
@@ -81,12 +148,17 @@ const Detail = () => {
             <ul>
               <li className="list-none flex justify-between">
                 <strong className="mr-4">Price:</strong>
-                <span>1,200,000 ETB</span>
+                <span>
+                  {propertyDetail.Price}
+                  ETB
+                </span>
               </li>
               <hr className="mt-5 mb-6" />
               <li className="list-none flex justify-between">
                 <strong>Property Size:</strong>
-                <span>198 m²</span>
+                <span className="ml-1">
+                  {propertyDetail.Area} <span className="ml-1">m²</span>
+                </span>
               </li>
               <hr className="mt-5 mb-6" />
 
@@ -104,18 +176,18 @@ const Detail = () => {
             <ul>
               <li className="list-none flex justify-between">
                 <strong>Bedrooms:</strong>
-                <span>3</span>
+                <span>{propertyDetail.Bedroom}</span>
               </li>
               <hr className="mt-5 mb-6" />
               <li className="list-none flex justify-between">
                 <strong>Bathrooms:</strong>
-                <span>2</span>
+                <span>{propertyDetail.Bathroom}</span>
               </li>
               <hr className="mt-5 mb-6" />
 
               <li className="list-none flex justify-between ">
                 <strong className="mr-12">Property Status:</strong>
-                <span>For Rent</span>
+                <span>{propertyDetail.ContractType}</span>
               </li>
 
               <hr className="mt-5 mb-6" />
@@ -128,7 +200,7 @@ const Detail = () => {
             </ul>
           </div>
         </section>
-        <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
+        {/* <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
           <h5 className="mt-5 mb-6">Features</h5>
           <hr className="mt-5 mb-6" />
           <ul className="flex row-span-1 justify-between">
@@ -271,36 +343,25 @@ const Detail = () => {
               <span className="font-light">security</span>
             </li>
           </ul>
-        </section>
+        </section> */}
         <section className="shadow-lg bg-white rounded-lg p-6  mx-8 my-8 w-7/12 ">
           <h5 className="mt-5 mb-6">Location</h5>
-          <hr className="mt-5 mb-6" />
           <ul>
             <hr className="mt-5 mb-6" />
             <li className="list-none flex ">
               <strong className="mr-4">City:</strong>
-              <span>Addis Abeba</span>
-            </li>
-            <hr className="mt-5 mb-6" />
-            <li className="list-none flex ">
-              <strong className="mr-4">Area:</strong>
-              <span>Summit</span>
+              <span>{propertyDetail.Location}</span>
             </li>
             <hr className="mt-5 mb-6" />
           </ul>
-          <Map />
+          <Map height={350} width={1200} />
         </section>
         <section className="container  p-6  mx-8 my-8 w-7/12 ">
           <h5 className="font-semibold text-2xl bg-green text-white p-2 rounded-sm">
             Similar Listings
           </h5>
           <hr className="mt-5 mb-6" />
-          <div className="grid grid-cols-2 ">
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-          </div>
+          <div className="grid grid-cols-2 "></div>
         </section>
       </div>
     </div>

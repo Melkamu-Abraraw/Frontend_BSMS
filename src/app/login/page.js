@@ -13,6 +13,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { login } from "@/redux/features/auth-slice";
+import { useSelector } from "react-redux";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -20,11 +21,11 @@ const Login = () => {
   const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
 
   const schema = yup.object().shape({
-    email: yup
+    Email: yup
       .string()
       .required("Email is required")
       .matches(emailRegex, "Invalid email format"),
-    password: yup.string().required("Password is required").min(8),
+    Password: yup.string().required("Password is required").min(8),
   });
 
   const {
@@ -50,7 +51,7 @@ const Login = () => {
 
   const onSubmit = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/User/login`, {
+      const response = await fetch(`http://localhost:3030/api/User/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,9 +68,16 @@ const Login = () => {
         showToastMessage("Login successful!");
         showToastMessage();
         setTimeout(() => {
-          dispatch(login());
-          router.push("/");
-        }, 1300);
+          dispatch(login(data.User.Role));
+          console.log(data.User);
+          if (data.User.Role === "Admin") {
+            router.push("/dashboard/companies");
+          } else if (data.User.Role === "BrokerAdmin") {
+            router.push("/dashboard/brokermanager");
+          } else if (data.User.Role === "User") {
+            router.push("/dashboard");
+          }
+        }, 1500);
       } else {
         showToastError("Invalid email or password!");
       }
@@ -96,9 +104,9 @@ const Login = () => {
               id="email"
               name="email"
               placeholder="Email"
-              {...register("email")}
+              {...register("Email")}
             />
-            <p className="p-1 text-red-600">{errors.email?.message}</p>
+            <p className="p-1 text-red-600">{errors.Email?.message}</p>
           </div>
           <div className="w-full">
             <div className="mb-3">
@@ -109,9 +117,9 @@ const Login = () => {
               id="password"
               name="password"
               placeholder="Password"
-              {...register("password")}
+              {...register("Password")}
             />
-            <p className="p-1 text-red-600">{errors.password?.message}</p>
+            <p className="p-1 text-red-600">{errors.Password?.message}</p>
           </div>
           <Button
             type="submit"

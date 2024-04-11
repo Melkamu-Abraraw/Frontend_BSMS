@@ -6,6 +6,7 @@ const initialState = {
     username: "",
     email: "",
     token: "",
+    role: "",
   },
 };
 
@@ -28,7 +29,7 @@ export const authSlice = createSlice({
         ...state,
         value: {
           isLoggedIn: true,
-          token: action.payload
+          role: action.payload,
         },
       };
     },

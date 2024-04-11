@@ -20,18 +20,6 @@ const Register = () => {
   const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
 
   const schema = yup.object().shape({
-    FirstName: yup
-      .string()
-      .required("First Name is required")
-      .matches(/^[A-Za-z]+$/, "First Name must contain only characters"),
-    LastName: yup
-      .string()
-      .required("Last Name is required")
-      .matches(/^[A-Za-z]+$/, "Last Name must contain only characters"),
-    Phone: yup
-      .string()
-      .required("Phone Number is required")
-      .matches(/^9\d{8}$/, "Phone Number must start with 9 and 9 numbers long"),
     Email: yup
       .string()
       .required("Email is required")
@@ -54,7 +42,7 @@ const Register = () => {
   const router = useRouter();
 
   const showToastMessage = () => {
-    toast.success("User is Successfully Registered!", {
+    toast.success("Manager is Successfully Registered!", {
       position: "top-right",
     });
   };
@@ -73,12 +61,9 @@ const Register = () => {
   };
 
   const [formData, setFormData] = useState({
-    FirstName: "",
-    LastName: "",
-    Phone: "",
     Email: "",
     Password: "",
-    ConfirmPassword: "",
+    confirmPassword: "",
   });
 
   const imageUrl = useSelector(
@@ -105,7 +90,7 @@ const Register = () => {
     formDataToSend.append("images", file);
     try {
       const response = await fetch(
-        `http://localhost:3030/api/User/userRegister`,
+        `http://localhost:3030/api/User/brokerAdminRegister`,
         {
           method: "POST",
           body: formDataToSend,
@@ -115,12 +100,11 @@ const Register = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      console.log(data);
-      if (data) {
-        // showToastMessage();
-        // setTimeout(() => {
-        //   router.push("/login"); // Redirect to login page after a delay
-        // }, 3000); // Adjust the delay time as needed
+      if (data.data) {
+        showToastMessage();
+        setTimeout(() => {
+          router.push("/dashboard/manage"); // Redirect to login page after a delay
+        }, 3000); // Adjust the delay time as needed
       }
       console.log("Success:", data);
     } catch (error) {
@@ -135,92 +119,21 @@ const Register = () => {
           className="grid grid-cols-1 gap-3 p-6 bg-white shadow-lg rounded-lg"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className=" mx-auto ">
-            <h1 className="text-2xl font-semibold mx-auto mb-1 ml-1">
-              Sign Up
-            </h1>
-            <label htmlFor="upload-input" className="relative mx-auto">
-              <input
-                id="upload-input"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="sr-only"
-              />
-              <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer">
-                {image ? (
-                  <img
-                    src={image}
-                    alt="Uploaded"
-                    className="w-full h-full rounded-full"
-                  />
-                ) : (
-                  <FaCamera className="text-gray-500 w-12 h-12" />
-                )}
-              </div>
-            </label>
-          </div>
-          <span className="mx-auto mb-2"> Upload Profile Image</span>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="w-full">
-              <div className="mb-2">
-                <Label htmlFor="FirstName">First Name</Label>
-              </div>
-              <Input
-                type="text"
-                id="FirstName"
-                name="FirstName"
-                placeholder="First Name"
-                {...register("FirstName")}
-              />
-              <p className="p-1 text-red-600">{errors.FirstName?.message}</p>
-            </div>
-            <div className="w-full">
-              <div className="mb-2">
-                <Label htmlFor="LastName">Last Name</Label>
-              </div>
-              <Input
-                type="text"
-                id="LastName"
-                name="LastName"
-                placeholder="Last Name"
-                {...register("LastName")}
-              />
-              <p className="p-1 text-red-600">{errors.LastName?.message}</p>
-            </div>
-            <div className="w-full">
-              <div className="mb-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-              </div>
-              <div className="flex">
-                <Input
-                  disabled
-                  type="tel"
-                  placeholder="+251"
-                  className="w-16 font-bold  placeholder"
-                />
-                <Input
-                  type="number"
-                  id="Phone"
-                  name="Phone"
-                  placeholder="Phone Number"
-                  {...register("Phone")}
-                />
-              </div>
-              <p className="p-1 text-red-600">{errors.Phone?.message}</p>
-            </div>
+          <div className="grid grid-cols-1 gap-6">
             <div className="w-full">
               <div className="mb-2">
                 <Label htmlFor="email">Email</Label>
               </div>
               <Input
-                type="Email"
-                id="Email"
-                name="Email"
+                type="email"
+                id="email"
+                name="email"
                 placeholder="Email"
                 {...register("Email")}
               />
-              <p className="p-1 text-red-600">{errors.email?.message}</p>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Email?.message}
+              </p>
             </div>
             <div className="w-full">
               <div className="mb-2">
@@ -233,7 +146,9 @@ const Register = () => {
                 placeholder="Password"
                 {...register("Password")}
               />
-              <p className="p-1 text-red-600">{errors.password?.message}</p>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Password?.message}
+              </p>
             </div>
             <div className="w-full">
               <div className="mb-2">
@@ -246,21 +161,14 @@ const Register = () => {
                 placeholder="Confirm Password"
                 {...register("confirmPassword")}
               />
-              <p className="p-1 text-red-600">
+              <p className="p-1 text-red-600 text-sm">
                 {errors.confirmPassword?.message}
               </p>
             </div>
           </div>
           <Button type="submit" variant="login" className="w-full">
-            Sign Up
+            Register
           </Button>
-
-          <p className="flex justify-center md:flex-col lg:flex-row ">
-            Do have an account?
-            <Link href="/login">
-              <span className="font-bold ml-1 text-green"> Login</span>
-            </Link>
-          </p>
         </form>
       </div>
       <ToastContainer />

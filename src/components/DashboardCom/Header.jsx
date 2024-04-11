@@ -5,6 +5,8 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import { IoIosChatboxes } from "react-icons/io";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
 
 const ShadowedIconButton = ({ children }) => (
   <IconButton
@@ -27,8 +29,8 @@ const ShadowedIconButton = ({ children }) => (
 
 const Header = () => {
   return (
-    <div className="flex justify-between px-5 pt-4">
-      <div className="flex items-center">
+    <div className="flex flex-row justify-between px-12  ">
+      <div className="flex items-center ">
         {/* SEARCH BAR */}
         <Box
           display="flex"
@@ -46,7 +48,7 @@ const Header = () => {
         display="flex"
         justifyContent="space-between"
         p={3}
-        style={{ marginLeft: "30px" }}
+        style={{ marginLeft: "40px" }}
       >
         {/* ICONS */}
         <Box display="flex">
@@ -60,7 +62,9 @@ const Header = () => {
             <IoIosChatboxes />
           </ShadowedIconButton>
           <ShadowedIconButton>
-            <PersonOutlinedIcon />
+            <Link href="/">
+              <PersonOutlinedIcon />
+            </Link>
           </ShadowedIconButton>
         </Box>
       </Box>
