@@ -1,11 +1,13 @@
 "use client";
+import * as yup from "yup";
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Map from "@/components/Maps/Map";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Select,
   SelectContent,
@@ -16,40 +18,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: value,
-  }));
-};
-
-const handleImageChange = (e) => {
-  const files = Array.from(e.target.files);
-  const images = files.map((file) => URL.createObjectURL(file));
-  setFormData((prevData) => ({
-    ...prevData,
-    images: [...prevData.images, ...images],
-  }));
-};
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-  // Send formData to backend or perform any other necessary action
-  console.log(formData);
-};
-
 function Homepage() {
   const [propertyType, setPropertyType] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [location, setLocation] = useState(null);
+  const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
+  const schema = yup.object().shape({
+    title: yup.string().required("title is required"),
+    description: yup.string().required("Description is required"),
+    PropretyType: yup.string().required("Proprety Type is required"),
+    PropertyCategory: yup.string().required("Property Category is required"),
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const [formData, setFormData] = useState({
-    propertyType: "",
-    location: "",
-    price: "",
+    title: "",
     description: "",
-    images: [],
+    PropretyType: "",
   });
+  const handleLocationChange = ({ lat, lng }) => {
+    setLocation({ lat, lng });
+  };
+  const onSubmit = async (formData) => {
+    const propertyType = formData.PropretyType;
+  };
   const colors = [
     { name: "Red", value: "#FF0000" },
     { name: "Green", value: "#00FF00" },
@@ -59,28 +58,21 @@ function Homepage() {
     { name: "Black", value: "#000" },
     { name: "White", value: "#FFF" },
     { name: "Mix", value: "    #4F1396" },
-    // Add more colors as needed
   ];
   const handlePdfChange = (event) => {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
   };
-
   const handleRemovePdf = (indexToRemove) => {
     setPdfs((prevPdfs) =>
       prevPdfs.filter((_, index) => index !== indexToRemove)
     );
   };
 
-  // State to store the selected color
-  const [selectedColor, setSelectedColor] = useState("");
-  const [images, setImages] = useState([]);
-
   const handleImageChange = (event) => {
     const selectedImages = Array.from(event.target.files);
     setImages((prevImages) => [...prevImages, ...selectedImages]);
   };
-  // Event handler for when a color is selected
   const handleColorChange = (e) => {
     setSelectedColor(e.target.value);
   };
@@ -89,27 +81,33 @@ function Homepage() {
       prevImages.filter((_, index) => index !== indexToRemove)
     );
   };
-  const handlePropertyTypeChange = (e) => {
-    console.log(e.target);
-    console.log(propertyType);
+  const handlePropertyTypeChange = (value) => {
+    setPropertyType(value);
   };
+  
   return (
     <>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className="w-full bg-white shadow-2xl rounded-lg px-8 pt-6 "
       >
         <div className="mb-2">
           <Label htmlFor="title" className="font-bold">
             Property Title :
           </Label>
-          <Input type="text" id="title" placeholder="Title" className="mt-3" />
+          <Input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Title"
+            {...register("title")}
+          />
         </div>
         <div className="mb-2">
           <Label htmlFor="location" className="font-bold">
             Property Location :
           </Label>
-          <Map height="300px" width="100%" />
+          <Map height="300px" width="100%" onClick={handleLocationChange} />
         </div>
         <div className="mb-3">
           <Label htmlFor="location" className="font-bold">
@@ -118,6 +116,7 @@ function Homepage() {
           <Textarea
             placeholder="Type your property Description here."
             className="mt-3"
+            {...register("description")}
           />
         </div>
         <div className="mt-4 grid grid-cols-3 gap-3">
@@ -127,21 +126,18 @@ function Homepage() {
                 Proprety Type :
               </Label>
             </div>
-            <Select id="propertyType" onValueChange={(e) => setPropertyType(e)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="House">House</SelectItem>
-                  <SelectItem value="Vehicle">Vehicle</SelectItem>
-                  <SelectItem value="Land">Land</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register("PropretyType")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="House">House</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Land">Land</option>
+            </select>
           </div>
           {propertyType === "House" && (
             <div>
@@ -150,26 +146,19 @@ function Homepage() {
                   Property Category :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Villa">Villa</SelectItem>
-                    <SelectItem value="Condominium">Condominium</SelectItem>
-                    <SelectItem value="Apartment">Apartment</SelectItem>
-                    <SelectItem value="Office">Office</SelectItem>
-                    <SelectItem value="Single Familiy">
-                      Single Familiy
-                    </SelectItem>
-                    <SelectItem value="G+">G+</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+              {...register(" PropertyCategory ")}
+              className="block appearance-none w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Villa">Villa</option>
+              <option value="Condominium">Condominium</option>
+              <option value="Apartment">Apartment</option>
+              <option value="Office">Office</option>
+              <option value="Single Familiy">Single Familiy</option>
+            </select>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -179,32 +168,23 @@ function Homepage() {
                   Brand :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Toyota">Toyota</SelectItem>
-                    <SelectItem value="Suzuki">Suzuki</SelectItem>
-                    <SelectItem value="Sinotruck">Sinotruck</SelectItem>
-                    <SelectItem value="Scania">Scania</SelectItem>
-                    <SelectItem value="Renault">Renault</SelectItem>
-                    <SelectItem value="Jetour">Jetour</SelectItem>
-                    <SelectItem value="Nissan">Nissan</SelectItem>
-                    <SelectItem value="Scannia">Scannia</SelectItem>
-                    <SelectItem value="Lifan">Lifan</SelectItem>
-                    <SelectItem value="Mercedes">Mercedes</SelectItem>
-                    <SelectItem value="Isuzu">Isuzu</SelectItem>
-                    <SelectItem value="Hundai">Hundai</SelectItem>
-                    <SelectItem value="Chevrolet">Chevrolet</SelectItem>
-                    <SelectItem value="Ford">Ford</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+              {...register("Brand")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Toyota">Toyota</option>
+              <option value="Suzuki">Suzuki</option>
+              <option value="Scania">Scania</option>
+              <option value="Renault">Renault</option>
+              <option value="Jetour">Jetour</option>
+              <option value="Scania">Scannia</option>
+              <option value="Lifan">Lifan</option>
+              <option value="Chevrolet">Chevrolet</option>
+            </select>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -214,27 +194,22 @@ function Homepage() {
                   Model :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Corolla">Corolla</SelectItem>
-                    <SelectItem value="Yaris">Yaris</SelectItem>
-                    <SelectItem value="Hilux">Hilux</SelectItem>
-                    <SelectItem value="Platz">Platz</SelectItem>
-                    <SelectItem value="Rava4">Rava4</SelectItem>
-                    <SelectItem value="Tacomma">Tacomma</SelectItem>
-                    <SelectItem value="Vitz">Vitz</SelectItem>
-                    <SelectItem value="Highlander">Highlander</SelectItem>
-                    <SelectItem value="Carina">Carina</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+              {...register("Model")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Corolla">Corolla</option>
+              <option value="Yaris">Yaris</option>
+              <option value="Hilux">Hilux</option>
+              <option value="Platz">Platz</option>
+              <option value="Rava4">Rava4</option>
+              <option value="Vitz">Vitz</option>
+              <option value="Highlander">Highlander</option>
+            </select>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -244,21 +219,18 @@ function Homepage() {
                   Transmission :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Manual">Manual</SelectItem>
-                    <SelectItem value="Automatic">Automatic</SelectItem>
-                    <SelectItem value="Both">Both</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+             
+              <select
+              {...register("Transmission")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Manual">Manual</option>
+              <option value="Automatic">Automatic</option>
+            </select>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -268,24 +240,21 @@ function Homepage() {
                   Body Type :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Sedan">Sedan</SelectItem>
-                    <SelectItem value="Truck">Truck</SelectItem>
-                    <SelectItem value="Compact">Compact</SelectItem>
-                    <SelectItem value="Minibus">Minibus</SelectItem>
-                    <SelectItem value="SUV">SUV</SelectItem>
-                    <SelectItem value="Pickup">Pickup</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+              {...register(" BodyType")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Sedan">Sedan</option>
+              <option value="Truck">Truck</option>
+              <option value="Compact">Compact</option>
+              <option value="Minibus">Minibus</option>
+              <option value="SUV">SUV</option>
+              <option value="Pickup">Pickup</option>
+            </select>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -295,54 +264,19 @@ function Homepage() {
                   Fuel Type :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Benzine">Benzine</SelectItem>
-                    <SelectItem value="Diesel">Diesel</SelectItem>
-                    <SelectItem value="Hybrid">Hybrid</SelectItem>
-                    <SelectItem value="Electric">Electric</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          {propertyType === "Vehicle" && (
-            <div>
-              <div className="mb-4">
-                <Label htmlFor="type" className="font-bold">
-                  Engine Size :
-                </Label>
-              </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="0,8">0,8</SelectItem>
-                    <SelectItem value="0,9">0,9</SelectItem>
-                    <SelectItem value="1,0">1,0</SelectItem>
-                    <SelectItem value="1,2">1,2</SelectItem>
-                    <SelectItem value="1,3">1,3</SelectItem>
-                    <SelectItem value="1,4">1,4</SelectItem>
-                    <SelectItem value="1,5">1,5</SelectItem>
-                    <SelectItem value="1,6">1,6</SelectItem>
-                    <SelectItem value="1,7">1,7</SelectItem>
-                    <SelectItem value="1,8">1,8</SelectItem>
-                    <SelectItem value="1,9">1,9</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+              {...register(" FuelType")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Benzine">Benzine</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Electric">Electric</option>
+            </select>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -420,20 +354,18 @@ function Homepage() {
                 Contract Type :
               </Label>
             </div>
-            <Select className="mt-4">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="For Sale">For Sale</SelectItem>
-                  <SelectItem value="For Rent">For Rent</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register(" ContractType")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="For Sale">For Sale</option>
+              <option value="For Rent">For Rent</option>
+             
+            </select>
           </div>
           <div>
             <div className="mb-4">
@@ -441,20 +373,18 @@ function Homepage() {
                 Currency :
               </Label>
             </div>
-            <Select className="mt-6">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="ETB">ETB</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register(" Currency")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="USD">USD</option>
+              <option value="ETB">ETB</option>
+             
+            </select>
           </div>
           <div>
             <div className="mb-4">
@@ -462,22 +392,20 @@ function Homepage() {
                 City :
               </Label>
             </div>
-            <Select className="mt-4">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Addis Abeba">Addis Abeba</SelectItem>
-                  <SelectItem value="Adama">Adama</SelectItem>
-                  <SelectItem value="Jimma">Jimma</SelectItem>
-                  <SelectItem value="Ambo">Ambo</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register(" City")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Addis Abeba">Addis Abeba</option>
+              <option value="Adama">Adama</option>
+              <option value="Jimma">Jimma</option>
+              <option value="Ambo">Ambo</option>
+             
+            </select>
           </div>
           <div>
             <div className="mb-4">
@@ -485,21 +413,19 @@ function Homepage() {
                 Price Category :
               </Label>
             </div>
-            <Select className="mt-4">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Negotiable">Negotiable</SelectItem>
-                  <SelectItem value="Adama">Slightliy Negotiable</SelectItem>
-                  <SelectItem value="Jimma">Fixed</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+      
+            <select
+              {...register(" PriceCategory")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Negotiable">Negotiable</option>
+              <option value="Adama">Slightliy Negotiable</option>
+              <option value="Jimma">Fixed</option>
+            </select>
           </div>
           <div className="mb-2">
             <Label htmlFor="title" className="font-bold">

@@ -1,5 +1,4 @@
-"use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -10,16 +9,18 @@ import {
 import Head from "next/head";
 import "leaflet/dist/leaflet.css";
 import { icon } from "leaflet";
+
 const ICON = icon({
   iconUrl: "/icon.png",
   iconSize: [32, 32],
 });
 
-function LocationMarker() {
-  const [position, setPosition] = React.useState(null);
+function LocationMarker({ onClick }) {
+  const [position, setPosition] = useState(null);
   const map = useMapEvents({
-    click() {
-      map.locate();
+    click(e) {
+      setPosition(e.latlng);
+      onClick(e.latlng); // Pass the coordinates to the parent component
     },
     locationfound(e) {
       setPosition(e.latlng);
@@ -34,11 +35,18 @@ function LocationMarker() {
   );
 }
 
-export default function Map({ width, height }) {
+export default function Map({ width, height ,onClick}) {
+  const [center, setCenter] = useState({ lat: 9.005401, lng: 38.763611 });
+
+  const handleMapClick = (latlng) => {
+    setCenter(latlng);
+    onClick(latlng)
+  };
+
   return (
     <div className="flex justify-center items-center mt-8 mb-5">
       <MapContainer
-        center={{ lat: 9.005401, lng: 38.763611 }}
+        center={center}
         zoom={13}
         scrollWheelZoom={false}
         style={{ height: height, width: width }}
@@ -48,10 +56,9 @@ export default function Map({ width, height }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker icon={ICON} position={{ lat: 9.005401, lng: 38.763611 }}>
-          <Popup>You are here</Popup>
+        <Marker icon={ICON} position={center}>
         </Marker>
-        <LocationMarker />
+        <LocationMarker onClick={handleMapClick} />
       </MapContainer>
     </div>
   );

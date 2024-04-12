@@ -78,7 +78,7 @@ const Register = () => {
 
   const onSubmit = async (formData) => {
     const formDataToSend = new FormData();
-
+console.log(formData)
     // Append each key-value pair from original formData
     for (const key in formData) {
       if (formData.hasOwnProperty(key)) {
