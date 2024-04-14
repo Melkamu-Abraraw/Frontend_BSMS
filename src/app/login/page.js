@@ -51,7 +51,7 @@ const Login = () => {
 
   const onSubmit = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:3030/api/User/login`, {
+      const response = await fetch(`http://localhost:3001/api/User/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,13 +69,14 @@ const Login = () => {
         showToastMessage();
         setTimeout(() => {
           dispatch(login(data.User.Role));
-          console.log(data.User);
           if (data.User.Role === "Admin") {
             router.push("/dashboard/companies");
           } else if (data.User.Role === "BrokerAdmin") {
             router.push("/dashboard/brokermanager");
           } else if (data.User.Role === "User") {
             router.push("/dashboard");
+          } else if (data.User.Role === "Broker") {
+            router.push("/dashboard/broker");
           }
         }, 1500);
       } else {
