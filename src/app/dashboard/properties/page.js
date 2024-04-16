@@ -131,7 +131,6 @@ function Homepage() {
     },
   ];
 
-  console.log(myProperties)
   const rows = myProperties.map((item, index) => ({
     id:item._id ,
     image: item.imageUrls[0],
