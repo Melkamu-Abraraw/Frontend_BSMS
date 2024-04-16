@@ -64,17 +64,17 @@ const Login = () => {
       }
 
       const data = await response.json();
-      if (data.token) {
+      if (data.responseData.token) {
         showToastMessage("Login successful!");
         showToastMessage();
         setTimeout(() => {
-          dispatch(login(data.User.Role));
+          dispatch(login(data.responseData));
           console.log(data.User);
-          if (data.User.Role === "Admin") {
+          if (data.responseData.user.Role === "Admin") {
             router.push("/dashboard/companies");
-          } else if (data.User.Role === "BrokerAdmin") {
+          } else if (data.responseData.user.Role === "BrokerAdmin") {
             router.push("/dashboard/brokermanager");
-          } else if (data.User.Role === "User") {
+          } else if (data.responseData.user.Role === "User") {
             router.push("/dashboard");
           }
         }, 1500);

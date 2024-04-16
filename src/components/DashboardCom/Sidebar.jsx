@@ -34,9 +34,9 @@ const Sidebar = () => {
   const [activeItem, setActiveItem] = useState(null);
   const menuRef = useRef(null);
   const [toggleChildCollapse, setToggleChildCollapse] = useState(false);
-  const user = useSelector((state) => state.authReducer.value);
-  console.log(user.role);
-  if (!user) {
+  const user = useSelector((state) => state.auth.value);
+  const persistedState = JSON.parse(localStorage.getItem('user')) 
+    if (!user) {
     // Render nothing until user data is available
     return null;
   }
@@ -188,12 +188,12 @@ const Sidebar = () => {
   ];
 
   let activeSidebarItems = (() => {
-    console.log(user.role);
-    if (user.role === "Admin") {
+    console.log(persistedState.role);
+    if (persistedState.role === "Admin") {
       return menuItems_admin;
-    } else if (user.role === "User") {
+    } else if (persistedState.role === "User") {
       return menuItems_user;
-    } else if (user.role === "BrokerAdmin") {
+    } else if (persistedState.role === "BrokerAdmin") {
       return menuItems_brokerManager;
     }
     // Return an empty array if user role is not recognized

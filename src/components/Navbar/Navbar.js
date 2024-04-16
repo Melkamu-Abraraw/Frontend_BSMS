@@ -25,7 +25,7 @@ const pages = ["Home", "Listings", "Jobs", "Contact", "About Us"];
 
 function Navbar() {
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.authReducer.value.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.auth.value.isLoggedIn);
 
   const appBarStyle = {
     backgroundColor: "white",

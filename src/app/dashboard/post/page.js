@@ -8,27 +8,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useSelector } from "react-redux";
 
 function Homepage() {
-  const [propertyType, setPropertyType] = useState("");
+  const [propertyType, setPropertyType] = useState("House");
   const [selectedColor, setSelectedColor] = useState("");
   const [location, setLocation] = useState(null);
   const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
+  const persistedState = JSON.parse(localStorage.getItem('user')) 
+
   const schema = yup.object().shape({
-    title: yup.string().required("title is required"),
-    description: yup.string().required("Description is required"),
-    PropretyType: yup.string().required("Proprety Type is required"),
-    PropertyCategory: yup.string().required("Property Category is required"),
+    // title: yup.string().required("Title is required"),
+    // description: yup.string().required("Description is required"),
+    // // ContractType: yup.string().required("Contract Type is required"),
+    // // Year: yup.number("Year must contain only Numbers").required("Year is required"),
+    // // Color: yup.string().required("Color is required"),
+    // // Currency: yup.string().required("Currency is required"),
+    // // City: yup.string().required("City is required"),
+    // // PriceCategory: yup.string().required("Price Category is required"),
+    // // Price: yup.string().required("Price Price is required"),
+    // // PricePrefix: yup.string().required("Price Prefix is required"),
+    // // Bedrooms: yup.string().required("Bedrooms is required"),
+    // // Bathrooms: yup.string().required("Bathrooms is required"),
+    // // YearBuilt: yup.string().required("Year Built is required"),
+    // // Area: yup.string().required("Area is required"),
+    // // AreaPrefix: yup.string(),
+ 
   });
   const {
     register,
@@ -42,12 +48,78 @@ function Homepage() {
     title: "",
     description: "",
     PropretyType: "",
+    Brand:"",
+    Model:"",
+    Transmission:"",
+    BodyType:"",
+    FuelType:"",
+    Mileage:"",
+    ContractType:"",
+    Year:1,
+    Color:"",
+    Currency:"",
+    City:"",
+    PriceCategory:"",
+    Price:"",
+    PricePrefix:"",
+    Bedrooms:"",
+    Bathrooms:"",
+    YearBuilt:"",
+    Area:"",
+    AreaPrefix:"",
   });
+
   const handleLocationChange = ({ lat, lng }) => {
     setLocation({ lat, lng });
+    console.log(location)
   };
+  
   const onSubmit = async (formData) => {
-    const propertyType = formData.PropretyType;
+    const formDataToSend = new FormData();
+
+    // Append each key-value pair from original formData
+    for (const key in formData) {
+      if (formData.hasOwnProperty(key)) {
+        formDataToSend.append(key, formData[key]);
+      }
+    }
+ // Assuming images is an array of File objects representing images
+
+images.forEach((image, index) => {
+  formDataToSend.append('images[]', image);
+});
+  formDataToSend.append('documents[]', pdfs[0]);
+  const locationString = JSON.stringify(location);
+  formDataToSend.append('Location', locationString);
+  
+
+
+    try {
+      const response = await fetch(
+        `http://localhost:3030/api/${propertyType}/upload`,
+        {
+          method: "POST",
+          body: formDataToSend,
+          headers: {
+            Authorization: `Bearer ${persistedState.token}` // Assuming your token is named `token`
+          }
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+      if (data) {
+        // showToastMessage();
+        // setTimeout(() => {
+        //   router.push("/login"); // Redirect to login page after a delay
+        // }, 3000); // Adjust the delay time as needed
+      }
+      console.log("Success:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
   const colors = [
     { name: "Red", value: "#FF0000" },
@@ -62,17 +134,20 @@ function Homepage() {
   const handlePdfChange = (event) => {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
+    console.log([pdfs, ...selectedPdfs]); // Log the updated state immediately after setting it
+
   };
   const handleRemovePdf = (indexToRemove) => {
     setPdfs((prevPdfs) =>
       prevPdfs.filter((_, index) => index !== indexToRemove)
     );
-  };
-
+  }; 
   const handleImageChange = (event) => {
     const selectedImages = Array.from(event.target.files);
     setImages((prevImages) => [...prevImages, ...selectedImages]);
+    console.log([...images, ...selectedImages]); // Log the updated state immediately after setting it
   };
+  
   const handleColorChange = (e) => {
     setSelectedColor(e.target.value);
   };
@@ -85,6 +160,7 @@ function Homepage() {
     setPropertyType(value);
   };
   
+
   return (
     <>
       <form
@@ -102,6 +178,9 @@ function Homepage() {
             placeholder="Title"
             {...register("title")}
           />
+            <p className="p-1 text-red-600 text-sm">
+                {errors.title?.message}
+              </p>
         </div>
         <div className="mb-2">
           <Label htmlFor="location" className="font-bold">
@@ -118,6 +197,9 @@ function Homepage() {
             className="mt-3"
             {...register("description")}
           />
+            <p className="p-1 text-red-600 text-sm">
+                {errors.description?.message}
+              </p>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-3">
           <div>
@@ -138,6 +220,9 @@ function Homepage() {
               <option value="Vehicle">Vehicle</option>
               <option value="Land">Land</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.PropretyType?.message}
+              </p>
           </div>
           {propertyType === "House" && (
             <div>
@@ -147,7 +232,7 @@ function Homepage() {
                 </Label>
               </div>
               <select
-              {...register(" PropertyCategory ")}
+              {...register("PropertyCategory")}
               className="block appearance-none w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             >
               <option value="" disabled>
@@ -159,6 +244,9 @@ function Homepage() {
               <option value="Office">Office</option>
               <option value="Single Familiy">Single Familiy</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.PropertyCategory?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -170,8 +258,7 @@ function Homepage() {
               </div>
               <select
               {...register("Brand")}
-              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"        
             >
               <option value="" disabled>
                 Select option
@@ -185,6 +272,9 @@ function Homepage() {
               <option value="Lifan">Lifan</option>
               <option value="Chevrolet">Chevrolet</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.Brand?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -197,7 +287,7 @@ function Homepage() {
               <select
               {...register("Model")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -210,6 +300,9 @@ function Homepage() {
               <option value="Vitz">Vitz</option>
               <option value="Highlander">Highlander</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.Model?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -223,7 +316,7 @@ function Homepage() {
               <select
               {...register("Transmission")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -231,6 +324,9 @@ function Homepage() {
               <option value="Manual">Manual</option>
               <option value="Automatic">Automatic</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.Transmission?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -243,7 +339,7 @@ function Homepage() {
               <select
               {...register(" BodyType")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -255,6 +351,9 @@ function Homepage() {
               <option value="SUV">SUV</option>
               <option value="Pickup">Pickup</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.BodyType?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -267,7 +366,7 @@ function Homepage() {
               <select
               {...register(" FuelType")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -277,6 +376,9 @@ function Homepage() {
               <option value="Hybrid">Hybrid</option>
               <option value="Electric">Electric</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.FuelType?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -289,12 +391,16 @@ function Homepage() {
                 id="mileage"
                 placeholder="Mileage"
                 className="mt-3 w-44"
-              />
+                {...register(" Mileage")}    
+                  />
+                    <p className="p-1 text-red-600 text-sm">
+                {errors.Mileage?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
             <div className="mb-2">
-              <Label htmlFor="title" className="font-bold">
+              <Label htmlFor="year" className="font-bold">
                 Year :
               </Label>
               <Input
@@ -302,21 +408,24 @@ function Homepage() {
                 id="year"
                 placeholder="Year"
                 className="mt-3 w-44"
-              />
+                {...register("Year")}      />  
+                  <p className="p-1 text-red-600 text-sm">
+                {errors.Year?.message}
+              </p>    
             </div>
           )}
           {propertyType === "Vehicle" && (
             <div>
-              <Label htmlFor="title" className="font-bold">
-                Color :
+              <Label htmlFor="Color" className="font-bold">
+                Color 
               </Label>
               <select
-                value={selectedColor}
-                onChange={handleColorChange}
+             
                 className="block w-44 py-2 px-3 border focus:border-black rounded-md shadow-sm"
                 style={{
                   backgroundColor: "transparent", // Remove green background on hover
                 }}
+                {...register("Color")} 
               >
                 <option value="">Select an Option</option>
                 {colors.map((color) => (
@@ -345,19 +454,21 @@ function Homepage() {
                   </option>
                 ))}
               </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Color?.message}
+              </p> 
             </div>
           )}
 
           <div>
             <div className="mb-4">
-              <Label htmlFor="type" className="font-bold">
+              <Label htmlFor="ContractType" className="font-bold">
                 Contract Type :
               </Label>
             </div>
             <select
-              {...register(" ContractType")}
+              {...register("ContractType")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
             >
               <option value="" disabled>
                 Select option
@@ -366,17 +477,20 @@ function Homepage() {
               <option value="For Rent">For Rent</option>
              
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.ContractType?.message}
+              </p> 
           </div>
           <div>
             <div className="mb-4">
-              <Label htmlFor="type" className="font-bold">
+              <Label htmlFor="Currency" className="font-bold">
                 Currency :
               </Label>
             </div>
             <select
-              {...register(" Currency")}
+              {...register("Currency")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -385,17 +499,20 @@ function Homepage() {
               <option value="ETB">ETB</option>
              
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.Currency?.message}
+              </p> 
           </div>
           <div>
             <div className="mb-4">
-              <Label htmlFor="type" className="font-bold">
-                City :
+              <Label htmlFor="City" className="font-bold">
+              City :
               </Label>
             </div>
             <select
-              {...register(" City")}
+              {...register("City")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -406,6 +523,9 @@ function Homepage() {
               <option value="Ambo">Ambo</option>
              
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.City?.message}
+              </p> 
           </div>
           <div>
             <div className="mb-4">
@@ -415,9 +535,9 @@ function Homepage() {
             </div>
       
             <select
-              {...register(" PriceCategory")}
+              {...register("PriceCategory")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+              
             >
               <option value="" disabled>
                 Select option
@@ -426,6 +546,9 @@ function Homepage() {
               <option value="Adama">Slightliy Negotiable</option>
               <option value="Jimma">Fixed</option>
             </select>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.PriceCategory?.message}
+              </p> 
           </div>
           <div className="mb-2">
             <Label htmlFor="title" className="font-bold">
@@ -436,20 +559,30 @@ function Homepage() {
               id="title"
               placeholder="Price"
               className="mt-3 w-44"
+              {...register("Price")}
+
             />
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Price?.message}
+              </p> 
           </div>
 
-          <div className="mb-2">
+          {/* <div className="mb-2">
             <Label htmlFor="title" className="font-bold">
               Price Prefix :
             </Label>
             <Input
               type="text"
               id="title"
-              placeholder="Price"
+              placeholder="Price Prefix"
               className="mt-3 w-44"
+              {...register("PricePrefix")}
+              
             />
-          </div>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.PricePrefix?.message}
+              </p> 
+          </div> */}
           {propertyType === "House" && (
             <div className="mb-2">
               <Label htmlFor="title" className="font-bold">
@@ -458,9 +591,13 @@ function Homepage() {
               <Input
                 type="number"
                 id="title"
-                placeholder="Price"
+                placeholder="Bedrooms"
                 className="mt-3 w-44"
+                {...register("Bedrooms")}
               />
+               <p className="p-1 text-red-600 text-sm">
+                {errors.Bedrooms?.message}
+              </p> 
             </div>
           )}
           {propertyType === "House" && (
@@ -471,9 +608,14 @@ function Homepage() {
               <Input
                 type="number"
                 id="title"
-                placeholder="Price"
+                placeholder="Bathrooms"
                 className="mt-3 w-44"
+                {...register("Bathrooms")}
+
               />
+               <p className="p-1 text-red-600 text-sm">
+                {errors.Bathrooms?.message}
+              </p> 
             </div>
           )}
           {propertyType === "House" && (
@@ -486,24 +628,32 @@ function Homepage() {
                 id="title"
                 placeholder="Price"
                 className="mt-3 w-44"
+                {...register("YearBuilt")}
               />
+                <p className="p-1 text-red-600 text-sm">
+                {errors.YearBuilt?.message}
+              </p> 
             </div>
           )}
-          {propertyType === "House" ||
-            (propertyType === "Land" && (
+          {(propertyType === "House" ||
+            propertyType === "Land" ) && (
               <div className="mb-2">
-                <Label htmlFor="title" className="font-bold">
+                <Label htmlFor="Area" className="font-bold">
                   Area :
                 </Label>
                 <Input
                   type="number"
-                  id="title"
-                  placeholder="Price"
+                  id="Area"
+                  placeholder="Area"
                   className="mt-3 w-44"
+                  {...register("Area")}
                 />
+                <p className="p-1 text-red-600 text-sm">
+                {errors.Area?.message}
+              </p> 
               </div>
-            ))}
-          {propertyType === "House" ||
+            )}
+          {/* {propertyType === "House" ||
             (propertyType === "Land" && (
               <div className="mb-2">
                 <Label htmlFor="title" className="font-bold">
@@ -512,11 +662,15 @@ function Homepage() {
                 <Input
                   type="text"
                   id="title"
-                  placeholder="Price"
+                  placeholder="Area Prefix"
                   className="mt-3 w-44"
+                  {...register(" AreaPrefix")}
                 />
+                <p className="p-1 text-red-600 text-sm">
+                {errors.AreaPrefix?.message}
+              </p> 
               </div>
-            ))}
+            ))} */}
         </div>
         <div>
           <label htmlFor="title" className="font-bold">
@@ -574,62 +728,7 @@ function Homepage() {
             </div>
           </div>
         </div>
-        <div className="mt-4">
-          <label htmlFor="title" className="font-bold">
-            Personal ID :
-          </label>
-          <div className="w-full rounded-lg border border-gray-300 p-4">
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            <label
-              htmlFor="image-upload"
-              className="custom-file-upload block  mx-auto text-center  text-black rounded-lg p-2 cursor-pointer mt-4"
-            >
-              Click to Select files
-            </label>
-            <label
-              htmlFor="image-upload"
-              className="custom-file-upload block w-36 mx-auto text-center bg-green text-white rounded-lg p-2 cursor-pointer mt-1"
-            >
-              Browse files
-            </label>
-            <div className="flex flex-wrap">
-              {images.map((image, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <img
-                    src={URL.createObjectURL(image)}
-                    alt={`Image ${index}`}
-                    style={{ maxWidth: "200px", margin: "10px" }}
-                  />
-                  <button
-                    aria-label="delete"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-0 right-0 text-red-500 bg-transparent border-none cursor-pointer mb-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M15.293 4.293a1 1 0 0 1 1.414 1.414L11.414 12l5.293 5.293a1 1 0 1 1-1.414 1.414L10 13.414l-5.293 5.293a1 1 0 1 1-1.414-1.414L8.586 12 3.293 6.707a1 1 0 0 1 1.414-1.414L10 10.586l5.293-5.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+       
         <div className="mt-4">
           <label htmlFor="title" className="font-bold">
             Property Ownership Documents :

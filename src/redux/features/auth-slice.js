@@ -3,10 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   value: {
     isLoggedIn: false,
-    username: "",
-    email: "",
-    token: "",
     role: "",
+    token: "",
   },
 };
 
@@ -22,17 +20,21 @@ export const authSlice = createSlice({
   initialState: initialState,
   reducers: {
     logout: () => {
+      localStorage.removeItem('user');
       return initialState;
-    },
+    },    
     login: (state, action) => {
-      return {
-        ...state,
-        value: {
-          isLoggedIn: true,
-          role: action.payload,
-        },
-      };
+  localStorage.setItem('user', JSON.stringify({ isLoggedIn: true, role: action.payload.user.Role, token:action.payload.token }));
+  return {
+    ...state,
+    value: {
+      isLoggedIn: true,
+      role: action.payload.user.Role,
+      token:action.payload.token
     },
+  };
+},
+
   },
 });
 
@@ -50,6 +52,8 @@ export const authForProfileImageSlice = createSlice({
     },
   },
 });
+
+
 
 export const { logout, login } = authSlice.actions;
 export const { loadProfile } = authForProfileImageSlice.actions;

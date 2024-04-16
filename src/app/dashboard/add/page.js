@@ -51,34 +51,24 @@ const Register = () => {
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const imageUrl = URL.createObjectURL(file); // Get URL of the selected file
-
-    setImage(imageUrl); // Set the image URL in component state
-    dispatch(loadProfile(imageUrl)); // Dispatch the image URL to Redux store
-    setFile(file); // Set the file object in component state
-  };
-
   const [formData, setFormData] = useState({
     Email: "",
     Password: "",
     confirmPassword: "",
   });
 
-  const imageUrl = useSelector(
-    (state) => state.authForProfileImageReducer.value.url
-  );
-  const baseUrl = useSelector(
-    (state) => state.authForProfileImageReducer.value.baseUrl
-  );
-  const handleChange = () => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // const imageUrl = useSelector(
+  //   (state) => state.authForProfileImageReducer.value.url
+  // );
+  // const baseUrl = useSelector(
+  //   (state) => state.authForProfileImageReducer.value.baseUrl
+  // );
+  // const handleChange = () => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+  // };
 
   const onSubmit = async (formData) => {
     const formDataToSend = new FormData();
-console.log(formData)
     // Append each key-value pair from original formData
     for (const key in formData) {
       if (formData.hasOwnProperty(key)) {

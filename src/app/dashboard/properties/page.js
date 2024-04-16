@@ -1,41 +1,53 @@
 "use client";
-import Head from "next/head";
+import React from "react";
 import Image from "next/image";
-import Header from "@/components/DashboardCom/Header";
-import Sidebar from "@/components/DashboardCom/Sidebar";
-import Cards from "@/components/DashboardCom/Cards";
-import Layout from "@/components/DashboardCom/layout";
-import RecentActivities from "@/components/DashboardCom/RecentActivities";
-import HouseIcon from "@mui/icons-material/House";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
+
 
 function Homepage() {
-  const handleEdit = (id) => {
-    // Handle edit operation
-    console.log("Edit clicked for id:", id);
-  };
+  const [myProperties, seMyProperties] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const persistedState = JSON.parse(localStorage.getItem('user')) 
 
-  const handleDelete = (id) => {
-    // Handle delete operation
-    console.log("Delete clicked for id:", id);
-  };
+  React.useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3030/api/Allproperty/getProperty`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${persistedState.token}`
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        seMyProperties(data.data);
+      } catch (error) {
+        console.error("Error:", error);
+        setLoading(false);
+      }
+    };
+    fetchListings();
+  }, []);
+
   const getStatusCellStyle = (status) => {
     let style = {
       padding: "6px 12px",
       borderRadius: "4px",
-      boxShadow: "none", // Reset box-shadow
-      backgroundColor: "transparent", // Reset background-color
-      color: "inherit", // Reset text color
+      boxShadow: "none",
+      backgroundColor: "transparent",
+      color: "inherit",
     };
 
-    // Apply styles based on status
-    if (status === "Approved") {
+    if (status === "Pending") {
       style.backgroundColor = "#1ecab826";
       style.color = "#1ecab8";
       style.boxShadow = "0 0 13px #1ecab80d";
@@ -48,13 +60,18 @@ function Homepage() {
     return style;
   };
 
+  const handleVisibilityClick = (property) => {
+    const { 
+      propertyType, id } = property;
+    window.location.href = `/listings/${propertyType}/${id}`;
+  };
+
   const columns = [
     {
       field: "image",
       headerName: "Image",
       width: 300,
       headerAlign: "center",
-      renderHeader: (params) => <strong>{"Image"}</strong>,
       renderCell: (params) => (
         <div style={{ width: 250, height: 200, padding: 4 }}>
           <Image
@@ -69,35 +86,19 @@ function Homepage() {
       ),
     },
     {
-      field: "propertyInfo",
-      headerName: "Property Title",
+      field: "propertyType",
+      headerName: "Property Type",
       width: 150,
-      editable: false,
       headerAlign: "bold-header",
-      renderHeader: (params) => <strong>{"Property Title"}</strong>,
       renderCell: (params) => (
         <div style={{ marginBottom: 100 }}>{params.value}</div>
       ),
     },
     {
-      field: "addedOn",
-      headerName: "Added On",
-      width: 150,
-      headerAlign: "bold-header",
-      renderHeader: (params) => <strong>{"Added On "}</strong>,
-      editable: false,
-      renderCell: (params) => (
-        <div style={{ paddingBottom: 100 }}>{params.value}</div>
-      ),
-    },
-
-    {
       field: "status",
       headerName: "Status ",
       width: 150,
-      editable: false,
       headerAlign: "bold-header",
-      renderHeader: (params) => <strong>{"Status "}</strong>,
       renderCell: (params) => (
         <div>
           <span style={getStatusCellStyle(params.value)}>{params.value}</span>
@@ -108,8 +109,6 @@ function Homepage() {
       field: "price",
       headerName: "Price ",
       width: 150,
-      editable: false,
-      renderHeader: (params) => <strong>{"Price "}</strong>,
       renderCell: (params) => (
         <div style={{ paddingBottom: 100 }}>{params.value}</div>
       ),
@@ -118,30 +117,12 @@ function Homepage() {
       field: "actions",
       headerName: "Actions",
       width: 110,
-      renderHeader: (params) => <strong>{"Actions "}</strong>,
-
       renderCell: (params) => (
         <div>
           <IconButton
-            aria-label="edit"
-            onClick={() => handleEdit(params.id)}
-            size="small"
-            style={{ color: "green" }}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleDelete(params.id)}
-            size="small"
-            style={{ color: "red" }}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
             aria-label="view"
-            onClick={() => handleView(params.id)}
             size="small"
+            onClick={() => handleVisibilityClick(params.row)}
           >
             <VisibilityIcon />
           </IconButton>
@@ -150,24 +131,15 @@ function Homepage() {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      image: "/images/about.jpg",
-      propertyInfo: "Apartment",
-      addedOn: "23/2/2024",
-      status: "Approved",
-      price: "1,200,000",
-    },
-    {
-      id: 2,
-      image: "/images/about.jpg",
-      propertyInfo: "Apartment",
-      addedOn: "23/2/2024",
-      status: "Rejected",
-      price: "1,200,000",
-    },
-  ];
+  console.log(myProperties)
+  const rows = myProperties.map((item, index) => ({
+    id:item._id ,
+    image: item.imageUrls[0],
+    propertyType: item.PropertyType,
+    status: item.Status,
+    price: item.Price,
+  }));
+
   const customStyles = {
     root: {
       "& .MuiDataGrid-colCell:focus-within": {
@@ -175,6 +147,7 @@ function Homepage() {
       },
     },
   };
+
   return (
     <>
       <div
@@ -194,7 +167,7 @@ function Homepage() {
           rows={rows}
           columns={columns.map((column) => ({
             ...column,
-            headerClassName: "bold-header", // Apply bold-header class to header cells
+            headerClassName: "bold-header",
           }))}
           rowHeight={300}
           initialState={{

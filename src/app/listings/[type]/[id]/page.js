@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Map from "@/components/Maps/Map";
+import Map from "@/components/Maps/MapShow";
 import Card from "@/components/propertyList/Card";
 import { Button } from "@/components/ui/button";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
@@ -350,11 +350,11 @@ const Detail = () => {
             <hr className="mt-5 mb-6" />
             <li className="list-none flex ">
               <strong className="mr-4">City:</strong>
-              <span>{propertyDetail.Location}</span>
+              <span>{propertyDetail.City}</span>
             </li>
             <hr className="mt-5 mb-6" />
           </ul>
-          <Map height={350} width={1200} />
+          <Map height={350} width={1200} location={propertyDetail.Location}/>
         </section>
         <section className="container  p-6  mx-8 my-8 w-7/12 ">
           <h5 className="font-semibold text-2xl bg-green text-white p-2 rounded-sm">
