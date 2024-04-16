@@ -27,6 +27,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
 import { IoIosList } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { BiListPlus, BiUserPlus } from "react-icons/bi";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -78,6 +79,7 @@ const Sidebar = () => {
       link: "/",
     },
   ];
+
   const menuItems_admin = [
     {
       id: 1,
@@ -187,6 +189,46 @@ const Sidebar = () => {
     },
   ];
 
+  //brokers
+  const menuItems_broker = [
+    {
+      id: 1,
+      label: "Dashboard",
+      icon: <RxDashboard size={25} />,
+      link: "/dashboard/broker",
+    },
+    {
+      id: 2,
+      label: "Employees",
+      icon: <BiUserPlus size={25} />,
+      link: "/dashboard/broker/employee",
+    },
+    {
+      id: 3,
+      label: "Property",
+      icon: <BiListPlus size={25} />,
+      link: "/dashboard/broker/property",
+    },
+    {
+      id: 4,
+      label: "Approval",
+      icon: <BiListPlus size={25} />,
+      link: "/dashboard/broker/approval",
+    },
+    {
+      id: 5,
+      label: "Conversation",
+      icon: <CiChat2 size={25} />,
+      link: "/dashboard/broker/chat",
+    },
+    {
+      id: 6,
+      label: "Profile",
+      icon: <CgProfile size={25} />,
+      link: "/dashboard/broker/profile",
+    },
+  ];
+
   let activeSidebarItems = (() => {
     console.log(persistedState.role);
     if (persistedState.role === "Admin") {
@@ -195,7 +237,10 @@ const Sidebar = () => {
       return menuItems_user;
     } else if (persistedState.role === "BrokerAdmin") {
       return menuItems_brokerManager;
+    } else if (user.role === "Broker") {
+      return menuItems_broker;
     }
+
     // Return an empty array if user role is not recognized
     return [];
   })();

@@ -26,7 +26,7 @@ function Trending() {
     const fetchTrending = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3030/api/Allproperty/all`,
+          `http://localhost:3001/api/Allproperty/all`,
           {
             method: "GET",
             headers: {

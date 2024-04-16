@@ -105,7 +105,7 @@ const Register = () => {
     formDataToSend.append("images", file);
     try {
       const response = await fetch(
-        `http://localhost:3030/api/User/userRegister`,
+        `http://localhost:3001/api/User/userRegister`,
         {
           method: "POST",
           body: formDataToSend,
@@ -117,10 +117,10 @@ const Register = () => {
       const data = await response.json();
       console.log(data);
       if (data) {
-        // showToastMessage();
-        // setTimeout(() => {
-        //   router.push("/login"); // Redirect to login page after a delay
-        // }, 3000); // Adjust the delay time as needed
+        showToastMessage();
+        setTimeout(() => {
+          router.push("/login"); // Redirect to login page after a delay
+        }, 3000); // Adjust the delay time as needed
       }
       console.log("Success:", data);
     } catch (error) {

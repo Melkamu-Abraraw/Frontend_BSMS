@@ -1,21 +1,30 @@
 "use client";
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { useSelector } from "react-redux";
-import EmpAdd from "./empAdd";
 import EmpUpdate from "./empUpdate";
+import EmpAdd from "./empAdd";
 
-const formReducer = (state, event) => {
-  return {
-    ...state,
-    [event.target.name]: event.target.value,
-  };
-};
+// const formReducer = (state, event) => {
+//   return {
+//     ...state,
+//     [event.target.name]: event.target.value,
+//   };
+// };
 
 const EmpForm = () => {
-  const f = true;
+  const [formData, setFormData] = useState({});
+  const formId = useSelector((state) => state.app.client.formId);
   return (
     <div className="container mx-auto py-5">
-      {f ? <EmpAdd /> : <EmpUpdate />}
+      {formId ? (
+        <EmpUpdate
+          formId={formId}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      ) : (
+        <EmpAdd formData={formData} setFormData={setFormData} />
+      )}
     </div>
   );
 };

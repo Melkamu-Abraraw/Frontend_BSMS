@@ -5,14 +5,14 @@ import { Button } from "@mui/material";
 import Link from "next/link";
 
 const Listings = () => {
-  const [latestProperties, seLatestProperties] = React.useState([]);
+  const [latestProperties, setLatestProperties] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3030/api/Allproperty/all`,
+          `http://localhost:3001/api/Allproperty/all`,
           {
             method: "GET",
             headers: {
@@ -26,7 +26,7 @@ const Listings = () => {
         }
 
         const data = await response.json();
-        seLatestProperties(data.data);
+        setLatestProperties(data.data);
       } catch (error) {
         console.error("Error:", error);
         setLoading(false);

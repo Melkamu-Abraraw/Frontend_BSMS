@@ -51,7 +51,7 @@ const Login = () => {
 
   const onSubmit = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:3030/api/User/login`, {
+      const response = await fetch(`http://localhost:3001/api/User/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,6 +76,8 @@ const Login = () => {
             router.push("/dashboard/brokermanager");
           } else if (data.responseData.user.Role === "User") {
             router.push("/dashboard");
+          } else if (data.User.Role === "Broker") {
+            router.push("/dashboard/broker");
           }
         }, 1500);
       } else {
