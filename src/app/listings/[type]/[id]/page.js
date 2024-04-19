@@ -16,7 +16,7 @@ const Detail = () => {
     const fetchDetail = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3030/api/${params.type}/${params.id}`,
+          `http://localhost:3001/api/${params.type}/${params.id}`,
           {
             method: "GET",
             headers: {
@@ -354,7 +354,7 @@ const Detail = () => {
             </li>
             <hr className="mt-5 mb-6" />
           </ul>
-          <Map height={350} width={1200} location={propertyDetail.Location}/>
+          {/* <Map height={350} width={1200} location={propertyDetail.City}/> */}
         </section>
         <section className="container  p-6  mx-8 my-8 w-7/12 ">
           <h5 className="font-semibold text-2xl bg-green text-white p-2 rounded-sm">

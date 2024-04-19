@@ -6,13 +6,12 @@ import {
   Popup,
   useMapEvents,
 } from "react-leaflet";
-import Head from "next/head";
 import "leaflet/dist/leaflet.css";
 import { icon } from "leaflet";
 
 const ICON = icon({
-  iconUrl: "/icon.png",
-  iconSize: [32, 32],
+  iconUrl: "/mark.png",
+  iconSize: [90, 90],
 });
 
 function LocationMarker({ onClick }) {
@@ -36,7 +35,7 @@ function LocationMarker({ onClick }) {
 }
 
 export default function Map({ width, height ,onClick}) {
-  const [center, setCenter] = useState({ lat: 9.005401, lng: 38.763611 });
+  const [center, setCenter] = useState( { lat: 9.145, lng: 40.489673 });
 
   const handleMapClick = (latlng) => {
     setCenter(latlng);
@@ -44,10 +43,10 @@ export default function Map({ width, height ,onClick}) {
   };
 
   return (
-    <div className="flex justify-center items-center mt-8 mb-5">
+    <div className="flex justify-center items-center mt-4 mb-5">
       <MapContainer
         center={center}
-        zoom={13}
+        zoom={5}
         scrollWheelZoom={false}
         style={{ height: height, width: width }}
         className="rounded-md shadow-md"

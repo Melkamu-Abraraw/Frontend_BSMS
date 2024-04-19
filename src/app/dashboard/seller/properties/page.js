@@ -1,42 +1,62 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 
-
 function Homepage() {
-  const [myProperties, seMyProperties] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const persistedState = JSON.parse(localStorage.getItem('user')) 
+  const [myProperties, setMyProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const persistedState = JSON.parse(localStorage.getItem("user"));
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3030/api/Allproperty/getProperty`,
+          `http://localhost:3001/api/Allproperty/getProperty`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${persistedState.token}`
-            }
+              Authorization: `Bearer ${persistedState.token}`,
+            },
           }
         );
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
         const data = await response.json();
-        seMyProperties(data.data);
+        setMyProperties(data.data);
       } catch (error) {
         console.error("Error:", error);
+        setError(error.message);
+      } finally {
         setLoading(false);
       }
     };
     fetchListings();
   }, []);
+
+  if (loading) return <div className="flex flex-col w-full items-center">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="animate-spin mx-auto w-12 h-12"
+  >
+    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+  </svg>
+  <h4 className="mx-auto items-center text-2xl pl-2">Loading...</h4>
+</div>;
+  if (error) return <div>Error: {error}</div>;
 
   const getStatusCellStyle = (status) => {
     let style = {
@@ -48,7 +68,7 @@ function Homepage() {
     };
 
     if (status === "Pending") {
-      style.backgroundColor = "#1ecab826";
+      style.backgroundColor = "#f1646c26";
       style.color = "#1ecab8";
       style.boxShadow = "0 0 13px #1ecab80d";
     } else if (status === "Rejected") {
@@ -56,13 +76,17 @@ function Homepage() {
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
     }
+    else if (status === "Approved") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "#1ecab8";
+      style.boxShadow = "0 0 13px #f1646c0d";
+    }
 
     return style;
   };
 
   const handleVisibilityClick = (property) => {
-    const { 
-      propertyType, id } = property;
+    const { propertyType, id } = property;
     window.location.href = `/listings/${propertyType}/${id}`;
   };
 
@@ -73,14 +97,15 @@ function Homepage() {
       width: 300,
       headerAlign: "center",
       renderCell: (params) => (
-        <div style={{ width: 250, height: 200, padding: 4 }}>
+        <div style={{ width: 250, height: 100, padding: 4 }}>
           <Image
             alt="Image"
             src={params.value}
             layout="responsive"
             width={200}
-            height={200}
+            height={150}
             objectFit="cover"
+            className="rounded"
           />
         </div>
       ),
@@ -132,20 +157,12 @@ function Homepage() {
   ];
 
   const rows = myProperties.map((item, index) => ({
-    id:item._id ,
+    id: item._id,
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
     price: item.Price,
   }));
-
-  const customStyles = {
-    root: {
-      "& .MuiDataGrid-colCell:focus-within": {
-        outline: " none !important",
-      },
-    },
-  };
 
   return (
     <>
@@ -158,11 +175,6 @@ function Homepage() {
         }}
       >
         <DataGrid
-          sx={{
-            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
-          }}
           rows={rows}
           columns={columns.map((column) => ({
             ...column,
@@ -175,10 +187,12 @@ function Homepage() {
             },
           }}
           disableRowSelectionOnClick
+          disableColumnSelector
           pageSizeOptions={[5, 10]}
         />
       </div>
     </>
   );
 }
+
 export default Homepage;

@@ -7,16 +7,16 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdOutlineAssignmentInd } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
-import { MdOutlineAppRegistration } from "react-icons/md";
-
 import "react-toastify/dist/ReactToastify.css";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 600,
-  height: 500,
+  height: 300,
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -31,12 +31,23 @@ function Homepage() {
   const [brokerEmail, setBrokerEmail] = useState("");
   const [propType, setPropType] = useState("");
   const [id, setId] = useState(1);
-  const [pdfs, setPdfs] = useState([]);
   const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [pdfs, setPdfs] = useState([]);
 
   const handleBrokerChange = (event) => {
     setBrokerEmail(event.target.value);
   };
+  const handlePdfChange = (event) => {
+    const selectedPdfs = Array.from(event.target.files);
+    setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
+    console.log([pdfs, ...selectedPdfs]); // Log the updated state immediately after setting it
+
+  };
+  const handleRemovePdf = (indexToRemove) => {
+    setPdfs((prevPdfs) =>
+      prevPdfs.filter((_, index) => index !== indexToRemove)
+    );
+  }; 
   const showToastMessage = (message, type) => {
     toast.success(message, {
       position: "top-right",
@@ -47,16 +58,16 @@ function Homepage() {
       position: "top-right",
     });
   };
-  const onApprove = async () => {
-    const formDataToSend = new FormData();
-    formDataToSend.append('agreementDocUrl[]', pdfs[0]);
-    formDataToSend.append('Status', "Approved");
-
+  const onAssign = async () => {
+  
     try {
-      const response = await fetch(`http://localhost:3001/api/${propType}/approve/${id}`, {
+      const response = await fetch(`http://localhost:3001/api/${propType}/assign/${id}/${brokerEmail}`, {
         method: "PUT",
-        body:formDataToSend,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -67,13 +78,15 @@ function Homepage() {
         showToastMessage();
        
       } else {
-        showToastError(res.message);
+        showToastError("Invalid email or password!");
       }
     } catch (error) {
       console.error("Error:", error);
       showToastError("An error occurred. Please try again."); // Show error toast message
     }
   };
+
+
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -100,6 +113,35 @@ function Homepage() {
         setLoadingProperties(false);
       }
     };
+
+    const fetchBrokers = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/User/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${persistedState.token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        const brokers = data.response.filter(user => user.Role === 'Broker');
+        setBrokers(brokers);
+        console.log(brokers)
+      } catch (error) {
+        console.error("Error fetching brokers:", error);
+      } finally {
+        setLoadingBrokers(false);
+      }
+    };
+
+    fetchBrokers();
     fetchListings();
   }, []);
 
@@ -129,17 +171,6 @@ function Homepage() {
     const { propertyType, id } = property;
     window.location.href = `/listings/${propertyType}/${id}`;
   };
-  const handlePdfChange = (event) => {
-    const selectedPdfs = Array.from(event.target.files);
-    setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
-    console.log([pdfs, ...selectedPdfs]); // Log the updated state immediately after setting it
-
-  };
-  const handleRemovePdf = (indexToRemove) => {
-    setPdfs((prevPdfs) =>
-      prevPdfs.filter((_, index) => index !== indexToRemove)
-    );
-  }; 
   const handleAssignClick = (property) => {
     setOpen(true);
     setId(property.id)
@@ -203,7 +234,7 @@ function Homepage() {
             <VisibilityIcon />
           </IconButton>
           <IconButton aria-label="view" size="small" onClick={()=>handleAssignClick(params.row)}>
-          <MdOutlineAppRegistration />
+            <MdOutlineAssignmentInd />
           </IconButton>
         </div>
       ),
@@ -259,12 +290,12 @@ function Homepage() {
       >
         <Box sx={style} className="rounded">
           <Typography id="modal-modal-title" variant="h4" component="h2">
-           Approve Property
+           Assign Broker
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           <div className="mt-4">
           <label htmlFor="title" className="font-bold">
-            Property Agreement Documents :
+            Property Ownership Documents :
           </label>
           <div className="w-full rounded-lg border border-gray-300 p-4">
             <input
@@ -317,12 +348,15 @@ function Homepage() {
               ))}
             </div>
           </div>
+          <Button className="bg-green  mb-3 mt-4 px-6 hover:bg-green/90">
+            Submit
+          </Button>
         </div>
             <div className="mt-10 text-right">
               <Button
-                style={{ color: "white", fontWeight: "bolder", backgroundColor: "green", marginRight: 15 }} onClick={onApprove}
+                style={{ color: "white", fontWeight: "bolder", backgroundColor: "green", marginRight: 15 }} onClick={onAssign}
               >
-                Approve
+                Assign
               </Button>
               <Button
                 style={{ color: "white", fontWeight: "bolder", backgroundColor: "red" }}
@@ -334,8 +368,6 @@ function Homepage() {
           </Typography>
         </Box>
       </Modal>
-      <ToastContainer />
-
     </>
   );
 }

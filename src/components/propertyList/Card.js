@@ -70,7 +70,7 @@ const Home = ({ property }) => {
           <div className="text-sm  text-darkBlue ml-4 flex flex-row justify-between mt-6">
             <div>
               <FontAwesomeIcon icon={faLocationDot} />
-              <a className="px-0 ml-1 text-green">{propertyValues.Location}</a>
+              <a className="px-0 ml-1 text-green">{propertyValues.City}</a>
             </div>
             <Rate rate={propertyValues.Rating} />
           </div>

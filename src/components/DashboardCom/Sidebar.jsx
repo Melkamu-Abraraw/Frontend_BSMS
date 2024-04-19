@@ -3,7 +3,6 @@ import classNames from "classnames";
 import Link from "next/link";
 import React, { useState, useRef } from "react";
 import { RxDashboard } from "react-icons/rx";
-import { FaPlus } from "react-icons/fa";
 import { FaHouseChimney } from "react-icons/fa6";
 import { TbLogout } from "react-icons/tb";
 import { CollapsIcon } from "../icons";
@@ -13,24 +12,23 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import {
   MdOutlineSupportAgent,
-  MdCarRental,
   MdOutlineRealEstateAgent,
   MdOutlineFeedback,
 } from "react-icons/md";
-import { FaListOl, FaUser } from "react-icons/fa";
-import { FcApproval } from "react-icons/fc";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa";
 import { FiUserCheck } from "react-icons/fi";
-import { BsHouseCheck } from "react-icons/bs";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
 import { IoIosList } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { BiListPlus, BiUserPlus } from "react-icons/bi";
+import { VscDiffAdded } from "react-icons/vsc";
+import { TbBuildingWarehouse } from "react-icons/tb";
+
+
 
 const Sidebar = () => {
-  const router = useRouter();
   const [toggleCollapse, setToggleCollapse] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const menuRef = useRef(null);
@@ -38,7 +36,6 @@ const Sidebar = () => {
   const user = useSelector((state) => state.auth.value);
   const persistedState = JSON.parse(localStorage.getItem('user')) 
     if (!user) {
-    // Render nothing until user data is available
     return null;
   }
   const menuItems_user = [
@@ -51,20 +48,20 @@ const Sidebar = () => {
     {
       id: 3,
       label: "Post Properties",
-      icon: <FaPlus size={25} />,
-      link: "/dashboard/post",
+      icon: <VscDiffAdded size={25} />,
+      link: "/dashboard/seller/post",
     },
     {
       id: 2,
-      label: "Properties",
-      icon: <FaHouseChimney size={25} />,
-      link: "/dashboard/properties",
+      label: "My Properties",
+      icon: <TbBuildingWarehouse size={25} />,
+      link: "/dashboard/seller/properties",
     },
     {
       id: 4,
       label: "Conversation",
       icon: <CiChat2 size={25} />,
-      link: "/dashboard/conversation",
+      link: "/dashboard/seller/conversation",
     },
     {
       id: 5,
@@ -162,9 +159,9 @@ const Sidebar = () => {
         },
         {
           id: 8,
-          title: "Property Approval",
+          title: "Assign Broker",
           icon: <MdAppRegistration size={20} />,
-          link: "/",
+          link: "/dashboard/brokermanager/assignbroker",
         },
         {
           id: 9,
@@ -230,10 +227,9 @@ const Sidebar = () => {
   ];
 
   let activeSidebarItems = (() => {
-    console.log(persistedState.role);
     if (persistedState.role === "Admin") {
       return menuItems_admin;
-    } else if (persistedState.role === "User") {
+    } else if (persistedState.role === "Seller") {
       return menuItems_user;
     } else if (persistedState.role === "BrokerAdmin") {
       return menuItems_brokerManager;

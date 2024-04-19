@@ -69,14 +69,13 @@ const Login = () => {
         showToastMessage();
         setTimeout(() => {
           dispatch(login(data.responseData));
-          console.log(data.User);
           if (data.responseData.user.Role === "Admin") {
             router.push("/dashboard/companies");
           } else if (data.responseData.user.Role === "BrokerAdmin") {
             router.push("/dashboard/brokermanager");
-          } else if (data.responseData.user.Role === "User") {
-            router.push("/dashboard");
-          } else if (data.User.Role === "Broker") {
+          } else if (data.responseData.user.Role === "Seller") {
+            router.push("/dashboard/seller");
+          } else if (data.responseData.user.Role === "Broker") {
             router.push("/dashboard/broker");
           }
         }, 1500);

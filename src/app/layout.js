@@ -1,8 +1,6 @@
-import { Inter, Poppins, Roboto } from "next/font/google";
-import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer";
-import "./globals.css";
+import {Roboto } from "next/font/google";
 import ReduxProvider from "@/redux/provider";
+import "./globals.css";
 
 const robot = Roboto({ subsets: ["latin"], weight: "400" });
 
