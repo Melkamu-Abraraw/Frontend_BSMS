@@ -1,54 +1,58 @@
-const BASE_URL = "http://localhost:3001/";
+const BASE_URL = "http://localhost:3001/api";
 
-// single user
-export async function getEmployee(empId) {
-  const empResponse = await fetch(`${BASE_URL}/api/workers/${empId}`);
-  const json = await empResponse.json();
-  if (json) return json;
-  return {};
+// get single user
+export async function getEmployeeById(EmployeeId) {
+  try {
+    const empResponse = await fetch(
+      `${BASE_URL}/Employee/getEmployee/${EmployeeId}`
+    );
+    if (empResponse.ok) {
+      const json = await empResponse.json();
+      return json;
+    } else {
+      throw new Error("Failed to fetch employee");
+    }
+  } catch (error) {
+    console.error("Error fetching employee:", error.message);
+    throw error;
+  }
 }
-// all user
-export async function getEmployees() {
-  const empResponses = await fetch(`${BASE_URL}/api/workers`);
+
+// fetch all all employee
+export async function showemployee() {
+  const empResponses = await fetch(`${BASE_URL}/Employee/showemployee`);
   const json = await empResponses.json();
   return json;
 }
-//posting a new user
-// export async function createEmployee(formData) {
-//   try {
-//     const Options = {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(formData),
-//     };
 
-//     const empResponse = await fetch(`${BASE_URL}/api/workers`, Options);
-//     const json = await empResponse.json();
-
-//     return json;
-//   } catch (error) {
-//     return error;
-//   }
-// }
-export async function createEmployee(formData) {
+// register all employee
+export async function addemployee(formData) {
   try {
     const formDataToSend = new FormData();
 
-    // Append form data
-    for (const key in formData) {
-      formDataToSend.append(key, formData[key]);
+    formDataToSend.append("FullName", formData.FullName);
+    formDataToSend.append("Age", formData.Age);
+    formDataToSend.append("Gender", formData.Gender);
+    formDataToSend.append("Phone", formData.Phone);
+    formDataToSend.append("Address", formData.Address);
+    formDataToSend.append("JobType", formData.JobType);
+    formDataToSend.append("Experience", formData.Experience);
+    formDataToSend.append("RelativeName", formData.RelativeName);
+    formDataToSend.append("RelativePhone", formData.RelativePhone);
+    formDataToSend.append("RelativeAddress", formData.RelativeAddress);
+    formDataToSend.append("Relationship", formData.Relationship);
+
+    if (formData.EmpAvatar) {
+      formDataToSend.append("EmpAvatar", formData.EmpAvatar);
+    }
+    if (formData.RelAvatar) {
+      formDataToSend.append("RelAvatar", formData.RelAvatar);
     }
 
-    // Append image files
-    formDataToSend.append("EmpAvator", formData.EmpAvator);
-    formDataToSend.append("RelAvator", formData.RelAvator);
-
-    const Options = {
+    const empResponse = await fetch(`${BASE_URL}/Employee/addemployee`, {
       method: "POST",
       body: formDataToSend,
-    };
-
-    const empResponse = await fetch(`${BASE_URL}/api/workers`, Options);
+    });
     const json = await empResponse.json();
 
     return json;
@@ -58,26 +62,53 @@ export async function createEmployee(formData) {
 }
 
 // Update a new user
-export async function updateEmployee(empId, formData) {
-  const Options = {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
-  };
+export async function updateemployee(EmployeeId, formData) {
+  try {
+    const formDataToSend = new FormData();
 
-  const empResponse = await fetch(`${BASE_URL}/api/workers/${empId}`, Options);
-  const json = await empResponse.json();
-  return json;
+    formDataToSend.append("FullName", formData.FullName);
+    formDataToSend.append("Age", formData.Age);
+    formDataToSend.append("Gender", formData.Gender);
+    formDataToSend.append("Phone", formData.Phone);
+    formDataToSend.append("Address", formData.Address);
+    formDataToSend.append("JobType", formData.JobType);
+    formDataToSend.append("Experience", formData.Experience);
+    formDataToSend.append("RelativeName", formData.RelativeName);
+    formDataToSend.append("RelativePhone", formData.RelativePhone);
+    formDataToSend.append("RelativeAddress", formData.RelativeAddress);
+    formDataToSend.append("Relationship", formData.Relationship);
+    if (formData.EmpAvatar) {
+      formDataToSend.append("EmpAvatar", formData.EmpAvatar);
+    }
+    if (formData.RelAvatar) {
+      formDataToSend.append("RelAvatar", formData.RelAvatar);
+    }
+
+    const empResponse = await fetch(
+      `${BASE_URL}/Employee/updateemployee/${EmployeeId}`,
+      { method: "PUT", body: formDataToSend }
+    );
+    if (!empResponse.ok) {
+      throw new Error("Failed to update employee");
+    }
+    const json = await empResponse.json();
+    return json;
+  } catch (error) {
+    return error;
+  }
 }
 
-// Delete a new user
-export async function deleteEmployee(empId) {
+// Delete an employeee
+export async function deleteemployee(EmployeeId) {
   const Options = {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   };
 
-  const empResponse = await fetch(`${BASE_URL}/api/workers/${empId}`, Options);
+  const empResponse = await fetch(
+    `${BASE_URL}/Employee/deleteemployee/${EmployeeId}`,
+    Options
+  );
   const json = await empResponse.json();
   return json;
 }

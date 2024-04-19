@@ -16,17 +16,10 @@ export const ReducerSlice = createSlice({
     deleteAction: (state, action) => {
       state.client.deleteId = action.payload;
     },
-    loadProfile: (state, action) => {
-      return {
-        ...state,
-        value: {
-          url: action.payload,
-        },
-      };
-    },
+
   },
 });
-export const { toggleChangeAction, updateAction, deleteAction, loadProfile } =
+export const { toggleChangeAction, updateAction, deleteAction } =
   ReducerSlice.actions;
 
 export default ReducerSlice.reducer;

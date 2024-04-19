@@ -233,7 +233,7 @@ const Sidebar = () => {
       return menuItems_user;
     } else if (persistedState.role === "BrokerAdmin") {
       return menuItems_brokerManager;
-    } else if (persistedState.role === "Broker") {
+    }  else if (persistedState.role === "Broker") {
       return menuItems_broker;
     }
 

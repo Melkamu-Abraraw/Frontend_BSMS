@@ -75,7 +75,7 @@ const Login = () => {
             router.push("/dashboard/brokermanager");
           } else if (data.responseData.user.Role === "Seller") {
             router.push("/dashboard/seller");
-          } else if (data.responseData.user.Role === "Broker") {
+          }else if (data.responseData.user.Role === "Broker") {
             router.push("/dashboard/broker");
           }
         }, 1500);
