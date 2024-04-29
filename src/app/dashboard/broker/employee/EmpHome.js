@@ -5,7 +5,7 @@ import EmpTable from "@/components/BEmpComp/empTable";
 import EmpForm from "@/components/BEmpComp/empForm";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleChangeAction, deleteAction } from "@/redux/empRedux/reducer";
-import { deleteEmployee, getEmployees } from "@/data/empdata/lib/EmpHelper";
+import { deleteemployee, showemployee } from "@/lib/emphelper";
 import { useQueryClient } from "react-query";
 import DeleteComponent from "@/components/BEmpComp/empDelete";
 
@@ -21,9 +21,10 @@ const EmpHome = () => {
 
   const deleteHandler = async () => {
     if (deleteId) {
-      await deleteEmployee(deleteId);
-      await queryClient.prefetchQuery("workers", getEmployees);
+      await deleteemployee(deleteId);
+      await queryClient.prefetchQuery("workers", showemployee);
       dispatch(deleteAction(null));
+      location.reload();
     }
   };
   const cancelHandler = async () => {

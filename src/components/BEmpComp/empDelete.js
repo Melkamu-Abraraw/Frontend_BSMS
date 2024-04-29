@@ -1,3 +1,5 @@
+import { BiCheck, BiX } from "react-icons/bi";
+
 const DeleteComponent = ({ deleteHandler, cancelHandler }) => {
   return (
     <div className="flex gap-5">

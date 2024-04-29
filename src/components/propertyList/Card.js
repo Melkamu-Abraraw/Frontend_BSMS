@@ -58,7 +58,7 @@ const Home = ({ property }) => {
         <div className="mt-3 text-left ">
           {propertyValues.PropertyType === "House" && (
             <h3 className="text-darkBlue ml-4 mb-1 mt-1">
-              {propertyValues.PropertyType}
+              {propertyValues.HouseType}
             </h3>
           )}
           {propertyValues.PropertyType === "Vehicle" && (

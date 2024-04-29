@@ -1,7 +1,5 @@
 "use client";
 import Head from "next/head";
-import Header from "@/components/DashboardCom/Header";
-import Layout from "@/components/DashboardCom/layout";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { store } from "@/redux/empRedux/store";
 import { Provider } from "react-redux";

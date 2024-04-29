@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiEdit, BiTrashAlt } from "react-icons/bi";
-//import { getEmployees } from "@/data/empdata/lib/EmpHelper";
+import { showemployee } from "@/lib/emphelper";
 import { useQuery } from "react-query";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -10,19 +10,27 @@ import {
   updateAction,
   deleteAction,
 } from "@/redux/empRedux/reducer";
-import EmpData from "@/data/empdata/tempdata/Empdata.json";
 
 const EmpTable = () => {
-  //const { isLoading, isError, data, error } = useQuery("workers",getEmployees);
+  const { isLoading, isError, data, error } = useQuery("employees", showemployee);
   const formVisible = useSelector((state) => state.app.client.toggleForm);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(getEmployees);
-  // }, [dispatch]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseData = await showemployee();
+        dispatch({ type: "FETCH_EMPLOYEES_SUCCESS", payload: responseData });
+      } catch (error) {
+        dispatch({ type: "FETCH_EMPLOYEES_FAILURE", payload: error.message });
+      }
+    };
 
-  // if (isLoading) return <div>Loading Please wait...</div>;
-  // if (isError) return <div>Error{error}</div>;
+    fetchData();
+  }, [dispatch]);
+
+  if (isLoading) return <div>Loading Please wait...</div>;
+  if (isError) return <div>Error{error}</div>;
 
   const empUpdate = (_id) => {
     dispatch(toggleChangeAction(_id));
@@ -49,28 +57,28 @@ const EmpTable = () => {
 
   const EmpHeader = [
     {
-      field: "EmpAvator",
+      field: "EmpAvatar",
       headerName: "E_ID",
-      width: 20,
+      width: 70,
       renderCell: ImageField,
     },
-    { field: "FullName", headerName: "FullName", width: 90 },
-    { field: "Age", headerName: "Age", width: 10 },
-    { field: "Gender", headerName: "Gender", width: 50 },
-    { field: "Phone", headerName: "Phone", width: 90 },
-    { field: "Address", headerName: "Address", width: 80 },
-    { field: "JobType", headerName: "JobType", width: 70 },
-    { field: "Experience", headerName: "Experience", width: 70 },
+    { field: "FullName", headerName: "FullName", width: 130 },
+    { field: "Age", headerName: "Age", width: 20 },
+    { field: "Gender", headerName: "Gender", width: 60 },
+    { field: "Phone", headerName: "Phone", width: 100 },
+    { field: "Address", headerName: "Address", width: 100 },
+    { field: "JobType", headerName: "JobType", width: 90 },
+    { field: "Experience", headerName: "Experience", width: 80 },
     {
-      field: "RelAvator",
+      field: "RelAvatar",
       headerName: "R_ID",
-      width: 20,
+      width: 70,
       renderCell: ImageField,
     },
-    { field: "RelativeName", headerName: "RelativeName", width: 90 },
-    { field: "RelativePhone", headerName: "RelativePhone", width: 90 },
-    { field: "RelativeAddress", headerName: "RelativeAddress", width: 80 },
-    { field: "Relationship", headerName: "Relationship", width: 70 },
+    { field: "RelativeName", headerName: "RelativeName", width: 130 },
+    { field: "RelativePhone", headerName: "RelativePhone", width: 100 },
+    { field: "RelativeAddress", headerName: "RelativeAddress", width: 90 },
+    { field: "Relationship", headerName: "Relationship", width: 90 },
     {
       field: "actions",
       headerName: "Actions",
@@ -78,8 +86,10 @@ const EmpTable = () => {
       renderCell: empActionButton,
     },
   ];
-  const EmpList = EmpData.map((empObj, index) => ({ ...empObj, id: index }));
-  //const EmpList = data.map((empObj) => ({ ...empObj, id: empObj._id }));
+  const EmpList = data.response.map((empObj) => ({
+    ...empObj,
+    id: empObj._id,
+  }));
 
   return (
     <div style={{ width: "97%", height: "auto", marginLeft: 20 }}>
@@ -99,11 +109,12 @@ const EmpTable = () => {
 };
 
 export default EmpTable;
+
 function ImageField(params) {
   return (
     <img
       src={params.value}
-      alt="empImage"
+      alt="IdImage"
       className="h-10 w-12 flex  items-center justify-center"
     />
   );

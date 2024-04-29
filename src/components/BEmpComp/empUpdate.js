@@ -1,38 +1,43 @@
 "use client";
-import React, { useState, useReducer } from "react";
-import { BiEditAlt, BiX } from "react-icons/bi";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { BiEditAlt } from "react-icons/bi";
 import TextField from "@mui/material/TextField";
 import { Grid } from "@mui/material";
-//import { loadProfile } from "@/redux/empRedux/reducer";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import {
-  getEmployee,
-  getEmployees,
-  updateEmployee,
-} from "@/data/empdata/lib/EmpHelper";
+import { getEmployeeById, showemployee, updateemployee } from "@/lib/emphelper";
+import Success from "./successMsg";
 
-const EmpUpdate = ({ formId, formData, setFormData }) => {
-  //hooks
-  const queryClient = useQueryClient();
-  //const dispatch = useDispatch();
-  //states
+const EmpUpdate = ({ formId }) => {
+  const [formData, setFormData] = useState({});
   const [empImage, setEmpImage] = useState(null);
   const [relImage, setRelImage] = useState(null);
-  const [file, setFile] = useState(null);
+  const queryClient = useQueryClient();
 
   const { isLoading, isError, data, error } = useQuery(
-    ["workers", formId],
-    () => getEmployee(formId)
+    ["employees", formId],
+    () => getEmployeeById(formId)
   );
-  const empUpdateMutation = useMutation(
-    (newData) => updateEmployee(formId, newData),
+
+  useEffect(() => {
+    if (data) {
+      setFormData(data);
+
+      if (data.EmpAvatar) {
+        setEmpImage(data.EmpAvatar);
+      }
+      if (data.RelAvatar) {
+        setRelImage(data.RelAvatar);
+      }
+    }
+  }, [data]);
+
+  const UpdateMutation = useMutation(
+    (newData) => updateemployee(formId, newData),
     {
       onSuccess: async (data) => {
-        queryClient.setQueryData("workers", (old) => [data]);
-        console.log(`Emp Data Updated`);
-        queryClient.prefetchQuery("workers", getEmployees);
-        window.location.reload();
+        queryClient.setQueryData("employees", (old) => [data]);
+        queryClient.prefetchQuery("employees", showemployee);
+        location.reload();
       },
     }
   );
@@ -41,7 +46,6 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
   if (isError) return <div>Error !{error} </div>;
 
   const {
-    //  EmpAvator,
     FullName,
     Age,
     Gender,
@@ -49,51 +53,47 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
     Address,
     JobType,
     Experience,
-    //  RelAvator,
     RelativeName,
     RelativePhone,
     RelativeAddress,
     Relationship,
   } = data;
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    let errorMessage = "";
+
+    if (name === "Phone" || name === "RelativePhone") {
+      if (!/^09\d{8}$/.test(value) && !/^\+2519\d{8}$/.test(value)) {
+        errorMessage =
+          'Phone number must start  with "09" or "+2519" and have 10 to 13 digits';
+      }
+    }
+    setFormData({ ...formData, [name]: value });
+  };
+
   const handleEmpImageUpdate = (e) => {
     const file = e.target.files[0];
     const imageUrl = URL.createObjectURL(file);
     setEmpImage(imageUrl);
-    //dispatch(loadProfile(imageUrl));
-    setFile(file);
+    setFormData({ ...formData, EmpAvatar: file });
   };
 
   const handleRelImageupdate = (e) => {
     const file = e.target.files[0];
     const imageUrl = URL.createObjectURL(file);
     setRelImage(imageUrl);
-    // dispatch(loadProfile(imageUrl));
-    setFile(file);
+    setFormData({ ...formData, RelAvatar: file });
   };
 
-  const handleUpdateSubmit = (e) => {
-    const formDataToSend = new FormData();
+  const handleUpdateSubmit = async (e) => {
     e.preventDefault();
-
-    // let empI = `${formData.empImage ?? empImage}`;
-    // let relI = `${formData.relImage ?? relImage}`;
-
-    const empI = formDataToSend.append("empImage", file);
-    const relI = formDataToSend.append("relImage", file);
-
-    let updatedEmpData = Object.assign(
-      {},
-      data,
-      formData
-      //   {
-      //   EmpAvator: empI,
-      //   RelAvator: relI,
-      // }
-    );
-    empUpdateMutation.mutate(updatedEmpData);
-    console.log(updatedEmpData);
+    UpdateMutation.mutate(formData);
   };
+
+  if (UpdateMutation.isSuccess) {
+    return <Success message={"Congratulation! Emp Updated Successfuly"} />;
+  }
 
   return (
     <>
@@ -112,9 +112,9 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
             <input
               id="emp-upload-input"
               type="file"
-              accept="empImage/*"
+              name="EmpAvatar"
+              accept="image/*"
               onChange={handleEmpImageUpdate}
-              //defaultValue={EmpAvator}
               className="sr-only"
             />
             <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer mx-auto">
@@ -136,9 +136,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="FullName"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={FullName}
                 label="Employee FullName"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -147,9 +152,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="number"
                 name="Age"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={Age}
                 label="Employee Age"
+                required
+                inputProps={{
+                  pattern: "[0-9]*",
+                  title: "Only numbers are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -158,9 +168,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="Gender"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={Gender}
                 label="Employee Gender"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -169,9 +184,12 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="Phone"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={Phone}
                 label="Employee Phone"
+                helperText={formData.error || ""}
+                error={Boolean(formData.error)}
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -180,9 +198,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="Address"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={Address}
                 label="Employee Address"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -191,9 +214,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="JobType"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={JobType}
                 label="Employee JobType"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -202,9 +230,10 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="Experience"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={Experience}
                 label="Employee Experience"
+                required
               />
             </Grid>
           </Grid>
@@ -220,9 +249,9 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
             <input
               id="rel-upload-input"
               type="file"
-              accept="relImage/*"
+              name="RelAvatar"
+              accept="image/*"
               onChange={handleRelImageupdate}
-              //defaultValue={RelAvator}
               className="sr-only"
             />
             <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer mx-auto">
@@ -244,9 +273,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="RelativeName"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={RelativeName}
                 label="Relative FullName"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -255,9 +289,12 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="RelativePhone"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={RelativePhone}
                 label="Relative PhoneNumber"
+                helperText={formData.error || ""}
+                error={Boolean(formData.error)}
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -266,9 +303,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="RelativeAddress"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={RelativeAddress}
                 label="Relative Address"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -277,9 +319,14 @@ const EmpUpdate = ({ formId, formData, setFormData }) => {
                 variant="outlined"
                 type="text"
                 name="Relationship"
-                onChange={setFormData}
+                onChange={handleInputChange}
                 defaultValue={Relationship}
                 label="There Relationship "
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
               />
             </Grid>
           </Grid>
