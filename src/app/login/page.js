@@ -64,6 +64,7 @@ const Login = () => {
       }
 
       const data = await response.json();
+      console.log(data);
       if (data.responseData.token) {
         showToastMessage("Login successful!");
         showToastMessage();
@@ -80,11 +81,11 @@ const Login = () => {
           }
         }, 1500);
       } else {
-        showToastError("Invalid email or password!");
+        showToastError("Invalid Email or Password");
       }
     } catch (error) {
       console.error("Error:", error);
-      showToastError("An error occurred. Please try again."); // Show error toast message
+      showToastError("Invalid Email or Password"); // Show error toast message
     }
   };
 

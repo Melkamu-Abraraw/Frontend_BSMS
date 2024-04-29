@@ -1,26 +1,21 @@
-import React from 'react'
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import React from "react";
 
 const Payement = () => {
   return (
     <>
-    <form method="POST" action="https://api.chapa.co/v1/hosted/pay" >
-    <input type="hidden" name="public_key" value="CHAPUBK_TEST-O7Hk3K783mQRKSYUH4CIVxqL4gAYpMmR" />
-    <input type="hidden" name="tx_ref" value="negade-tx-12345678sss9" />
-    <input type="hidden" name="amount" value="100" />
-    <input type="hidden" name="currency" value="ETB" />
-    <input type="hidden" name="email" value="israel@negade.et" />
-    <input type="hidden" name="first_name" value="Israel" />
-    <input type="hidden" name="last_name" value="Goytom" />
-    <input type="hidden" name="title" value="Let us do this" />
-    <input type="hidden" name="description" value="Paying with Confidence with cha" />
-    <input type="hidden" name="logo" value="https://chapa.link/asset/images/chapa_swirl.svg" />
-    <input type="hidden" name="callback_url" value="https://example.com/callbackurl" />
-    <input type="hidden" name="return_url" value="https://example.com/returnurl" />
-    <input type="hidden" name="meta[title]" value="test" />
-    <button type="submit">Pay Now</button>
-</form>
-</>
-  )
-}
+      <div className="container flex flex-row items-end gap-2">
+        <p className="text-green text-2xl font-semibold">Balance : </p>
+        <p className="text-veryDarkBlue text-2xl">1,000,000 ETB</p>
+      </div>
+      <div className="container mt-4">
+        <Link href="/dashboard/seller/payment/info">
+          <Button className="bg-green hover:bg-green/65 ">Withdraw</Button>
+        </Link>
+      </div>
+    </>
+  );
+};
 
-export default Payement
+export default Payement;

@@ -3,7 +3,6 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PhoneIcon from "@mui/icons-material/Phone";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { footer } from "../../data/Data";
-import Image from "next/image";
 import "./footer.css";
 
 const Footer = () => {

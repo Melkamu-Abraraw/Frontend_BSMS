@@ -1,15 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import * as yup from "yup";
-import Link from "next/link";
-import Image from "next/image";
-import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { FaCamera } from "react-icons/fa";
-import { loadProfile } from "@/redux/features/auth-slice";
-import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -18,7 +12,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
-
   const schema = yup.object().shape({
     Email: yup
       .string()
@@ -47,40 +40,16 @@ const Register = () => {
     });
   };
 
-  const dispatch = useDispatch();
-  const [image, setImage] = useState(null);
-  const [file, setFile] = useState(null);
-
-  const [formData, setFormData] = useState({
-    Email: "",
-    Password: "",
-    confirmPassword: "",
-  });
-
-  // const imageUrl = useSelector(
-  //   (state) => state.authForProfileImageReducer.value.url
-  // );
-  // const baseUrl = useSelector(
-  //   (state) => state.authForProfileImageReducer.value.baseUrl
-  // );
-  // const handleChange = () => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
   const onSubmit = async (formData) => {
     const formDataToSend = new FormData();
-    // Append each key-value pair from original formData
     for (const key in formData) {
       if (formData.hasOwnProperty(key)) {
         formDataToSend.append(key, formData[key]);
       }
     }
-
-    // Append images with file as key-value pairs
-    formDataToSend.append("images", file);
     try {
       const response = await fetch(
-        `http://localhost:3030/api/User/brokerAdminRegister`,
+        `http://localhost:3001/api/User/brokerAdminRegister`,
         {
           method: "POST",
           body: formDataToSend,
@@ -93,8 +62,8 @@ const Register = () => {
       if (data.data) {
         showToastMessage();
         setTimeout(() => {
-          router.push("/dashboard/manage"); // Redirect to login page after a delay
-        }, 3000); // Adjust the delay time as needed
+          router.push("/dashboard/manage");
+        }, 3000);
       }
       console.log("Success:", data);
     } catch (error) {

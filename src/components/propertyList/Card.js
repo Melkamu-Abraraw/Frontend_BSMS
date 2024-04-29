@@ -5,15 +5,19 @@ import {
   faBed,
   faRestroom,
 } from "@fortawesome/free-solid-svg-icons";
-import Rate from "../Rating/Rate";
-import "./property.css";
 import { TbManualGearbox } from "react-icons/tb";
 import { MdPrecisionManufacturing } from "react-icons/md";
 import { BsFuelPumpDieselFill } from "react-icons/bs";
 import Link from "next/link";
-
+import React from "react";
+import "./property.css";
 const Home = ({ property }) => {
   const propertyValues = { ...property };
+  const createdAt = new Date(propertyValues.createdAt);
+  const currentDate = new Date();
+  const differenceInMs = currentDate - createdAt;
+  const millisecondsPerDay = 1000 * 60 * 60 * 24;
+  const daysSincePublication = Math.floor(differenceInMs / millisecondsPerDay);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  p-4 mt-7 w-806  gap-1">
@@ -38,7 +42,7 @@ const Home = ({ property }) => {
           <div className="price-overlay mt-3">
             <div className="mx-2">
               <h2 className="green-color rounded text-green px-2 font-bold">
-                {propertyValues.Price} ETB
+                {propertyValues.Price.toLocaleString()} ETB
               </h2>
             </div>
           </div>
@@ -67,12 +71,11 @@ const Home = ({ property }) => {
               {propertyValues.PropertyType}
             </h3>
           )}
-          <div className="text-sm  text-darkBlue ml-4 flex flex-row justify-between mt-6">
+          <div className="text-sm  text-darkBlue ml-4 flex flex-row justify-between mt-8">
             <div>
               <FontAwesomeIcon icon={faLocationDot} />
               <a className="px-0 ml-1 text-green">{propertyValues.City}</a>
             </div>
-            <Rate rate={propertyValues.Rating} />
           </div>
         </div>
         <div className=" bg-slate-200 pt-2">
@@ -203,22 +206,25 @@ const Home = ({ property }) => {
           </div>
         </div>
         <div className=" flex flex-row justify-between">
-          <p className="ml-4 mt-10 text-darkBlue text-sm">
-            Published 2 days ago
+          <p className="ml-4 mt-10  text-sm">
+            {` Published ${daysSincePublication} days ago`}
           </p>
-          <div className="flex flex-row justify-start items-center">
-            <div className="relative rounded-full overflow-hidden h-16 w-16">
-              <Image
-                src="/images/avator.jpg"
-                alt={propertyValues.Description}
-                height={70}
-                width={70}
-                className="rounded-full"
-              />
-            </div>
-            <div className="flex flex-col justify-start text-darkBlue mt-4 mb-3 ml-3 pr-2">
-              <p>Agent</p>
-              <p>Melkamu</p>
+          <div className="flex flex-row justify-start items-center text-darkBlue ">
+            {propertyValues.Broker.imageUrls &&
+              propertyValues.Broker.imageUrls[0] && ( // Check if broker.imageUrls exists and has at least one element
+                <div className="relative rounded-full overflow-hidden h-12 w-12">
+                  <Image
+                    src={propertyValues.Broker.imageUrls[0]}
+                    alt={propertyValues.Description}
+                    height={70}
+                    width={70}
+                    className="rounded-full"
+                  />
+                </div>
+              )}
+            <div className="flex flex-col justify-start text-darkBlue  mt-4 mb-3 ml-3 pr-2">
+              <p className="font-medium">Agent</p>
+              <p>{propertyValues.Broker.FirstName}</p>
             </div>
           </div>
         </div>

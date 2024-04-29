@@ -18,7 +18,7 @@ const Home = () => {
         </div>
         <div className="flex flex-grow justify-center lg:w-1/3 md:w-full sm:w-full">
           <Cards
-            title="Total Agents "
+            title="Total Brokers "
             amount="2"
             icon={MdOutlineSupportAgent}
           />

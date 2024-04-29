@@ -11,9 +11,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
+import { setAmount } from "@/redux/features/auth-slice";
 
 function Homepage() {
   const [propertyType, setPropertyType] = useState("House");
+  const [ContractType, setContractTypee] = useState("sale");
   const [selectedColor, setSelectedColor] = useState("");
   const [location, setLocation] = useState(null);
   const [images, setImages] = useState([]);
@@ -22,72 +25,178 @@ function Homepage() {
   const [pdfError, setPdfError] = useState(false); // State to track PDF selection
   const [imageError, setImageError] = useState(false); // State to track PDF selection
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  const schema = yup.object().shape({
-  //   title: yup
-  //     .string()
-  //     .required("Title is required")
-  //     .matches(
-  //       /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
-  //       "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
-  //     ),
-  //   description: yup
-  //     .string()
-  //     .required("Description is required")
-  //     .matches(
-  //       /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
-  //       "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
-  //     ),
-  //   // ContractType: yup.string().required("Contract Type is required"),
-  //   // Year: yup
-  //   //   .number("Year must contain only Numbers")
-  //   //   .required("Year is required"),
-  //   // Color: yup.string().required("Color is required"),
-  //   // Currency: yup.string().required("Currency is required"),
-  //   // City: yup.string().required("City is required"),
-  //   // PriceCategory: yup.string().required("Price Category is required"),
-  //   Price: yup
-  //     .number()
-  //     .typeError("Price required and must be a number")
-  //     .required("Price is required")
-  //     .test(
-  //       "is-positive",
-  //       "Price must be a positive number",
-  //       (value) => parseFloat(value) > 0
-  //     ),
-  //   // PricePrefix: yup.string().required("Price Prefix is required"),
-  //   Bedrooms: yup.number()
-  //   .typeError("Bedrooms required and must be a number")
-  //   .required("Bedrooms is required")
-  //   .test(
-  //     "is-positive",
-  //     "Bedrooms must be a positive number",
-  //     (value) => parseFloat(value) >=0
-  //   ),
-  //   Bathrooms: yup.number()
-  //   .typeError("Bathrooms required and must be a number")
-  //   .required("Bathrooms is required")
-  //   .test(
-  //     "is-positive",
-  //     "Bathrooms must be a positive number",
-  //     (value) => parseFloat(value) > 0
-  //   ),
-  //   Area: yup.number()
-  //   .typeError("Area required and must be a number")
-  //   .required("Area is required")
-  //   .test(
-  //     "is-positive",
-  //     "Area must be a positive number",
-  //     (value) => parseFloat(value) > 0
-  //   ),
-  //   // AreaPrefix: yup.string(),
+  const Houseschema = yup.object().shape({
+    title: yup
+      .string()
+      .required("Title is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    description: yup
+      .string()
+      .required("Description is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    ContractType: yup.string().required("Contract Type is required"),
+    propertyType: yup.string().required("Property Type is required"),
+    Color: yup.string().required("Color is required"),
+    Currency: yup.string().required("Currency is required"),
+    City: yup.string().required("City is required"),
+    Brand: yup.string().required("Brand is required"),
+    FuelType: yup.string().required("Fuel Type is required"),
+    BodyType: yup.string().required("Body Type is required"),
+    PriceCategory: yup.string().required("Price Category is required"),
+    // PricePrefix: yup.string().required("Price Prefix is required"),
+    Mileage: yup
+      .number()
+      .typeError("Mileage required and must be a number")
+      .required("Mileage is required")
+      .test(
+        "is-positive",
+        "Mileage must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Year: yup
+      .number()
+      .typeError("Year required and must be a number")
+      .required("Year is required")
+      .test(
+        "is-positive",
+        "Year must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
   });
+
+  const vehicleSchema = yup.object().shape({
+    title: yup
+      .string()
+      .required("Title is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    description: yup
+      .string()
+      .required("Description is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    ContractType: yup.string().required("Contract Type is required"),
+    propertyType: yup.string().required("Contract Type is required"),
+    Currency: yup.string().required("Currency is required"),
+    City: yup.string().required("City is required"),
+    Bedrooms: yup
+      .number()
+      .typeError("Bedrooms required and must be a number")
+      .required("Bedrooms is required")
+      .test(
+        "is-positive",
+        "Bedrooms must be a positive number",
+        (value) => parseFloat(value) >= 0
+      ),
+    PriceCategory: yup.string().required("Price Category is required"),
+    Bathrooms: yup
+      .number()
+      .typeError("Bathrooms required and must be a number")
+      .required("Bathrooms is required")
+      .test(
+        "is-positive",
+        "Bathrooms must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Area: yup
+      .number()
+      .typeError("Area required and must be a number")
+      .required("Area is required")
+      .test(
+        "is-positive",
+        "Area must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    AreaPrefix: yup.string(),
+  });
+
+  const landSchema = yup.object().shape({
+    title: yup
+      .string()
+      .required("Title is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    description: yup
+      .string()
+      .required("Description is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    ContractType: yup.string().required("Contract Type is required"),
+    propertyType: yup.string().required("Contract Type is required"),
+    Currency: yup.string().required("Currency is required"),
+    City: yup.string().required("City is required"),
+    PriceCategory: yup.string().required("Price Category is required"),
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Area: yup
+      .number()
+      .typeError("Area required and must be a number")
+      .required("Area is required")
+      .test(
+        "is-positive",
+        "Area must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    AreaPrefix: yup.string(),
+  });
+
+  const schema = (propertyType) => {
+    if (propertyType === "House") {
+      return vehicleSchema;
+    } else if (propertyType === "Vehicle") {
+      return Houseschema;
+    } else return landSchema;
+  };
+
+  const selectedSchema = schema(propertyType);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(selectedSchema),
   });
 
   const [formData, setFormData] = useState({
@@ -116,9 +225,11 @@ function Homepage() {
 
   const handleLocationChange = ({ lat, lng }) => {
     setLocation({ lat, lng });
+    console.log({ lat, lng });
   };
+
   const showToastMessage = (message, type) => {
-    console.log(message)
+    console.log(message);
     toast.success(message, {
       position: "top-right",
     });
@@ -129,44 +240,56 @@ function Homepage() {
     });
   };
 
+  function calculateListingFee(propertyType, ContractType) {
+    const pricingStructure = {
+      House: {
+        sale: 500,
+        rent: 300,
+      },
+      Vehicle: {
+        sale: 300,
+        rent: 200,
+      },
+      Land: {
+        sale: 1000,
+        rent: 500,
+      },
+    };
 
-    const Payment = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/payment/pay`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+    const fee = pricingStructure[propertyType][ContractType];
+    dispatch(setAmount(fee));
+    router.push("/checkout");
+  }
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+  const Payment = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/payment/pay`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-        const res = await response.json();
-        router.push(res.data.data.checkout_url);
-        console.log(res.data.data.checkout_url)
-      } catch (error) {
-        console.error("Error:", error);
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
 
-    };
-   
-
-
+      const res = await response.json();
+      router.push(res.data.data.checkout_url);
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
 
   const onSubmit = async (formData) => {
     if (pdfs.length === 0) {
       setPdfError(true);
-      if(images.length === 0){
+      if (images.length === 0) {
         setImageError(true);
       }
     }
-    if(images.length === 0){
+    if (images.length === 0) {
       setImageError(true);
       return;
     }
@@ -228,8 +351,7 @@ function Homepage() {
   const handlePdfChange = (event) => {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
-    setPdfError(false)
-
+    setPdfError(false);
   };
   const handleRemovePdf = (indexToRemove) => {
     setPdfs((prevPdfs) =>
@@ -239,7 +361,7 @@ function Homepage() {
   const handleImageChange = (event) => {
     const selectedImages = Array.from(event.target.files);
     setImages((prevImages) => [...prevImages, ...selectedImages]);
-    setImageError(false)
+    setImageError(false);
   };
 
   const handleColorChange = (e) => {
@@ -253,7 +375,9 @@ function Homepage() {
   const handlePropertyTypeChange = (value) => {
     setPropertyType(value);
   };
-
+  const handleContractTypeChange = (value) => {
+    setContractTypee(value);
+  };
   return (
     <>
       <form
@@ -301,7 +425,7 @@ function Homepage() {
               </Label>
             </div>
             <select
-              {...register("PropretyType")}
+              {...register("propertyType")}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               onChange={(e) => handlePropertyTypeChange(e.target.value)}
             >
@@ -313,7 +437,7 @@ function Homepage() {
               <option value="Land">Land</option>
             </select>
             <p className="p-1 text-red-600 text-sm">
-              {errors.PropretyType?.message}
+              {errors.propertyType?.message}
             </p>
           </div>
           {propertyType === "House" && (
@@ -428,7 +552,7 @@ function Homepage() {
                 </Label>
               </div>
               <select
-                {...register(" BodyType")}
+                {...register("BodyType")}
                 className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               >
                 <option value="" disabled>
@@ -454,7 +578,7 @@ function Homepage() {
                 </Label>
               </div>
               <select
-                {...register(" FuelType")}
+                {...register("FuelType")}
                 className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               >
                 <option value="" disabled>
@@ -480,7 +604,7 @@ function Homepage() {
                 id="mileage"
                 placeholder="Mileage"
                 className="mt-3 w-44"
-                {...register(" Mileage")}
+                {...register("Mileage")}
               />
               <p className="p-1 text-red-600 text-sm">
                 {errors.Mileage?.message}
@@ -555,13 +679,14 @@ function Homepage() {
             </div>
             <select
               {...register("ContractType")}
+              onChange={(e) => handleContractTypeChange(e.target.value)}
               className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             >
               <option value="" disabled>
                 Select option
               </option>
-              <option value="For Sale">For Sale</option>
-              <option value="For Rent">For Rent</option>
+              <option value="sale">For Sale</option>
+              <option value="rent">For Rent</option>
             </select>
             <p className="p-1 text-red-600 text-sm">
               {errors.ContractType?.message}
@@ -783,7 +908,9 @@ function Homepage() {
             </div>
           </div>
           {imageError && (
-            <p className="text-red-500 mt-2">Please select at least one Image file</p>
+            <p className="text-red-500 mt-2">
+              Please select at least one Image file
+            </p>
           )}
         </div>
 
@@ -842,10 +969,12 @@ function Homepage() {
               ))}
             </div>
             {pdfError && (
-            <p className="text-red-500 mt-2">Please select at least one PDF file</p>
-          )}
+              <p className="text-red-500 mt-2">
+                Please select at least one PDF file
+              </p>
+            )}
           </div>
-          <Button className="bg-green  mb-3 mt-4 px-6 hover:bg-green/90" onClick={Payment}>
+          <Button className="bg-green  mb-3 mt-4 px-6 hover:bg-green/90">
             Next
           </Button>
         </div>

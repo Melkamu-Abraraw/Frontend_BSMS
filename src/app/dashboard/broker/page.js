@@ -9,6 +9,7 @@ import RecentActivities from "@/components/DashboardCom/RecentActivities";
 import HouseIcon from "@mui/icons-material/House";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
 function Homepage() {
   return (
     <>
@@ -18,7 +19,7 @@ function Homepage() {
           <Cards title="Total Properties" amount="4" icon={HouseIcon} />
         </div>
         <div className="flex flex-grow justify-center lg:w-1/3 md:w-full sm:w-full">
-          <Cards title="Pending Properties" amount="2" icon={AccessTimeIcon} />
+          <Cards title="Assigned Properties" amount="2" icon={AccessTimeIcon} />
         </div>
         <div className="flex flex-grow justify-center lg:w-1/3 md:w-full sm:w-full">
           <Cards title="Published " amount="2" icon={CloudUploadIcon} />

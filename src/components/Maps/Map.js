@@ -34,12 +34,12 @@ function LocationMarker({ onClick }) {
   );
 }
 
-export default function Map({ width, height ,onClick}) {
-  const [center, setCenter] = useState( { lat: 9.145, lng: 40.489673 });
+export default function Map({ width, height, onClick }) {
+  const [center, setCenter] = useState({ lat: 9.145, lng: 40.489673 });
 
   const handleMapClick = (latlng) => {
     setCenter(latlng);
-    onClick(latlng)
+    onClick(latlng);
   };
 
   return (
@@ -55,8 +55,7 @@ export default function Map({ width, height ,onClick}) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker icon={ICON} position={center}>
-        </Marker>
+        <Marker icon={ICON} position={center}></Marker>
         <LocationMarker onClick={handleMapClick} />
       </MapContainer>
     </div>

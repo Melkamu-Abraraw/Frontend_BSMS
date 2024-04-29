@@ -1,15 +1,23 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Button from "@mui/material/Button";
-import { IconButton, Modal, Box, Typography } from "@mui/material";
+import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdOutlineAssignmentInd } from "react-icons/md";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDispatch } from "react-redux";
+import { setValue } from "@/redux/features/auth-slice";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -23,6 +31,8 @@ const style = {
 };
 
 function Homepage() {
+  const path = `/dashboard/brokermanager/assignbroker/broker-list`;
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [myProperties, setMyProperties] = useState([]);
   const [brokers, setBrokers] = useState([]);
@@ -34,20 +44,6 @@ function Homepage() {
   const persistedState = JSON.parse(localStorage.getItem("user"));
   const [pdfs, setPdfs] = useState([]);
 
-  const handleBrokerChange = (event) => {
-    setBrokerEmail(event.target.value);
-  };
-  const handlePdfChange = (event) => {
-    const selectedPdfs = Array.from(event.target.files);
-    setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
-    console.log([pdfs, ...selectedPdfs]); // Log the updated state immediately after setting it
-
-  };
-  const handleRemovePdf = (indexToRemove) => {
-    setPdfs((prevPdfs) =>
-      prevPdfs.filter((_, index) => index !== indexToRemove)
-    );
-  }; 
   const showToastMessage = (message, type) => {
     toast.success(message, {
       position: "top-right",
@@ -58,15 +54,18 @@ function Homepage() {
       position: "top-right",
     });
   };
+
   const onAssign = async () => {
-  
     try {
-      const response = await fetch(`http://localhost:3001/api/${propType}/assign/${id}/${brokerEmail}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3001/api/${propType}/assign/${id}/${brokerEmail}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -76,7 +75,6 @@ function Homepage() {
       if (res.success) {
         showToastMessage(res.message);
         showToastMessage();
-       
       } else {
         showToastError("Invalid email or password!");
       }
@@ -86,13 +84,11 @@ function Homepage() {
     }
   };
 
-
-
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/Allproperty/getProperty`,
+          `http://localhost:3001/api/Allproperty/pending`,
           {
             method: "GET",
             headers: {
@@ -116,24 +112,21 @@ function Homepage() {
 
     const fetchBrokers = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3001/api/User/`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${persistedState.token}`,
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3001/api/User/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${persistedState.token}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
         const data = await response.json();
-        const brokers = data.response.filter(user => user.Role === 'Broker');
+        const brokers = data.response.filter((user) => user.Role === "Broker");
         setBrokers(brokers);
-        console.log(brokers)
+        console.log(brokers);
       } catch (error) {
         console.error("Error fetching brokers:", error);
       } finally {
@@ -166,23 +159,25 @@ function Homepage() {
 
     return style;
   };
-
   const handleVisibilityClick = (property) => {
     const { propertyType, id } = property;
-    window.location.href = `/listings/${propertyType}/${id}`;
+    window.location.href = `/listings/${propertyType}/detail/${id}`;
   };
-  const handleAssignClick = (property) => {
-    setOpen(true);
-    setId(property.id)
-    setPropType(property.propertyType)
 
+  const handleApproveChange = (property) => {
+    const { propertyType, id } = property;
+    dispatch(setValue(property));
   };
+
   const columns = [
     {
       field: "image",
       headerName: "Image",
       width: 300,
       headerAlign: "center",
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Image "}</strong>
+      ),
       renderCell: (params) => (
         <div style={{ width: 250, height: 200, padding: 4 }}>
           <Image
@@ -199,15 +194,23 @@ function Homepage() {
     {
       field: "propertyType",
       headerName: "Property Type",
-      width: 150,
+      width: 200,
       headerAlign: "bold-header",
-      renderCell: (params) => <div style={{ marginBottom: 100 }}>{params.value}</div>,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Property Type"}</strong>
+      ),
+      renderCell: (params) => (
+        <div style={{ marginBottom: 100 }}>{params.value}</div>
+      ),
     },
     {
       field: "status",
       headerName: "Status ",
       width: 150,
       headerAlign: "bold-header",
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Status "}</strong>
+      ),
       renderCell: (params) => (
         <div>
           <span style={getStatusCellStyle(params.value)}>{params.value}</span>
@@ -218,24 +221,61 @@ function Homepage() {
       field: "price",
       headerName: "Price ",
       width: 150,
-      renderCell: (params) => <div style={{ paddingBottom: 100 }}>{params.value}</div>,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Price "}</strong>
+      ),
+      renderCell: (params) => (
+        <div style={{ paddingBottom: 100 }}>{params.value}</div>
+      ),
     },
     {
       field: "actions",
       headerName: "Actions",
-      width: 110,
+      width: 300,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Actions "}</strong>
+      ),
       renderCell: (params) => (
         <div>
-          <IconButton
-            aria-label="view"
-            size="small"
-            onClick={() => handleVisibilityClick(params.row)}
-          >
-            <VisibilityIcon />
-          </IconButton>
-          <IconButton aria-label="view" size="small" onClick={()=>handleAssignClick(params.row)}>
-            <MdOutlineAssignmentInd />
-          </IconButton>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IconButton
+                  aria-label="view"
+                  size="medium"
+                  onClick={() => handleVisibilityClick(params.row)}
+                >
+                  <VisibilityIcon className="text-black" />
+                </IconButton>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View Detail</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={path}
+                  onClick={() => handleApproveChange(params.row)}
+                >
+                  <IconButton aria-label="view" size="medium">
+                    <MdOutlineAssignmentInd className="text-green" />
+                  </IconButton>
+                </Link>
+                {/* <Link href={`/target-page?param1=${value1}&param2=${value2}`}>
+                  <a>Go to Target Page</a>
+                </Link> */}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Approve Property</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Button className="bg-red-700 text-sm hover:bg-red-500">
+            Reject
+          </Button>
         </div>
       ),
     },
@@ -268,106 +308,19 @@ function Homepage() {
               ...column,
               headerClassName: "bold-header",
             }))}
-            rowHeight={300}
+            rowHeight={220}
             initialState={{
               pagination: {
                 paginationModel: { page: 0, pageSize: 5 },
               },
             }}
             disableRowSelectionOnClick
+            disableMultipleRowSelection
+            disableColumnSelector
             pageSizeOptions={[5, 10]}
           />
         )}
       </div>
-
-      <Modal
-        open={open}
-        className="dialog-modal__box "
-        PaperProps={{ sx: { width: "30%", height: "80%" } }}
-        onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style} className="rounded">
-          <Typography id="modal-modal-title" variant="h4" component="h2">
-           Assign Broker
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          <div className="mt-4">
-          <label htmlFor="title" className="font-bold">
-            Property Ownership Documents :
-          </label>
-          <div className="w-full rounded-lg border border-gray-300 p-4">
-            <input
-              id="pdf-upload"
-              type="file"
-              accept=".pdf" // Accepts only PDF files
-              multiple
-              onChange={handlePdfChange}
-              className="hidden"
-            />
-            <label
-              htmlFor="pdf-upload"
-              className="custom-file-upload block mx-auto text-center text-black rounded-lg p-2 cursor-pointer mt-4"
-            >
-              Click to Select PDF files
-            </label>
-            <label
-              htmlFor="pdf-upload"
-              className="custom-file-upload block w-36 mx-auto text-center bg-green text-white rounded-lg p-2 cursor-pointer mt-1"
-            >
-              Browse PDF files
-            </label>
-            <div className="flex flex-wrap">
-              {pdfs.map((pdf, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <embed
-                    src={URL.createObjectURL(pdf)}
-                    type="application/pdf"
-                    className="max-w-200px m-2"
-                  />
-                  <button
-                    aria-label="delete"
-                    onClick={() => handleRemovePdf(index)}
-                    className="absolute top-0 right-0 text-red-500 bg-transparent border-none cursor-pointer mb-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M15.293 4.293a1 1 0 0 1 1.414 1.414L11.414 12l5.293 5.293a1 1 0 1 1-1.414 1.414L10 13.414l-5.293 5.293a1 1 0 1 1-1.414-1.414L8.586 12 3.293 6.707a1 1 0 0 1 1.414-1.414L10 10.586l5.293-5.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <Button className="bg-green  mb-3 mt-4 px-6 hover:bg-green/90">
-            Submit
-          </Button>
-        </div>
-            <div className="mt-10 text-right">
-              <Button
-                style={{ color: "white", fontWeight: "bolder", backgroundColor: "green", marginRight: 15 }} onClick={onAssign}
-              >
-                Assign
-              </Button>
-              <Button
-                style={{ color: "white", fontWeight: "bolder", backgroundColor: "red" }}
-                onClick={() => setOpen(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </Typography>
-        </Box>
-      </Modal>
     </>
   );
 }

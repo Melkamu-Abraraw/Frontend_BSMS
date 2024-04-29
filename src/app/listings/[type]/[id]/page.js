@@ -1,14 +1,16 @@
 "use client";
 import React from "react";
-import Map from "@/components/Maps/MapShow";
-import Card from "@/components/propertyList/Card";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
 import { useParams } from "next/navigation";
+import Map from "@/components/Maps/MapShow";
+import Card from "@/components/propertyList/Card";
 
 const Detail = () => {
   const [propertyDetail, setPropertyDetail] = React.useState([]);
+  const [similarProperty, setSimilarProperty] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const params = useParams();
 
@@ -30,7 +32,9 @@ const Detail = () => {
         }
 
         const data = await response.json();
-        setPropertyDetail(data.data);
+        console.log(data);
+        setPropertyDetail(data.mainHouse);
+        setSimilarProperty(data.similarHouses);
         setLoading(false);
       } catch (error) {
         console.error("Error:", error);
@@ -68,56 +72,87 @@ const Detail = () => {
     <div className="flex flex-row">
       <div className="">
         <div className="  mt-20  container">
-          <section className=" flex justify-between mx-6">
+          <section className=" flex justify-between ">
             <div className="flex flex-col">
-              <h1 className="font-normal text-2xl">{propertyDetail.Title}</h1>
+              <h1 className="font-normal text-2xl">
+                {propertyDetail.PropertyType}
+              </h1>
               <h6 className="bg-green rounded-sm mt-2 text-white w-20 pl-2 ">
                 {propertyDetail.ContractType}
               </h6>
             </div>
             <div className=" text-green text-2xl font-bold">
-              {propertyDetail.Price}
-              <span className="ml-1"> ETB/month</span>
+              {propertyDetail.Price.toLocaleString()}
+              <span className="ml-1"> ETB</span>
             </div>
           </section>
         </div>
         <div className="container flex flex-row">
-          <Carousel width="59%">
-            <div className="h-80">
-              <img src="/../images/hero/house.png" className="object-cover" />
-            </div>
-            <div className="h-80">
-              <img src="/../images/hero/house.png" className="object-cover" />
-            </div>
-            <div className="h-80">
-              <img src="/../images/hero/house.png" className="object-cover" />
-            </div>
-            <div className="h-80">
-              <img src="/../images/hero/house.png" className="object-cover" />
-            </div>
-            <div className="h-80">
-              <img src="/../images/hero/house.png" className="object-cover" />
-            </div>
+          <Carousel width="59%" className="mt-2 ">
+            {propertyDetail.imageUrls.map((imageUrl, index) => (
+              <div className="h-80  ">
+                <img
+                  key={index}
+                  src={imageUrl}
+                  className="object-cover rounded"
+                />
+              </div>
+            ))}
+            {propertyDetail.imageUrls.map((imageUrl, index) => (
+              <div className="h-80  ">
+                <img
+                  key={index}
+                  src={imageUrl}
+                  className="object-cover rounded"
+                />
+              </div>
+            ))}
+            {propertyDetail.imageUrls.map((imageUrl, index) => (
+              <div className="h-80  ">
+                <img
+                  key={index}
+                  src={imageUrl}
+                  className="object-cover rounded"
+                />
+              </div>
+            ))}
+            {propertyDetail.imageUrls.map((imageUrl, index) => (
+              <div className="h-80  ">
+                <img
+                  key={index}
+                  src={imageUrl}
+                  className="object-cover rounded"
+                />
+              </div>
+            ))}
           </Carousel>
-          <div className="container   p-2 bg-white rounded shadow-lg">
+          <div className="container   p-2 bg-white rounded shadow-lg items-center">
             <h1 className="text-2xl font-normal mb-4 text-center mx-auto mt-2">
               Agent Information
             </h1>
-            <div className=" mb-4 w-72 p-4">
+            <div className=" mb-4 w-72 p-4 items-center">
               <div className="flex flex-row">
-                <img
-                  src="/../images/agent.jpg"
-                  alt="Agent Avatar"
-                  className="w-16 h-16 rounded mr-4"
-                />
-                <h2 className=" font-light mt-3">John Doe</h2>
+                {propertyDetail.Broker.imageUrls &&
+                  propertyDetail.Broker.imageUrls[0] && ( // Check if broker.imageUrls exists and has at least one element
+                    <div className="relative rounded-full overflow-hidden h-12 w-12">
+                      <Image
+                        src={propertyDetail.Broker.imageUrls[0]}
+                        alt={propertyDetail.Description}
+                        height={70}
+                        width={70}
+                        className="rounded-full"
+                      />
+                    </div>
+                  )}
+                <h2 className=" font-light mt-3 ml-2">{`${propertyDetail.Broker.FirstName} ${propertyDetail.Broker.LastName}`}</h2>
               </div>
               <div>
                 <div className="mt-3">
                   <input
                     type="email"
-                    placeholder="+251994104901"
                     className="w-full p-2 border border-gray-300 rounded"
+                    disabled
+                    value={`+251${propertyDetail.Broker.Phone}`}
                   />
                   <textarea
                     placeholder="Enter your message"
@@ -142,210 +177,64 @@ const Detail = () => {
           <p className="text-black leading-9">{propertyDetail.Description}</p>
         </section>
         <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
-          <h5 className="mt-5 mb-6">Details</h5>
+          <h5 className="mt-5 mb-6 text-veryDarkBlue">Details</h5>
           <hr className="mt-5 mb-6" />
           <div className="flex justify-evenly">
             <ul>
               <li className="list-none flex justify-between">
                 <strong className="mr-4">Price:</strong>
-                <span>
-                  {propertyDetail.Price}
-                  ETB
-                </span>
+                <span>{`${propertyDetail.Price.toLocaleString()} ETB`}</span>
               </li>
               <hr className="mt-5 mb-6" />
-              <li className="list-none flex justify-between">
-                <strong>Property Size:</strong>
-                <span className="ml-1">
-                  {propertyDetail.Area} <span className="ml-1">m²</span>
-                </span>
-              </li>
+              {propertyDetail.PropertyType === "House" && (
+                <li className="list-none flex justify-between">
+                  <strong>Area:</strong>
+                  <span className="ml-1">
+                    {propertyDetail.Area} <span className="ml-1">m²</span>
+                  </span>
+                </li>
+              )}
               <hr className="mt-5 mb-6" />
-
-              <li className="list-none flex justify-between">
-                <strong>Land Area:</strong>
-                <span>198 m²</span>
-              </li>
+              {propertyDetail.PropertyType === "House" && (
+                <li className="list-none flex justify-between">
+                  <strong className="mr-12">Price Category:</strong>
+                  {propertyDetail.ContractType}
+                </li>
+              )}
               <hr className="mt-5 mb-6" />
-              <li className="list-none flex justify-between">
-                <strong>Floor:</strong>
-                <span>4</span>
-              </li>
-              <hr className="mt-5 mb-6" />
+              {propertyDetail.PropertyType === "House" && (
+                <li className="list-none flex justify-between">
+                  <strong>Property Category:</strong>
+                  <span className="ml-1">{propertyDetail.HouseType}</span>
+                </li>
+              )}
             </ul>
             <ul>
-              <li className="list-none flex justify-between">
-                <strong>Bedrooms:</strong>
-                <span>{propertyDetail.Bedroom}</span>
-              </li>
+              {propertyDetail.PropertyType === "House" && (
+                <li className="list-none flex justify-between">
+                  <strong>Bedrooms:</strong>
+                  <span className="ml-1">{propertyDetail.Bedroom}</span>
+                </li>
+              )}
               <hr className="mt-5 mb-6" />
-              <li className="list-none flex justify-between">
-                <strong>Bathrooms:</strong>
-                <span>{propertyDetail.Bathroom}</span>
-              </li>
+              {propertyDetail.PropertyType === "House" && (
+                <li className="list-none flex justify-between">
+                  <strong>Bathrooms:</strong>
+                  <span className="ml-1">{propertyDetail.Bathroom}</span>
+                </li>
+              )}
               <hr className="mt-5 mb-6" />
-
               <li className="list-none flex justify-between ">
-                <strong className="mr-12">Property Status:</strong>
+                <strong className="mr-12">Contract Type:</strong>
                 <span>{propertyDetail.ContractType}</span>
-              </li>
-
-              <hr className="mt-5 mb-6" />
-              <li className="list-none flex justify-between ">
-                <strong className="mr-12">Furnished:</strong>
-                <span>Yes</span>
               </li>
 
               <hr className="mt-5 mb-6" />
             </ul>
           </div>
         </section>
-        {/* <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
-          <h5 className="mt-5 mb-6">Features</h5>
-          <hr className="mt-5 mb-6" />
-          <ul className="flex row-span-1 justify-between">
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">balcony</span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">generator</span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">terrace</span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">elevator</span>
-            </li>
-          </ul>
-          <ul className="flex row-span-1 justify-between mt-7">
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">internet</span>
-            </li>
-            <li className="flex items-center ml-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2  "
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">water-pump</span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">garage</span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              <span className="font-light">security</span>
-            </li>
-          </ul>
-        </section> */}
         <section className="shadow-lg bg-white rounded-lg p-6  mx-8 my-8 w-7/12 ">
-          <h5 className="mt-5 mb-6">Location</h5>
+          <h5 className="mt-5 mb-6">Address</h5>
           <ul>
             <hr className="mt-5 mb-6" />
             <li className="list-none flex ">
@@ -353,15 +242,22 @@ const Detail = () => {
               <span>{propertyDetail.City}</span>
             </li>
             <hr className="mt-5 mb-6" />
+            <li className="list-none flex ">
+              <strong className="mr-4">Location:</strong>
+            </li>
           </ul>
-          {/* <Map height={350} width={1200} location={propertyDetail.City}/> */}
+          <Map height={350} width={1200} />
         </section>
-        <section className="container  p-6  mx-8 my-8 w-7/12 ">
-          <h5 className="font-semibold text-2xl bg-green text-white p-2 rounded-sm">
-            Similar Listings
+        <section className="container p-6 mx-8 my-8 w-11/12 items-center">
+          <h5 className="text-2xl text-green font-bold text-center mb-2">
+            Recommended Properties
           </h5>
-          <hr className="mt-5 mb-6" />
-          <div className="grid grid-cols-2 "></div>
+          <hr className="w-28 h-1 bg-black mx-auto mt-1"></hr>
+          <div className="grid grid-cols-3 gap-4">
+            {similarProperty.map((property, index) => (
+              <Card property={property} key={index} />
+            ))}
+          </div>
         </section>
       </div>
     </div>

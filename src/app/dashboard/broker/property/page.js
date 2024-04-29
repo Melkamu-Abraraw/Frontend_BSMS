@@ -27,10 +27,9 @@ function Homepage() {
     console.log("Delete clicked for id:", id);
   };
   const handleView = (id) => {
-     // Handle delete operation
-     router.push("/login"); // Redirect to login page after a delay
-
-   };
+    // Handle delete operation
+    router.push("/login"); // Redirect to login page after a delay
+  };
   const getStatusCellStyle = (status) => {
     let style = {
       padding: "6px 12px",
@@ -144,11 +143,7 @@ function Homepage() {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton
-            aria-label="view"
-            onClick={handleView}
-            size="small"
-          >
+          <IconButton aria-label="view" onClick={handleView} size="small">
             <VisibilityIcon />
           </IconButton>
         </div>
@@ -202,7 +197,7 @@ function Homepage() {
             ...column,
             headerClassName: "bold-header", // Apply bold-header class to header cells
           }))}
-          rowHeight={300}
+          rowHeight={230}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },

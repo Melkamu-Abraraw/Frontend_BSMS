@@ -8,8 +8,6 @@ import { TbLogout } from "react-icons/tb";
 import { CollapsIcon } from "../icons";
 import { CiChat2 } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 import {
   MdOutlineSupportAgent,
   MdOutlineRealEstateAgent,
@@ -25,8 +23,16 @@ import { useSelector } from "react-redux";
 import { BiListPlus, BiUserPlus } from "react-icons/bi";
 import { VscDiffAdded } from "react-icons/vsc";
 import { TbBuildingWarehouse } from "react-icons/tb";
-
-
+import { usePathname } from "next/navigation";
+import { CiSettings } from "react-icons/ci";
+import { IoDocumentsOutline } from "react-icons/io5";
+import { PiSignature } from "react-icons/pi";
+import { BsDownload } from "react-icons/bs";
+import { MdOutlinePayment } from "react-icons/md";
+import { FaUsers } from "react-icons/fa";
+import { RiUserStarLine } from "react-icons/ri";
+import { PiUploadSimple } from "react-icons/pi";
+import { FaCloudDownloadAlt } from "react-icons/fa";
 
 const Sidebar = () => {
   const [toggleCollapse, setToggleCollapse] = useState(false);
@@ -34,46 +40,65 @@ const Sidebar = () => {
   const menuRef = useRef(null);
   const [toggleChildCollapse, setToggleChildCollapse] = useState(false);
   const user = useSelector((state) => state.auth.value);
-  const persistedState = JSON.parse(localStorage.getItem('user')) 
-    if (!user) {
+  const persistedState = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
     return null;
   }
   const menuItems_user = [
     {
       id: 1,
       label: "Dashboard",
-      icon: <RxDashboard size={25} />,
+      icon: <RxDashboard size={25} className="text-green" />,
       link: "/dashboard",
     },
     {
       id: 3,
       label: "Post Properties",
-      icon: <VscDiffAdded size={25} />,
+      icon: <VscDiffAdded size={25} className="text-green" />,
       link: "/dashboard/seller/post",
     },
     {
       id: 2,
       label: "My Properties",
-      icon: <TbBuildingWarehouse size={25} />,
+      icon: <TbBuildingWarehouse size={25} className="text-green" />,
       link: "/dashboard/seller/properties",
+    },
+    {
+      id: 3,
+      title: "Agreement Documents",
+      icon: <IoDocumentsOutline size={25} className="text-green" />,
+      children: [
+        {
+          id: 7,
+          title: "Sign",
+          icon: <PiSignature size={19} className="text-green" />,
+          link: "/dashboard/seller/agreement/upload",
+        },
+        {
+          id: 8,
+          title: "Download",
+          icon: <BsDownload size={19} className="text-green" />,
+          link: "/dashboard/seller/agreement/download",
+        },
+      ],
+    },
+    {
+      id: 5,
+      label: "Payment",
+      icon: <MdOutlinePayment size={25} className="text-green" />,
+      link: "/dashboard/seller/payment",
     },
     {
       id: 4,
       label: "Conversation",
-      icon: <CiChat2 size={25} />,
+      icon: <CiChat2 size={25} className="text-green" />,
       link: "/dashboard/seller/conversation",
     },
     {
       id: 5,
-      label: "Profile",
-      icon: <CgProfile size={25} />,
-      link: "/dashboard/profile",
-    },
-    {
-      id: 6,
-      label: "Logout",
-      icon: <TbLogout size={25} />,
-      link: "/",
+      label: "Settings",
+      icon: <CiSettings size={25} className="text-green" />,
+      link: "/dashboard/seller/profile",
     },
   ];
 
@@ -81,42 +106,35 @@ const Sidebar = () => {
     {
       id: 1,
       label: "Dashboard",
-      icon: <RxDashboard size={25} />,
+      icon: <RxDashboard size={25} className="text-green" />,
       link: "/dashboard/companies",
     },
     {
       id: 2,
       title: "Managers",
-      icon: <FaHouseChimney size={25} />,
+      icon: <FaHouseChimney size={25} className="text-green" />,
       link: "/dashboard/manage",
 
       children: [
         {
           id: 7,
           title: "Add Manager",
-          icon: <IoIosAddCircleOutline size={20} />,
+          icon: <IoIosAddCircleOutline size={20} className="text-green" />,
           link: "/dashboard/add",
         },
         {
           id: 8,
           title: "Manage Managers",
-          icon: <MdOutlineManageAccounts size={20} />,
+          icon: <MdOutlineManageAccounts size={20} className="text-green" />,
           link: "/dashboard/manage",
         },
       ],
     },
-
     {
       id: 5,
-      label: "Profile",
-      icon: <CgProfile size={25} />,
-      link: "/dashboard/profile",
-    },
-    {
-      id: 6,
-      label: "Logout",
-      icon: <TbLogout size={25} />,
-      link: "/",
+      label: "Settings",
+      icon: <CiSettings size={25} className="text-green" />,
+      link: "/dashboard/seller/profile",
     },
   ];
 
@@ -124,24 +142,24 @@ const Sidebar = () => {
     {
       id: 1,
       label: "Dashboard",
-      icon: <RxDashboard size={25} />,
+      icon: <RxDashboard size={23} className="text-green" />,
       link: "/dashboard/brokermanager",
     },
     {
       id: 2,
-      title: "User",
-      icon: <FaRegUser size={25} />,
+      title: "Users",
+      icon: <FaUsers size={25} className="text-green" />,
       children: [
         {
           id: 5,
-          title: "Customer",
-          icon: <FiUserCheck size={20} />,
+          title: "Clients",
+          icon: <RiUserStarLine size={16} className="text-green" />,
           link: "/dashboard/brokermanager/customers",
         },
         {
           id: 6,
-          title: "Agent",
-          icon: <MdOutlineSupportAgent size={20} />,
+          title: "Broker",
+          icon: <MdOutlineSupportAgent size={16} className="text-green" />,
           link: "/dashboard/brokermanager/agents",
         },
       ],
@@ -149,24 +167,24 @@ const Sidebar = () => {
     {
       id: 3,
       title: "Property",
-      icon: <MdOutlineRealEstateAgent size={25} />,
+      icon: <MdOutlineRealEstateAgent size={25} className="text-green" />,
       children: [
         {
           id: 7,
           title: " Property Add",
-          icon: <IoIosAddCircleOutline size={20} />,
+          icon: <IoIosAddCircleOutline size={16} className="text-green" />,
           link: "/dashboard/brokermanager/add",
         },
         {
           id: 8,
           title: "Assign Broker",
-          icon: <MdAppRegistration size={20} />,
+          icon: <MdAppRegistration size={16} className="text-green" />,
           link: "/dashboard/brokermanager/assignbroker",
         },
         {
           id: 9,
           title: " Property List",
-          icon: <IoIosList size={20} />,
+          icon: <IoIosList size={16} className="text-green" />,
           link: "/dashboard/brokermanager/list",
         },
       ],
@@ -174,12 +192,12 @@ const Sidebar = () => {
     {
       id: 4,
       title: "Feedback",
-      icon: <MdOutlineFeedback size={25} />,
+      icon: <MdOutlineFeedback size={25} className="text-green" />,
       children: [
         {
           id: 10,
           title: " Feedback List",
-          icon: <IoIosList size={20} />,
+          icon: <IoIosList size={16} className="text-green" />,
           link: "/dashboard/brokermanager/feedback",
         },
       ],
@@ -191,38 +209,64 @@ const Sidebar = () => {
     {
       id: 1,
       label: "Dashboard",
-      icon: <RxDashboard size={25} />,
+      icon: <RxDashboard size={25} className="text-green" />,
       link: "/dashboard/broker",
     },
     {
       id: 2,
       label: "Employees",
-      icon: <BiUserPlus size={25} />,
+      icon: <BiUserPlus size={25} className="text-green" />,
       link: "/dashboard/broker/employee",
     },
     {
       id: 3,
-      label: "Property",
-      icon: <BiListPlus size={25} />,
-      link: "/dashboard/broker/property",
+      title: "Property",
+      icon: <BiListPlus size={25} className="text-green" />,
+      children: [
+        {
+          id: 7,
+          title: "Property Add",
+          icon: <IoIosAddCircleOutline size={15} className="text-green" />,
+          link: "/dashboard/broker/add",
+        },
+        {
+          id: 8,
+          title: "Assigned Property",
+          icon: <MdAppRegistration size={15} className="text-green" />,
+          link: "/dashboard/broker/property/assigned",
+        },
+        {
+          id: 9,
+          title: "Property List",
+          icon: <IoIosList size={15} className="text-green" />,
+          link: "/dashboard/broker/property/list",
+        },
+      ],
     },
     {
-      id: 4,
-      label: "Approval",
-      icon: <BiListPlus size={25} />,
-      link: "/dashboard/broker/approval",
+      id: 3,
+      title: "Agreement Documents",
+      icon: <IoDocumentsOutline size={25} className="text-green" />,
+      children: [
+        {
+          id: 7,
+          title: "Upload",
+          icon: <PiUploadSimple size={15} className="text-green" />,
+          link: "/dashboard/broker/agreement/upload",
+        },
+        {
+          id: 8,
+          title: "Download",
+          icon: <FaCloudDownloadAlt size={15} className="text-green" />,
+          link: "/dashboard/brokermanager/assignbroker",
+        },
+      ],
     },
     {
       id: 5,
       label: "Conversation",
-      icon: <CiChat2 size={25} />,
+      icon: <CiChat2 size={25} className="text-green" />,
       link: "/dashboard/broker/chat",
-    },
-    {
-      id: 6,
-      label: "Profile",
-      icon: <CgProfile size={25} />,
-      link: "/dashboard/broker/profile",
     },
   ];
 
@@ -233,11 +277,10 @@ const Sidebar = () => {
       return menuItems_user;
     } else if (persistedState.role === "BrokerAdmin") {
       return menuItems_brokerManager;
-    } else if (user.role === "Broker") {
+    } else if (persistedState.role === "Broker") {
       return menuItems_broker;
     }
 
-    // Return an empty array if user role is not recognized
     return [];
   })();
 
@@ -285,39 +328,27 @@ const Sidebar = () => {
             <CollapsIcon />
           </button>
         </div>
-        <div className="flex flex-col items-start mt-5 gap-3">
+        <div className="flex flex-col items-start  gap-1">
           {activeSidebarItems.map(
             ({ id, title, icon, children, label, link }) => (
               <div key={id} className="relative">
                 {!toggleCollapse && title && (
                   <div
-                    style={{ marginTop: "10px", marginLeft: "4px" }}
-                    className={classNames({
-                      "flex items-center text-sm text-gray-800":
-                        activeItem !== id,
-                      "flex items-center text-sm text-green":
-                        activeItem === id || usePathname() === link,
-                    })}
+                    style={{ marginTop: "5px", marginLeft: "4px" }}
+                    className="flex items-center text-sm text-darkBlue font-semibold"
                     onClick={() => handleItemClick({ id })}
                   >
                     {icon}
-                    <span className={classNames("text-ml text-gray-800 ml-4")}>
-                      {title}
-                    </span>
+                    <span className="text-ml text-darkBlue ml-4 ">{title}</span>
                   </div>
                 )}
                 {children && !toggleCollapse ? (
-                  <div className="flex flex-col mt-2">
+                  <div className="flex flex-col ">
                     {children.map(({ id, title, icon, link }) => (
                       <Link href={link || "#"}>
                         <div
                           key={id}
-                          className={classNames({
-                            "flex items-center text-sm text-gray-800 ml-10 py-1 cursor-pointer":
-                              activeItem !== id,
-                            "flex items-center text-sm text-green ml-10 py-1 cursor-pointer":
-                              activeItem === id || usePathname() === link,
-                          })}
+                          className="flex items-center text-sm text-darkBlue ml-10 py-1 cursor-pointer font-medium"
                           onClick={() => handleItemClick({ id })}
                         >
                           {icon}
@@ -329,12 +360,7 @@ const Sidebar = () => {
                 ) : (
                   <Link href={link || "#"}>
                     <div
-                      className={classNames({
-                        "flex px-1 items-center cursor-pointer hover:bg-gray-200 hover:rounded-lg":
-                          activeItem !== id,
-                        "flex px-1 items-center cursor-pointer hover:bg-gray-200 hover:rounded-lg  text-green bg-LGreen":
-                          activeItem === id || usePathname() === link,
-                      })}
+                      className="flex px-1 items-center cursor-pointer hover:bg-gray-200 hover:rounded-lg text-darkBlue font-semibold"
                       onClick={() => handleItemClick({ id })}
                     >
                       {icon}
@@ -344,11 +370,7 @@ const Sidebar = () => {
                           style={{ width: "12rem" }}
                         >
                           <span
-                            className={classNames({
-                              "text-sm text-gray-800": activeItem !== id,
-                              "text-sm text-green":
-                                activeItem === id || usePathname() === link,
-                            })}
+                            className="text-sm text-darkBlue"
                             onClick={() => handleItemClick({ id })}
                           >
                             {label}

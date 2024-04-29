@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
-import Heading from "../Heading/Heading";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import "./Hero.css";
 
 const Hero = () => {
@@ -11,6 +14,29 @@ const Hero = () => {
     fontWeight: "bold",
   };
 
+  const schema = yup.object().shape({
+    minPrice: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema), // Use Yup resolver for React Hook Form
+  });
+
+  const onSubmit = (data) => {
+    console.log(data); // Do something with the form data
+  };
+
   return (
     <>
       <section className="hero sm:mb-24">
@@ -19,35 +45,45 @@ const Hero = () => {
             Find <span className="text-green pt-10">Properties </span>
             That Suits You.
           </h1>
-          <form className="flex">
+          <form className="flex" onSubmit={handleSubmit()}>
             <div className="box">
-              <span className="text-black font-bold">Location</span>
+              <span className="text-black font-bold">City</span>
               <select className="equal-size-select ">
-                <option value="" className="opt">
-                  All locations
+                <option value="All" className="opt">
+                  All City
                 </option>
-                <option value="">Addis Ababa</option>
-                <option value="">Adama</option>
-                <option value="">Jimma</option>
-                <option value="">Debre Birhan</option>
+                <option value="Addis Ababa">Addis Ababa</option>
+                <option value="Adama">Adama</option>
+                <option value="Jimma">Jimma</option>
+                <option value="Debre Birhan">Debre Birhan</option>
+                <option value="Ambo">Ambo</option>
+                <option value="Bishoftu">Bishoftu</option>
+                <option value="Wolkite">Wolkite</option>
               </select>
             </div>
             <div className="box">
-              <span className="text-black font-bold">Property Type</span>
+              <span className="text-black font-bold">Contract Type</span>
               <select className="equal-size-select ">
-                <option value="">All Type</option>
-                <option value="">For Sale</option>
-                <option value="">For Rent</option>
+                <option value="All">All Type</option>
+                <option value="Sale">For Sale</option>
+                <option value="Rent">For Rent</option>
               </select>
             </div>
             <div className="box">
               <span className="text-black font-bold">Property Category</span>
               <select className="equal-size-select ">
-                <option value="">All Properties</option>
-                <option value="">House</option>
-                <option value="">Vehicles</option>
-                <option value="">Land</option>
-                <option value="">Job</option>
+                <option value="All">All Properties</option>
+                <option value="House">House</option>
+                <option value="Vehicles">Vehicles</option>
+                <option value="Land">Land</option>
+              </select>
+            </div>
+            <div className="box">
+              <span className="text-black font-bold">Currency</span>
+              <select className="equal-size-select ">
+                <option value="All">All</option>
+                <option value="ETB">ETB</option>
+                <option value="USD">USD</option>
               </select>
             </div>
             <div className="box">
@@ -55,13 +91,14 @@ const Hero = () => {
               <input
                 className="price-input "
                 type="number"
-                placeholder="Min.Price(ETB)"
+                placeholder="Price"
+                {...register("minPrice")}
               />
-              <input
-                className="price-input ml-4"
-                type="number"
-                placeholder="Max.Price(ETB)"
-              />
+              <div>
+                <p className="p-1 text-red-600 text-sm">
+                  {errors.minPrice?.message}
+                </p>
+              </div>
             </div>
             <button className="flex items-center justify-center bg-green rounded h-10 mt-10 pr-2 ">
               <span className="ml-2  text-black font-bold hover:text-white">

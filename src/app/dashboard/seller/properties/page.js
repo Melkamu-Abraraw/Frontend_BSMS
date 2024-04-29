@@ -39,23 +39,26 @@ function Homepage() {
     fetchListings();
   }, []);
 
-  if (loading) return <div className="flex flex-col w-full items-center">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="animate-spin mx-auto w-12 h-12"
-  >
-    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-  </svg>
-  <h4 className="mx-auto items-center text-2xl pl-2">Loading...</h4>
-</div>;
+  if (loading)
+    return (
+      <div className="flex flex-col w-full items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="animate-spin mx-auto w-12 h-12"
+        >
+          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+        <h4 className="mx-auto items-center text-2xl pl-2">Loading...</h4>
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   const getStatusCellStyle = (status) => {
@@ -68,15 +71,14 @@ function Homepage() {
     };
 
     if (status === "Pending") {
-      style.backgroundColor = "#f1646c26";
-      style.color = "#1ecab8";
+      style.backgroundColor = "#1ecab826";
+      style.color = "yellow";
       style.boxShadow = "0 0 13px #1ecab80d";
     } else if (status === "Rejected") {
       style.backgroundColor = "#f1646c26";
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
-    }
-    else if (status === "Approved") {
+    } else if (status === "Approved") {
       style.backgroundColor = "#1ecab826";
       style.color = "#1ecab8";
       style.boxShadow = "0 0 13px #f1646c0d";
@@ -87,7 +89,7 @@ function Homepage() {
 
   const handleVisibilityClick = (property) => {
     const { propertyType, id } = property;
-    window.location.href = `/listings/${propertyType}/${id}`;
+    window.location.href = `/listings/${propertyType}/detail/${id}`;
   };
 
   const columns = [
@@ -96,6 +98,7 @@ function Homepage() {
       headerName: "Image",
       width: 300,
       headerAlign: "center",
+      renderHeader: (params) => <strong className=" text-md">{"Image"}</strong>,
       renderCell: (params) => (
         <div style={{ width: 250, height: 100, padding: 4 }}>
           <Image
@@ -115,6 +118,9 @@ function Homepage() {
       headerName: "Property Type",
       width: 150,
       headerAlign: "bold-header",
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Property Type"}</strong>
+      ),
       renderCell: (params) => (
         <div style={{ marginBottom: 100 }}>{params.value}</div>
       ),
@@ -124,6 +130,9 @@ function Homepage() {
       headerName: "Status ",
       width: 150,
       headerAlign: "bold-header",
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Status"}</strong>
+      ),
       renderCell: (params) => (
         <div>
           <span style={getStatusCellStyle(params.value)}>{params.value}</span>
@@ -134,6 +143,7 @@ function Homepage() {
       field: "price",
       headerName: "Price ",
       width: 150,
+      renderHeader: (params) => <strong className=" text-md">{"Price"}</strong>,
       renderCell: (params) => (
         <div style={{ paddingBottom: 100 }}>{params.value}</div>
       ),
@@ -142,6 +152,9 @@ function Homepage() {
       field: "actions",
       headerName: "Actions",
       width: 110,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Actions"}</strong>
+      ),
       renderCell: (params) => (
         <div>
           <IconButton
@@ -149,7 +162,7 @@ function Homepage() {
             size="small"
             onClick={() => handleVisibilityClick(params.row)}
           >
-            <VisibilityIcon />
+            <VisibilityIcon color="black" />
           </IconButton>
         </div>
       ),
@@ -161,7 +174,7 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price,
+    price: item.Price.toLocaleString(),
   }));
 
   return (
@@ -180,7 +193,7 @@ function Homepage() {
             ...column,
             headerClassName: "bold-header",
           }))}
-          rowHeight={300}
+          rowHeight={220}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },

@@ -53,7 +53,14 @@ function Navbar() {
     textTransform: "capitalize",
     fontWeight: "bold",
     backgroundColor: "rgb(0, 167, 111)",
+    // Adding hover effect
+    ":hover": {
+      backgroundColor: "rgba(0, 167, 111, 0.1)", // Adjust the opacity or any other properties for the hover effect
+      cursor: "pointer",
+       // Change cursor to pointer on hover
+    },
   };
+  
   const listStyle = {
     textTransform: "capitalize",
   };
@@ -194,7 +201,7 @@ function Navbar() {
             <Button
               variant="contained"
               style={addBtnStyle}
-              className="bg-green text-center ml-5 hover:bg-veryDarkBlue hover:text-white"
+              className="bg-green text-center ml-5  hover:text-white"
             >
               <Link
                 href="/add-listing"
@@ -395,7 +402,7 @@ function Navbar() {
               <Button
                 variant="outlined"
                 style={signUpBtnStyle}
-                className="hover:bg-green text-center hover:text-white"
+                className=" text-center hover:text-white"
               >
                 <Link href="/register">
                   <span className=" text-black font-bold hover:text-white">

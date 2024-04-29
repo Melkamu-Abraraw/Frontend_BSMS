@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import * as yup from "yup";
 import Link from "next/link";
-import Image from "next/image";
-import { useSelector } from "react-redux";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,13 @@ const Register = () => {
       .string()
       .required("Email is required")
       .matches(emailRegex, "Invalid email format"),
-    Password: yup.string().required("Password is required").min(8),
+    Password: yup
+      .string()
+      .required("Password is required")
+      .matches(
+        /^(?!.*\s).{8,}$/,
+        "Password must be at least 8 characters long and should not contain spaces"
+      ),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref("Password"), null], "Passwords Does Not Match")
@@ -53,8 +58,14 @@ const Register = () => {
 
   const router = useRouter();
 
-  const showToastMessage = () => {
-    toast.success("User is Successfully Registered!", {
+  const showToastMessage = (msg) => {
+    toast.success(msg, {
+      position: "top-right",
+    });
+  };
+
+  const showToastError = (msg) => {
+    toast.error(msg, {
       position: "top-right",
     });
   };
@@ -81,12 +92,6 @@ const Register = () => {
     ConfirmPassword: "",
   });
 
-  const imageUrl = useSelector(
-    (state) => state.authForProfileImageReducer.value.url
-  );
-  const baseUrl = useSelector(
-    (state) => state.authForProfileImageReducer.value.baseUrl
-  );
   const handleChange = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -115,12 +120,13 @@ const Register = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      console.log(data);
-      if (data) {
-        showToastMessage();
+      if (data.success) {
+        showToastMessage(data.message);
         setTimeout(() => {
-          router.push("/login"); // Redirect to login page after a delay
-        }, 3000); // Adjust the delay time as needed
+          router.push("/login");
+        }, 3000);
+      } else {
+        showToastError(data.message);
       }
       console.log("Success:", data);
     } catch (error) {
@@ -220,7 +226,7 @@ const Register = () => {
                 placeholder="Email"
                 {...register("Email")}
               />
-              <p className="p-1 text-red-600">{errors.email?.message}</p>
+              <p className="p-1 text-red-600">{errors.Email?.message}</p>
             </div>
             <div className="w-full">
               <div className="mb-2">
@@ -233,7 +239,7 @@ const Register = () => {
                 placeholder="Password"
                 {...register("Password")}
               />
-              <p className="p-1 text-red-600">{errors.password?.message}</p>
+              <p className="p-1 text-red-600">{errors.Password?.message}</p>
             </div>
             <div className="w-full">
               <div className="mb-2">
@@ -252,7 +258,9 @@ const Register = () => {
             </div>
           </div>
           <Button type="submit" variant="login" className="w-full">
-            Sign Up
+            <span className="text-veryDarkBlue font-extrabold text-1xl">
+              Sign Up
+            </span>
           </Button>
 
           <p className="flex justify-center md:flex-col lg:flex-row ">
