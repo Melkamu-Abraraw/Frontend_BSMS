@@ -7,6 +7,7 @@ import { Carousel } from "react-responsive-carousel";
 import { useParams } from "next/navigation";
 import Map from "@/components/Maps/MapShow";
 import Card from "@/components/propertyList/Card";
+import { MdOutlineFavoriteBorder } from "react-icons/md";
 
 const Detail = () => {
   const [propertyDetail, setPropertyDetail] = React.useState([]);
@@ -171,6 +172,7 @@ const Detail = () => {
             </div>
           </div>
         </div>
+
         <section className="shadow-lg bg-white rounded-lg p-6 w-7/12  mx-8 my-8">
           <h5 className="mt-5 mb-6">Description</h5>
           <hr className="mt-5 mb-6" />
@@ -247,6 +249,10 @@ const Detail = () => {
             </li>
           </ul>
           <Map height={350} width={1200} />
+          <Button variant="call" className="w-1/2 mt-6 bg-green text-white">
+            <MdOutlineFavoriteBorder color="white" size={25} className="mr-1" />
+            Favourite
+          </Button>
         </section>
         <section className="container p-6 mx-8 my-8 w-11/12 items-center">
           <h5 className="text-2xl text-green font-bold text-center mb-2">

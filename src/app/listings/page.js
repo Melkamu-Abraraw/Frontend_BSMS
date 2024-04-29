@@ -1,14 +1,14 @@
 "use client";
 import * as React from "react";
-import TextField from "@mui/material/TextField";
+import * as yup from "yup";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Map from "@/components/Maps/ShowProperty";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Card from "@/components/propertyList/Card";
 import Pagination from "@mui/material/Pagination";
 
@@ -20,41 +20,57 @@ export default function SelectSmall() {
     textTransform: "capitalize",
     fontWeight: "bold",
   };
-  const [showInputs, setShowInputs] = React.useState(false);
-  const [category, setCategory] = React.useState("All");
-  const [contractType, setcontractType] = React.useState("All");
+
   const [propType, setPropType] = React.useState("All");
-  const [bedrooms, setBedrooms] = React.useState("All");
-  const [bathrooms, setBathrooms] = React.useState("All");
-  const [currency, setCurrency] = React.useState("All");
-  const [location, setLocation] = React.useState("All");
-  const [featuredProperties, setFeaturedProperties] = React.useState([]);
+  const [contractType, setcontractType] = React.useState("All");
+  const [city, setcity] = React.useState("All");
+  const [price, setPrice] = React.useState(null);
+  const [properties, setProperties] = React.useState([]);
   const [searchPerformed, setSearchPerformed] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
   const propertiesPerPage = 3;
 
-  var filteredProperties;
-  const handleChange = (event) => {
-    setAge(event.target.value);
+  const handleContractTypeChange = (event) => {
+    setcontractType(event.target.value);
   };
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
+  const handleCityChange = (e) => {
+    setcity(e.target.value);
   };
-
-  const handlePropertyChange = (e) => {
+  const handlePriceChange = (e) => {
+    setPrice(e.target.value);
+  };
+  const handlePropTypeChange = (e) => {
     setPropType(e.target.value);
   };
-
-  const handleContractTypeChange = (e) => {
-    setcontractType(e.target.value);
+  const handleClear = (e) => {
+    setPrice(null);
+    setPropType("All");
+    setcity("All");
+    setcontractType("All");
   };
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-  };
+  const propertySchema = yup.object().shape({
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(propertySchema),
+  });
 
   React.useEffect(() => {
-    const fetchTrending = async () => {
+    const fetchAllProperty = async () => {
       try {
         const response = await fetch(
           `http://localhost:3001/api/Allproperty/all`,
@@ -72,7 +88,7 @@ export default function SelectSmall() {
 
         const data = await response.json();
         if (data.data) {
-          setFeaturedProperties(data.data);
+          setProperties(data.data);
         } else {
           console.log("No Properties Found!");
         }
@@ -80,37 +96,43 @@ export default function SelectSmall() {
         console.error("Error:", error);
       }
     };
-    fetchTrending();
-  }, []); // Call fetchTrending only once on component mount
-
-  const handleLocationChange = (event) => {
-    setLocation(event.target.value);
-  };
-  const handlePropTypeChange = (event) => {
-    setProType(event.target.value);
-  };
-
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    setShowInputs(!showInputs); // Toggle input field visibility
-  };
-  const handleSearch = () => {
-    const filteredProperties = featuredProperties.filter((property) =>
-      // property.Location.toLowerCase().includes(location.toLowerCase()) ||
-      property.PropertyType.toLowerCase().includes(category.toLowerCase())
-    );
-    setFeaturedProperties(filteredProperties);
-    setSearchPerformed(true);
-  };
+    fetchAllProperty();
+  }, []);
 
   const indexOfLastProperty = currentPage * propertiesPerPage;
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
-  const currentProperties = featuredProperties.slice(
+  const currentProperties = properties.slice(
     indexOfFirstProperty,
     indexOfLastProperty
   );
+
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const onSubmit = (data) => {
+    const filteredProperties = properties.filter((property) => {
+      let score = 0;
+      if (propType !== "All" && property.propertyType === propType) {
+        score += 1;
+      }
+      if (contractType !== "All" && property.contractType === contractType) {
+        score += 1;
+      }
+      if (city !== "All" && property.city === city) {
+        score += 1;
+      }
+      if (
+        price !== null &&
+        Math.abs(property.price - parseFloat(price)) < 1000
+      ) {
+        score += 1;
+      }
+      return score >= 2;
+    });
+
+    setProperties(filteredProperties);
+    setSearchPerformed(true);
   };
 
   return (
@@ -125,7 +147,7 @@ export default function SelectSmall() {
             <Select
               value={propType}
               label="Property Category"
-              onChange={handlePropertyChange}
+              onChange={handlePropTypeChange}
             >
               <MenuItem value="All">All</MenuItem>
               <MenuItem value="House">House</MenuItem>
@@ -133,215 +155,59 @@ export default function SelectSmall() {
               <MenuItem value="Land">Land</MenuItem>
             </Select>
           </FormControl>
-          {propType === "House" && (
-            <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
-              <InputLabel>Property Category</InputLabel>
-              <Select
-                value={category}
-                label="Property Category"
-                onChange={handleCategoryChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Villa">Villa</MenuItem>
-                <MenuItem value="Condominium">Condominium</MenuItem>
-                <MenuItem value="Apartment">Apartment</MenuItem>
-                <MenuItem value="Office">Office</MenuItem>
-                <MenuItem value="Single Familiy">Single Familiy</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-          {propType === "Vehicles" && (
-            <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
-              <InputLabel>Brand</InputLabel>
-              <Select
-                value={category}
-                label="Property Category"
-                onChange={handleCategoryChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Benzine">Benzine</MenuItem>
-                <MenuItem value="Suzuki">Suzuki</MenuItem>
-                <MenuItem value="Scania">Scania</MenuItem>
-                <MenuItem value="Renault">Renault</MenuItem>
-                <MenuItem value="Jetour">Jetour</MenuItem>
-                <MenuItem value="Scannia">Scannia</MenuItem>
-                <MenuItem value="Lifan">Lifan</MenuItem>
-                <MenuItem value="Chevrolet">Chevrolet</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-          {propType === "Vehicles" && (
-            <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
-              <InputLabel>Fuel Type</InputLabel>
-              <Select
-                value={category}
-                label="Property Category"
-                onChange={handleCategoryChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Benzine">Benzine</MenuItem>
-                <MenuItem value="Suzuki">Diesel</MenuItem>
-                <MenuItem value="Hybrid">Hybrid</MenuItem>
-                <MenuItem value="Electric">Electric</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-          {propType === "Vehicles" && (
-            <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
-              <InputLabel>Body Type</InputLabel>
-              <Select
-                value={category}
-                label="Property Category"
-                onChange={handleCategoryChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Sedan">Sedan</MenuItem>
-                <MenuItem value="Truck">Truck</MenuItem>
-                <MenuItem value="Compact">Compact</MenuItem>
-                <MenuItem value="Minibus">Minibus</MenuItem>
-                <MenuItem value="SUV">SUV</MenuItem>
-                <MenuItem value="Pickup">Pickup</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-          {propType === "Vehicles" && (
-            <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
-              <InputLabel>Body Type</InputLabel>
-              <Select
-                value={category}
-                label="Property Category"
-                onChange={handleCategoryChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Manual">Manual</MenuItem>
-                <MenuItem value="Automatic">Automatic</MenuItem>
-                <MenuItem value="Both">Both</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-          {propType === "Vehicles" && (
-            <div className="mr-2">
-              <Input
-                type="number"
-                id="Year"
-                placeholder="Year"
-                className="mt-2 w-36"
-                // {...register(" Mileage")}
-              />
-            </div>
-          )}
-
-          <FormControl sx={{ m: 1, minWidth: 150 }} size="small">
+          <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
             <InputLabel>Contract Type</InputLabel>
             <Select
               value={contractType}
-              label="Property Type"
+              label="Contract Type"
               onChange={handleContractTypeChange}
             >
-              <MenuItem value="All">
-                <>All </>
-              </MenuItem>
-              <MenuItem value="For Sell">For Sell</MenuItem>
+              <MenuItem value="All">All</MenuItem>
               <MenuItem value="For Rent">For Rent</MenuItem>
+              <MenuItem value="For Sale">For Sale</MenuItem>
             </Select>
           </FormControl>
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-select-small-label">City</InputLabel>
-            <Select
-              value={location}
-              label="City"
-              onChange={handleLocationChange}
-            >
-              <MenuItem value="All">
-                <>All</>
-              </MenuItem>
-              <MenuItem value="Addis Ababa">Addis Ababa</MenuItem>
+          <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
+            <InputLabel>City</InputLabel>
+            <Select value={city} label="City" onChange={handleCityChange}>
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Addis Abeba">Addis Abeba</MenuItem>
               <MenuItem value="Adama">Adama</MenuItem>
-              <MenuItem value="Bishoftu">Bishoftu</MenuItem>
-              <MenuItem value="Sebeta">Sebeta</MenuItem>
-              <MenuItem value="Debre Brehan">Debre Brehan</MenuItem>
+              <MenuItem value="Jimma">Jimma</MenuItem>
+              <MenuItem value="Ambo">Ambo</MenuItem>
             </Select>
           </FormControl>
-          <div className="mr-2">
+          <div>
             <Input
               type="number"
-              id="Max.Price"
-              placeholder="Max.Price"
-              className="mt-2 w-36"
-              // {...register(" Mileage")}
+              value={price}
+              id="price"
+              placeholder="Price"
+              className="mt-2 w-44"
+              onChange={handlePriceChange}
+              {...register("Price")}
             />
-          </div>
-          <div className="mr-2">
-            <Input
-              type="number"
-              id="Min.Price"
-              placeholder="Min.Price"
-              className="mt-2 w-36"
-              // {...register(" Mileage")}
-            />
-          </div>
-          {(propType === "House" || propType === "Land") && (
-            <div className="mr-2">
-              <Input
-                type="number"
-                id="Area"
-                placeholder="Area in m2"
-                className="mt-2 w-32"
-                // {...register(" Mileage")}
-              />
-            </div>
-          )}
-          {propType === "House" && (
-            <div className="mr-2">
-              <Input
-                type="number"
-                id="Bedrooms"
-                placeholder="Bedrooms"
-                className="mt-2 w-36"
-                // {...register(" Mileage")}
-              />
-            </div>
-          )}
-          {propType === "House" && (
-            <div className="mr-2">
-              <Input
-                type="number"
-                id="Bathrooms"
-                placeholder="Bathrooms"
-                className="mt-2 w-36"
-                // {...register(" Mileage")}
-              />
-            </div>
-          )}
-
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel>Curreny</InputLabel>
-            <Select
-              value={currency}
-              label="Currency"
-              onChange={handleCurrencyChange}
+            <p
+              className={`p-1 text-red-600 text-sm ${
+                errors.Price ? "" : "hidden"
+              } absolute`}
             >
-              <MenuItem value="All">
-                <>All</>
-              </MenuItem>
-              <MenuItem value="ETB">ETB</MenuItem>
-              <MenuItem value="USD">USD</MenuItem>
-            </Select>
-          </FormControl>
-          <div className="flex justify-center items-center mt-2 md:mt-0">
+              {errors.Price?.message}
+            </p>
+          </div>
+          <div className="flex justify-center items-center  md:mt-0 ">
             <button
-              className="flex items-center justify-center bg-green rounded h-10 pr-2 ml-2 hover:bg-green/90"
-              onClick={handleSearch}
+              className="flex items-center justify-center bg-green rounded h-10 pr-2 ml-2 hover:bg-green/70"
+              onClick={handleSubmit(onSubmit)}
             >
-              <span className="ml-2 text-white font-bold hover:text-black">
-                Search
-              </span>
+              <span className="ml-2 text-white font-bold ">Search</span>
             </button>
             <button
-              className="flex items-center justify-center rounded h-10 pr-2 ml-2 hover:bg-green"
+              className="flex items-center justify-center rounded h-10 pr-2 ml-2 hover:bg-green/85"
               style={btnStyle}
+              onClick={handleClear}
             >
-              <span className="ml-2 text-black font-bold text-center hover:text-white">
+              <span className="ml-2 text-black font-bold text-center hover:text-white ">
                 Clear
               </span>
             </button>
@@ -357,34 +223,10 @@ export default function SelectSmall() {
         <div className="flex flex-row justify-between items-center mt-10">
           {searchPerformed && (
             <h1 className="font-semibold text-1xl ml-6">
-              {featuredProperties.length}
+              {properties.length}
               <span> Results Found</span>
             </h1>
           )}
-
-          {/* <div className="flex items-center">
-            <span className="mr-1 inline mb-1">sort by:</span>
-            <div className="inline ">
-              <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
-                <InputLabel id="demo-select-small-label">
-                  Default Order
-                </InputLabel>
-                <Select
-                  labelId="demo-select-small-label"
-                  id="demo-select-small"
-                  value={age}
-                  label="Location"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>Price</MenuItem>
-                  <MenuItem value={20}>Bedrooms</MenuItem>
-                  <MenuItem value={30}>Bathrooms</MenuItem>
-                  <MenuItem value={30}>Area</MenuItem>
-                  <MenuItem value={30}>Location</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-          </div> */}
         </div>
       </section>
       <section className="px-24  mb-20">
@@ -395,7 +237,7 @@ export default function SelectSmall() {
         </div>
         <div className="flex justify-end">
           <Pagination
-            count={Math.ceil(featuredProperties.length / propertiesPerPage)}
+            count={Math.ceil(properties.length / propertiesPerPage)}
             page={currentPage}
             onChange={handlePageChange}
           />
