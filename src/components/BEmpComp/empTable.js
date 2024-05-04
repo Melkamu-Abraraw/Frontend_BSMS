@@ -12,7 +12,10 @@ import {
 } from "@/redux/empRedux/reducer";
 
 const EmpTable = () => {
-  const { isLoading, isError, data, error } = useQuery("employees", showemployee);
+  const { isLoading, isError, data, error } = useQuery(
+    "employees",
+    showemployee
+  );
   const formVisible = useSelector((state) => state.app.client.toggleForm);
   const dispatch = useDispatch();
 
@@ -101,8 +104,16 @@ const EmpTable = () => {
         }}
         rows={EmpList}
         columns={EmpHeader}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 20]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5, 10, 20]}
+        //checkboxSelection
+        disableRowSelectionOnClick
       />
     </div>
   );

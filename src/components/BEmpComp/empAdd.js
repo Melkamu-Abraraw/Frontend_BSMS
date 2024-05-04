@@ -289,6 +289,21 @@ const EmpAdd = () => {
                 }}
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="text"
+                name="Agent"
+                onChange={handleInputChange}
+                label="Agent FullName"
+                required
+                inputProps={{
+                  pattern: "[A-Za-z ]+",
+                  title: "Only alphabetic characters are allowed",
+                }}
+              />
+            </Grid>
           </Grid>
           <div className="flex gap-5 justify-end mt-20">
             <button

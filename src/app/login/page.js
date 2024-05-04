@@ -69,14 +69,21 @@ const Login = () => {
         showToastMessage("Login successful!");
         showToastMessage();
         setTimeout(() => {
+          localStorage.setItem("token", data.responseData.token);
           dispatch(login(data.responseData));
+
+          //For Chat Page
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify(data.responseData.user)
+          );
           if (data.responseData.user.Role === "Admin") {
             router.push("/dashboard/companies");
           } else if (data.responseData.user.Role === "BrokerAdmin") {
             router.push("/dashboard/brokermanager");
           } else if (data.responseData.user.Role === "Seller") {
             router.push("/dashboard/seller");
-          }else if (data.responseData.user.Role === "Broker") {
+          } else if (data.responseData.user.Role === "Broker") {
             router.push("/dashboard/broker");
           }
         }, 1500);

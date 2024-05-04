@@ -41,6 +41,7 @@ export async function addemployee(formData) {
     formDataToSend.append("RelativePhone", formData.RelativePhone);
     formDataToSend.append("RelativeAddress", formData.RelativeAddress);
     formDataToSend.append("Relationship", formData.Relationship);
+    formDataToSend.append("Agent", formData.Agent);
 
     if (formData.EmpAvatar) {
       formDataToSend.append("EmpAvatar", formData.EmpAvatar);
