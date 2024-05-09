@@ -117,12 +117,6 @@ const Sidebar = () => {
 
       children: [
         {
-          id: 7,
-          title: "Add Manager",
-          icon: <IoIosAddCircleOutline size={20} className="text-green" />,
-          link: "/dashboard/add",
-        },
-        {
           id: 8,
           title: "Manage Managers",
           icon: <MdOutlineManageAccounts size={20} className="text-green" />,
@@ -153,13 +147,13 @@ const Sidebar = () => {
         {
           id: 5,
           title: "Clients",
-          icon: <RiUserStarLine size={16} className="text-green" />,
+          icon: <RiUserStarLine size={15} className="text-green" />,
           link: "/dashboard/brokermanager/customers",
         },
         {
           id: 6,
           title: "Broker",
-          icon: <MdOutlineSupportAgent size={16} className="text-green" />,
+          icon: <MdOutlineSupportAgent size={15} className="text-green" />,
           link: "/dashboard/brokermanager/agents",
         },
       ],
@@ -172,19 +166,19 @@ const Sidebar = () => {
         {
           id: 7,
           title: " Property Add",
-          icon: <IoIosAddCircleOutline size={16} className="text-green" />,
+          icon: <IoIosAddCircleOutline size={15} className="text-green" />,
           link: "/dashboard/brokermanager/add",
         },
         {
           id: 8,
           title: "Assign Broker",
-          icon: <MdAppRegistration size={16} className="text-green" />,
+          icon: <MdAppRegistration size={15} className="text-green" />,
           link: "/dashboard/brokermanager/assignbroker",
         },
         {
           id: 9,
           title: " Property List",
-          icon: <IoIosList size={16} className="text-green" />,
+          icon: <IoIosList size={15} className="text-green" />,
           link: "/dashboard/brokermanager/list",
         },
       ],
@@ -197,7 +191,7 @@ const Sidebar = () => {
         {
           id: 10,
           title: " Feedback List",
-          icon: <IoIosList size={16} className="text-green" />,
+          icon: <IoIosList size={15} className="text-green" />,
           link: "/dashboard/brokermanager/feedback",
         },
       ],
@@ -273,7 +267,7 @@ const Sidebar = () => {
   let activeSidebarItems = (() => {
     if (persistedState.role === "Admin") {
       return menuItems_admin;
-    } else if (persistedState.role === "Seller") {
+    } else if (persistedState.role === "User") {
       return menuItems_user;
     } else if (persistedState.role === "BrokerAdmin") {
       return menuItems_brokerManager;

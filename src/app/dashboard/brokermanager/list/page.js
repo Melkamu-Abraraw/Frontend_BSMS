@@ -1,41 +1,156 @@
 "use client";
-import Head from "next/head";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Header from "@/components/DashboardCom/Header";
-import Sidebar from "@/components/DashboardCom/Sidebar";
-import Cards from "@/components/DashboardCom/Cards";
-import Layout from "@/components/DashboardCom/layout";
-import RecentActivities from "@/components/DashboardCom/RecentActivities";
-import HouseIcon from "@mui/icons-material/House";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDispatch } from "react-redux";
+import { setValue } from "@/redux/features/auth-slice";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 600,
+  height: 300,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+};
 
 function Homepage() {
-  const handleEdit = (id) => {
-    // Handle edit operation
-    console.log("Edit clicked for id:", id);
+  const path = `/dashboard/brokermanager/assignbroker/broker-list`;
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [myProperties, setMyProperties] = useState([]);
+  const [brokers, setBrokers] = useState([]);
+  const [loadingProperties, setLoadingProperties] = useState(true);
+  const [loadingBrokers, setLoadingBrokers] = useState(true);
+  const [brokerEmail, setBrokerEmail] = useState("");
+  const [propType, setPropType] = useState("");
+  const [id, setId] = useState(1);
+  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [pdfs, setPdfs] = useState([]);
+
+  const showToastMessage = (message, type) => {
+    toast.success(message, {
+      position: "top-right",
+    });
+  };
+  const showToastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+    });
   };
 
-  const handleDelete = (id) => {
-    // Handle delete operation
-    console.log("Delete clicked for id:", id);
+  const onAssign = async (prop) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/${prop.propertyType}/approve/${prop.id}/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        showToastMessage(res.message);
+        // Filter out the property with the same status as the updated one
+        const updatedPropList = myProperties.filter(
+          (property) => property._id != res.data._id
+        );
+        console.log(updatedPropList);
+        setMyProperties(updatedPropList);
+        showToastMessage();
+      } else {
+        showToastError("Invalid email or password!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showToastError("An error occurred. Please try again."); // Show error toast message
+    }
   };
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/Allproperty/all`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${persistedState.token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        setMyProperties(data.data);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
+        setLoadingProperties(false);
+      }
+    };
+
+    const fetchBrokers = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/User/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${persistedState.token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        const brokers = data.response.filter((user) => user.Role === "Broker");
+        setBrokers(brokers);
+      } catch (error) {
+        console.error("Error fetching brokers:", error);
+      } finally {
+        setLoadingBrokers(false);
+      }
+    };
+
+    fetchBrokers();
+    fetchListings();
+  }, []);
+
   const getStatusCellStyle = (status) => {
     let style = {
       padding: "6px 12px",
       borderRadius: "4px",
-      boxShadow: "none", // Reset box-shadow
-      backgroundColor: "transparent", // Reset background-color
-      color: "inherit", // Reset text color
+      boxShadow: "none",
+      backgroundColor: "transparent",
+      color: "inherit",
     };
 
-    // Apply styles based on status
-    if (status === "Approved") {
+    if (status === "Pending") {
       style.backgroundColor = "#1ecab826";
       style.color = "#1ecab8";
       style.boxShadow = "0 0 13px #1ecab80d";
@@ -47,6 +162,15 @@ function Homepage() {
 
     return style;
   };
+  const handleVisibilityClick = (property) => {
+    const { propertyType, id } = property;
+    window.location.href = `/listings/${propertyType}/${id}`;
+  };
+
+  const handleApproveChange = (property) => {
+    const { propertyType, id } = property;
+    dispatch(setValue(property));
+  };
 
   const columns = [
     {
@@ -54,7 +178,9 @@ function Homepage() {
       headerName: "Image",
       width: 300,
       headerAlign: "center",
-      renderHeader: (params) => <strong>{"Image"}</strong>,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Image "}</strong>
+      ),
       renderCell: (params) => (
         <div style={{ width: 250, height: 200, padding: 4 }}>
           <Image
@@ -69,35 +195,25 @@ function Homepage() {
       ),
     },
     {
-      field: "propertyInfo",
-      headerName: "Property Title",
-      width: 150,
-      editable: false,
+      field: "propertyType",
+      headerName: "Property Type",
+      width: 200,
       headerAlign: "bold-header",
-      renderHeader: (params) => <strong>{"Property Title"}</strong>,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Property Type"}</strong>
+      ),
       renderCell: (params) => (
         <div style={{ marginBottom: 100 }}>{params.value}</div>
       ),
     },
     {
-      field: "addedOn",
-      headerName: "Added On",
-      width: 150,
-      headerAlign: "bold-header",
-      renderHeader: (params) => <strong>{"Added On "}</strong>,
-      editable: false,
-      renderCell: (params) => (
-        <div style={{ paddingBottom: 100 }}>{params.value}</div>
-      ),
-    },
-
-    {
       field: "status",
       headerName: "Status ",
       width: 150,
-      editable: false,
       headerAlign: "bold-header",
-      renderHeader: (params) => <strong>{"Status "}</strong>,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Status "}</strong>
+      ),
       renderCell: (params) => (
         <div>
           <span style={getStatusCellStyle(params.value)}>{params.value}</span>
@@ -108,8 +224,9 @@ function Homepage() {
       field: "price",
       headerName: "Price ",
       width: 150,
-      editable: false,
-      renderHeader: (params) => <strong>{"Price "}</strong>,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Price "}</strong>
+      ),
       renderCell: (params) => (
         <div style={{ paddingBottom: 100 }}>{params.value}</div>
       ),
@@ -117,64 +234,48 @@ function Homepage() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 110,
-      renderHeader: (params) => <strong>{"Actions "}</strong>,
-
+      width: 300,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Actions "}</strong>
+      ),
       renderCell: (params) => (
         <div>
-          <IconButton
-            aria-label="edit"
-            onClick={() => handleEdit(params.id)}
-            size="small"
-            style={{ color: "green" }}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IconButton
+                  aria-label="view"
+                  size="medium"
+                  onClick={() => handleVisibilityClick(params.row)}
+                >
+                  <VisibilityIcon className="text-black" />
+                </IconButton>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View Detail</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Button
+            className="text-sm hover:bg-green-500"
+            style={{ backgroundColor: "green" }}
+            onClick={() => onAssign(params.row)}
           >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleDelete(params.id)}
-            size="small"
-            style={{ color: "red" }}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            aria-label="view"
-            onClick={() => handleView(params.id)}
-            size="small"
-          >
-            <VisibilityIcon />
-          </IconButton>
+            Accept
+          </Button>
         </div>
       ),
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      image: "/images/about.jpg",
-      propertyInfo: "Apartment",
-      addedOn: "23/2/2024",
-      status: "Approved",
-      price: "1,200,000",
-    },
-    {
-      id: 2,
-      image: "/images/about.jpg",
-      propertyInfo: "Apartment",
-      addedOn: "23/2/2024",
-      status: "Rejected",
-      price: "1,200,000",
-    },
-  ];
-  const customStyles = {
-    root: {
-      "& .MuiDataGrid-colCell:focus-within": {
-        outline: " none !important",
-      },
-    },
-  };
+  const propertyRows = myProperties.map((item, index) => ({
+    id: item._id,
+    image: item.imageUrls[0],
+    propertyType: item.PropertyType,
+    status: item.Status,
+    price: item.Price.toLocaleString(),
+  }));
+
   return (
     <>
       <div
@@ -185,28 +286,31 @@ function Homepage() {
           marginBottom: 4,
         }}
       >
-        <DataGrid
-          sx={{
-            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
-          }}
-          rows={rows}
-          columns={columns.map((column) => ({
-            ...column,
-            headerClassName: "bold-header", // Apply bold-header class to header cells
-          }))}
-          rowHeight={300}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          disableRowSelectionOnClick
-          pageSizeOptions={[5, 10]}
-        />
+        {loadingProperties ? (
+          <p>Loading properties...</p>
+        ) : (
+          <DataGrid
+            rows={propertyRows}
+            columns={columns.map((column) => ({
+              ...column,
+              headerClassName: "bold-header",
+            }))}
+            rowHeight={220}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            disableRowSelectionOnClick
+            disableMultipleRowSelection
+            disableColumnSelector
+            pageSizeOptions={[5, 10]}
+          />
+        )}
       </div>
+      <ToastContainer />
     </>
   );
 }
+
 export default Homepage;

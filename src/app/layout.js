@@ -1,8 +1,8 @@
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import ReduxProvider from "@/redux/provider";
 import "./globals.css";
 
-const robot = Roboto({ subsets: ["latin"], weight: "400" });
+const inter = Inter({ subsets: ["latin"], weight: "400" });
 
 export const metadata = {
   title: "BSMS",
@@ -13,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={robot.className}>
+      <body className={inter.className}>
         <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>

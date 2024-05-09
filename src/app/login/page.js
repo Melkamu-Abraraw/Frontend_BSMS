@@ -74,9 +74,9 @@ const Login = () => {
             router.push("/dashboard/companies");
           } else if (data.responseData.user.Role === "BrokerAdmin") {
             router.push("/dashboard/brokermanager");
-          } else if (data.responseData.user.Role === "Seller") {
+          } else if (data.responseData.user.Role === "User") {
             router.push("/dashboard/seller");
-          }else if (data.responseData.user.Role === "Broker") {
+          } else if (data.responseData.user.Role === "Broker") {
             router.push("/dashboard/broker");
           }
         }, 1500);
@@ -126,7 +126,7 @@ const Login = () => {
           <Button
             type="submit"
             variant="login"
-            className="w-full text-1xl font-semibold text-veryDarkBlue hover:text-white"
+            className="w-full text-1xl font-semibold text-white hover:bg-green/80"
           >
             Login
           </Button>

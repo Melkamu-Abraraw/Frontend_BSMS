@@ -13,6 +13,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { setAmount } from "@/redux/features/auth-slice";
+import Link from "next/link";
 
 function Homepage() {
   const [propertyType, setPropertyType] = useState("House");
@@ -975,7 +976,7 @@ function Homepage() {
             )}
           </div>
           <Button className="bg-green  mb-3 mt-4 px-6 hover:bg-green/90">
-            Next
+            Submit
           </Button>
         </div>
       </form>

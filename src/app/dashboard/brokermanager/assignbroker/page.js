@@ -5,8 +5,6 @@ import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdOutlineAssignmentInd } from "react-icons/md";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +15,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useDispatch } from "react-redux";
 import { setValue } from "@/redux/features/auth-slice";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const style = {
   position: "absolute",
@@ -55,10 +55,10 @@ function Homepage() {
     });
   };
 
-  const onAssign = async () => {
+  const handleReject = async (prop) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/${propType}/assign/${id}/${brokerEmail}`,
+        `http://localhost:3001/api/${prop.propertyType}/reject/${prop.id}`,
         {
           method: "PUT",
           headers: {
@@ -75,68 +75,68 @@ function Homepage() {
       if (res.success) {
         showToastMessage(res.message);
         showToastMessage();
+        fetchListings();
       } else {
-        showToastError("Invalid email or password!");
+        showToastError(res.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      showToastError("An error occurred. Please try again."); // Show error toast message
+      showToastError("An error occurred. Please try again.");
     }
   };
 
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/Allproperty/pending`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${persistedState.token}`,
-            },
-          }
-        );
+    fetchBrokers();
+    fetchListings();
+  }, []);
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-        setMyProperties(data.data);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
-        setLoadingProperties(false);
-      }
-    };
-
-    const fetchBrokers = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/api/User/`, {
+  const fetchListings = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Allproperty/pending`,
+        {
           method: "GET",
           headers: {
             Authorization: `Bearer ${persistedState.token}`,
           },
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
         }
+      );
 
-        const data = await response.json();
-        const brokers = data.response.filter((user) => user.Role === "Broker");
-        setBrokers(brokers);
-        console.log(brokers);
-      } catch (error) {
-        console.error("Error fetching brokers:", error);
-      } finally {
-        setLoadingBrokers(false);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    };
 
-    fetchBrokers();
-    fetchListings();
-  }, []);
+      const data = await response.json();
+      setMyProperties(data.data);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setLoadingProperties(false);
+    }
+  };
+  const fetchBrokers = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/User/`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${persistedState.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      const brokers = data.response.filter((user) => user.Role === "Broker");
+      setBrokers(brokers);
+      console.log(brokers);
+    } catch (error) {
+      console.error("Error fetching brokers:", error);
+    } finally {
+      setLoadingBrokers(false);
+    }
+  };
 
   const getStatusCellStyle = (status) => {
     let style = {
@@ -149,11 +149,15 @@ function Homepage() {
 
     if (status === "Pending") {
       style.backgroundColor = "#1ecab826";
-      style.color = "#1ecab8";
+      style.color = "yellow";
       style.boxShadow = "0 0 13px #1ecab80d";
     } else if (status === "Rejected") {
       style.backgroundColor = "#f1646c26";
       style.color = "#f1646c";
+      style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Approved") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "#1ecab8";
       style.boxShadow = "0 0 13px #f1646c0d";
     }
 
@@ -269,11 +273,14 @@ function Homepage() {
                 </Link> */}
               </TooltipTrigger>
               <TooltipContent>
-                <p>Approve Property</p>
+                <p>Assign Broker</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button className="bg-red-700 text-sm hover:bg-red-500">
+          <Button
+            className="bg-red-700 text-sm hover:bg-red-500"
+            onClick={() => handleReject(params.row)}
+          >
             Reject
           </Button>
         </div>
@@ -286,7 +293,7 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price,
+    price: item.Price.toLocaleString(),
   }));
 
   return (
@@ -321,6 +328,7 @@ function Homepage() {
           />
         )}
       </div>
+      <ToastContainer />
     </>
   );
 }

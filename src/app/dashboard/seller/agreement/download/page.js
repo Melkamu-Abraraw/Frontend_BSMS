@@ -50,8 +50,6 @@ export default function DialogDemo() {
     fetchPaymentData();
   }, []);
 
-  // Redirect user to the appropriate URL
-
   return (
     <div className="flex justify-center flex-col items-center mt-20">
       {paymentStatus === "Paid" ? (

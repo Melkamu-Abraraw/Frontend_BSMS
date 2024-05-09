@@ -39,6 +39,7 @@ function DataTable() {
         }
 
         const data = await response.json();
+        console.log(data);
         setBroker(data.users);
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -81,14 +82,6 @@ function DataTable() {
       ),
     },
     {
-      field: "assigned",
-      headerName: "Assigned Property",
-      width: 200,
-      renderHeader: (params) => (
-        <strong className=" text-md">{"Assigned Property "}</strong>
-      ),
-    },
-    {
       field: "actions",
       headerName: "Actions",
       width: 110,
@@ -112,7 +105,6 @@ function DataTable() {
     firstName: item.FirstName,
     lastName: item.LastName,
     email: item.Email,
-    assigned: 1,
   }));
 
   const handleAssign = async (broker) => {
@@ -140,7 +132,7 @@ function DataTable() {
       }
     } catch (error) {
       console.error("Error:", error);
-      showToastError("An error occurred. Please try again."); // Show error toast message
+      showToastError("An error occurred. Please try again.");
     }
   };
   return (

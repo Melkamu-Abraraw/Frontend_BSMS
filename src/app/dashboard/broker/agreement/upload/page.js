@@ -73,6 +73,7 @@ export default function DialogDemo() {
   };
 
   const handleClick = async (formData) => {
+    console.log(sellerEmail, buyerEmail);
     if (pdfs.length === 0) {
       setPdfError(true);
     }
