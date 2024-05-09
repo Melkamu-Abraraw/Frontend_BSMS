@@ -90,12 +90,18 @@ const Sidebar = () => {
     },
     {
       id: 4,
-      label: "Conversation",
-      icon: <CiChat2 size={25} className="text-green" />,
-      link: "/dashboard/seller/conversation",
+      label: "Job-Seekers",
+      icon: <BiUserPlus size={25} className="text-green" />,
+      link: "/dashboard/seller/job-seeker",
     },
     {
       id: 5,
+      label: "Conversation",
+      icon: <CiChat2 size={25} className="text-green" />,
+      link: "/dashboard/seller/conversation/RootChat/chats",
+    },
+    {
+      id: 6,
       label: "Settings",
       icon: <CiSettings size={25} className="text-green" />,
       link: "/dashboard/seller/profile",
@@ -238,7 +244,7 @@ const Sidebar = () => {
       ],
     },
     {
-      id: 3,
+      id: 4,
       title: "Agreement Documents",
       icon: <IoDocumentsOutline size={25} className="text-green" />,
       children: [
@@ -260,7 +266,7 @@ const Sidebar = () => {
       id: 5,
       label: "Conversation",
       icon: <CiChat2 size={25} className="text-green" />,
-      link: "/dashboard/broker/chat",
+      link: "/dashboard/broker/conversation/RootChat/chats",
     },
   ];
 

@@ -210,7 +210,7 @@ const Home = ({ property }) => {
             {` Published ${daysSincePublication} days ago`}
           </p>
           <div className="flex flex-row justify-start items-center text-darkBlue ">
-            {propertyValues.Broker.imageUrls &&
+            {propertyValues.Broker?.imageUrls &&
               propertyValues.Broker.imageUrls[0] && ( // Check if broker.imageUrls exists and has at least one element
                 <div className="relative rounded-full overflow-hidden h-12 w-12">
                   <Image
@@ -224,7 +224,7 @@ const Home = ({ property }) => {
               )}
             <div className="flex flex-col justify-start text-darkBlue  mt-4 mb-3 ml-3 pr-2">
               <p className="font-medium">Agent</p>
-              <p>{propertyValues.Broker.FirstName}</p>
+              <p>{propertyValues.Broker?.FirstName}</p>
             </div>
           </div>
         </div>

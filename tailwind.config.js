@@ -72,6 +72,19 @@ export const theme = {
         DEFAULT: "hsl(var(--card))",
         foreground: "hsl(var(--card-foreground))",
       },
+
+      // for chat only
+      "blue-1": "#0A065C",
+      "blue-2": "#F5F7FB",
+      "blue-3": "#04A1E3",
+      "grey-1": "#737373",
+      "grey-2": "#f0f0f0",
+      "grey-3": "#8B8B8B",
+      "red-1": "#FF5252",
+      "purple-1": "#C6D4FF",
+      "purple-2": "#4D426D",
+      "green-1": "#13E0E0",
+      "pink-1": "#FDDAD6",
     },
     borderRadius: {
       lg: "var(--radius)",
@@ -103,4 +116,7 @@ export const theme = {
     },
   },
 };
-export const plugins = [require("tailwindcss-animate")];
+export const plugins = [
+  require("tailwindcss-animate"),
+  require("@tailwindcss/forms"),
+];

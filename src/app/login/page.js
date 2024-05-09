@@ -69,7 +69,14 @@ const Login = () => {
         showToastMessage("Login successful!");
         showToastMessage();
         setTimeout(() => {
+          localStorage.setItem("token", data.responseData.token);
           dispatch(login(data.responseData));
+
+          //For Chat Page
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify(data.responseData.user)
+          );
           if (data.responseData.user.Role === "Admin") {
             router.push("/dashboard/companies");
           } else if (data.responseData.user.Role === "BrokerAdmin") {
