@@ -158,7 +158,7 @@ const Sidebar = () => {
         },
         {
           id: 6,
-          title: "Broker",
+          title: "Brokers",
           icon: <MdOutlineSupportAgent size={15} className="text-green" />,
           link: "/dashboard/brokermanager/agents",
         },

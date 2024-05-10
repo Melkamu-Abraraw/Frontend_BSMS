@@ -31,7 +31,17 @@ export default function DataTable() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [userIdToDelete, setUserIdToDelete] = React.useState(null);
-  const [selectedUser, setSelectedUser] = React.useState(null);
+  const [selectedUser, setSelectedUser] = React.useState({
+    lastName: "",
+    firstName: "",
+    status: "",
+  });
+  const [errorsf, setErrors] = React.useState({
+    lastName: "",
+    status: "",
+  });
+
+  const [selectedModal, setSelectedModal] = React.useState("");
   const [openEditModal, setOpenEditModal] = React.useState(false);
   const persistedState = JSON.parse(localStorage.getItem("user"));
 
@@ -58,6 +68,7 @@ export default function DataTable() {
       setLoading(false);
     }
   };
+
   const deleteUser = async (userId) => {
     try {
       const response = await fetch(
@@ -127,15 +138,56 @@ export default function DataTable() {
     setAlertOpen(false);
   };
 
+  React.useEffect(() => {
+    if (
+      selectedUser.firstName != "" &&
+      selectedUser.lastName != "" &&
+      selectedUser.status != ""
+    ) {
+      setOpenEditModal(true);
+    }
+  }, [selectedUser]);
+
   const handleEdit = (user) => {
-    setSelectedUser({ ...user });
-    setOpenEditModal(true);
+    setSelectedModal("Update");
+    setSelectedUser(user); // Update selectedUser state with the user data
   };
 
   const handleCloseEditModal = () => {
-    setSelectedUser(() => null);
     setOpenEditModal(false);
   };
+
+  const editUser = async (user) => {
+    if (!errorsf.firstName && !errorsf.lastName && !errorsf.status) {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/User/update/${user.id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user), // Convert formData to JSON string
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        if (data.success) {
+          showToastMessage(data.message);
+          fetchUsers();
+          handleCloseEditModal();
+        } else {
+          showToastError(data.message);
+        }
+        console.log("Success:", data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
+
   const columns = [
     {
       field: "no",
@@ -144,10 +196,16 @@ export default function DataTable() {
       renderHeader: (params) => <strong>{"No "}</strong>,
     },
     {
-      field: "fullName",
-      headerName: "Full Name",
-      width: 170,
-      renderHeader: (params) => <strong>{"Full Name "}</strong>,
+      field: "firstName",
+      headerName: "First Name",
+      width: 120,
+      renderHeader: (params) => <strong>{"First Name "}</strong>,
+    },
+    {
+      field: "lastName",
+      headerName: "Last Name",
+      width: 120,
+      renderHeader: (params) => <strong>{"Last Name "}</strong>,
     },
     {
       field: "email",
@@ -207,12 +265,14 @@ export default function DataTable() {
   const rows = users.map((item, index) => ({
     id: item._id,
     no: index + 1,
-    fullName: `${item.FirstName}  ${item.LastName}`,
+    firstName: item.FirstName,
+    lastName: item.LastName,
     email: item.Email,
-    status: "Active",
+    status: item.Status,
   }));
 
   const handleClickOpen = () => {
+    setSelectedModal("Add");
     setOpen(true);
   };
   const handleClose = () => {
@@ -220,7 +280,7 @@ export default function DataTable() {
   };
 
   const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
-  const schema = yup.object().shape({
+  const addSchema = yup.object().shape({
     FirstName: yup
       .string()
       .required("First Name is required")
@@ -246,13 +306,75 @@ export default function DataTable() {
       .required("Confirm Password is required"),
   });
 
+  const handleFirstNameChange = (event) => {
+    setSelectedUser({
+      ...selectedUser,
+      firstName: event.target.value, // Update the lastName field of selectedUser
+    });
+    if (!event.target.value) {
+      setErrors({
+        ...errorsf,
+        firstName: "First Name is required",
+      });
+    } else if (!/^[A-Za-z]+$/.test(event.target.value)) {
+      setErrors({
+        ...errorsf,
+        firstName: "First Name must contain only characters",
+      });
+    } else {
+      setErrors({
+        ...errorsf,
+        firstName: "",
+      });
+    }
+  };
+  const handleLastNameChange = (event) => {
+    setSelectedUser({
+      ...selectedUser,
+      lastName: event.target.value, // Update the lastName field of selectedUser
+    });
+    if (!event.target.value) {
+      setErrors({
+        ...errorsf,
+        lastName: "Last Name is required",
+      });
+    } else if (!/^[A-Za-z]+$/.test(event.target.value)) {
+      setErrors({
+        ...errorsf,
+        lastName: "Last Name must contain only characters",
+      });
+    } else {
+      setErrors({
+        ...errorsf,
+        lastName: "",
+      });
+    }
+  };
+
+  const handleStatusChange = (event) => {
+    setSelectedUser({
+      ...selectedUser,
+      status: event.target.value, // Update the lastName field of selectedUser
+    });
+    if (!event.target.value) {
+      setErrors({
+        ...errorsf,
+        status: "Status is required",
+      });
+    } else {
+      setErrors({
+        ...errorsf,
+        status: "",
+      });
+    }
+  };
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(addSchema),
   });
   const router = useRouter();
 
@@ -287,6 +409,7 @@ export default function DataTable() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      console.log(data);
       if (data.success) {
         showToastMessage(data.message);
         setTimeout(() => {
@@ -302,6 +425,16 @@ export default function DataTable() {
         handleClose();
       } else {
         showToastError(data.message);
+        setTimeout(() => {
+          reset({
+            LastName: "",
+            FirstName: "",
+            Email: "",
+            Password: "",
+            confirmPassword: "",
+          });
+        });
+        handleClose();
       }
       console.log("Success:", data);
     } catch (error) {
@@ -446,7 +579,6 @@ export default function DataTable() {
         </DialogActions>
       </BootstrapDialog>
 
-      {/* Edit Modal */}
       <Dialog
         onClose={handleCloseEditModal}
         aria-labelledby="customized-dialog-title"
@@ -481,29 +613,64 @@ export default function DataTable() {
                 <Input
                   id="fname"
                   placeholder="First Name"
-                  defaultValue={selectedUser?.fullName}
-                  {...register("FirstName")}
+                  value={selectedUser.firstName}
+                  onChange={handleFirstNameChange}
                 />
-                <p className="p-1 text-xs text-red-600">
-                  {errors.FirstName?.message}
-                </p>
+                {errorsf.firstName && (
+                  <p className="p-1 text-xs text-red-600">
+                    {errorsf.firstName}
+                  </p>
+                )}
               </div>
             </div>
-            {/* Repeat similar structure for other fields */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right font-semibold">
+                Last Name:
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="lname"
+                  placeholder="Last Name"
+                  value={selectedUser.lastName}
+                  onChange={handleLastNameChange}
+                />
+                {errorsf.lastName && (
+                  <p className="p-1 text-xs text-red-600">{errorsf.lastName}</p>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right font-semibold">
+                Status:
+              </Label>
+              <select
+                value={selectedUser.status}
+                onChange={handleStatusChange}
+                className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Active">Active</option>
+                <option value="Deactive">Deactive</option>
+              </select>
+              {errorsf.status && (
+                <p className="p-1 text-xs text-red-600">{errorsf.status}</p>
+              )}
+            </div>
           </div>
         </DialogContent>
         <DialogActions>
           <Button
             type="submit"
             className="bg-green hover:bg-green/85"
-            onClick={handleSubmit(onSubmit)}
+            onClick={() => editUser(selectedUser)}
           >
             Save Changes
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Confirmation Dialog */}
       <Dialog
         open={openAlert}
         onClose={handleAlertClose}
@@ -514,10 +681,7 @@ export default function DataTable() {
           {"Are you sure to Delete user permanently?"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {/* Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running. */}
-          </DialogContentText>
+          <DialogContentText id="alert-dialog-description"></DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button

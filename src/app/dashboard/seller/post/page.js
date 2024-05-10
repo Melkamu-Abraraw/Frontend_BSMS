@@ -332,7 +332,7 @@ function Homepage() {
         showToastMessage(data.message);
         setTimeout(() => {
           router.push("/dashboard/seller/properties"); // Redirect to login page after a delay
-        }, 3000); // Adjust the delay time as needed
+        }, 1000); // Adjust the delay time as needed
       }
       console.log("Success:", data);
     } catch (error) {

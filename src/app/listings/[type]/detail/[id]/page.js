@@ -74,13 +74,12 @@ const Detail = () => {
         <div className="  mt-20  container">
           <section className=" flex justify-between ">
             <div className="flex flex-col">
-              <h1 className="font-normal text-2xl">
-                {propertyDetail.HouseType}
-              </h1>
+              <h1 className="font-normal text-2xl">{propertyDetail.Title}</h1>
               <h6 className="bg-green rounded-sm mt-2 text-white w-20 pl-2 ">
                 {propertyDetail.ContractType}
               </h6>
             </div>
+
             <div className=" text-green text-2xl font-bold">
               {propertyDetail.Price.toLocaleString()}
               <span className="ml-1"> ETB</span>
