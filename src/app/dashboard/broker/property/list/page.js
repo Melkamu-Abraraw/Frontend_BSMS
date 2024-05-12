@@ -158,6 +158,14 @@ function Homepage() {
       style.backgroundColor = "#f1646c26";
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Assigned") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "green";
+      style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Approved") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "rgb(0, 167, 111)";
+      style.boxShadow = "0 0 13px #f1646c0d";
     }
 
     return style;
@@ -234,7 +242,7 @@ function Homepage() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 300,
+      width: 100,
       renderHeader: (params) => (
         <strong className=" text-md">{"Actions "}</strong>
       ),
@@ -256,13 +264,6 @@ function Homepage() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button
-            className="text-sm hover:bg-green-500"
-            style={{ backgroundColor: "green" }}
-            onClick={() => onAssign(params.row)}
-          >
-            Accept
-          </Button>
         </div>
       ),
     },
@@ -274,7 +275,7 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price.toLocaleString(),
+    price: `${item.Price.toLocaleString()} ${item.Currency}`,
   }));
 
   return (

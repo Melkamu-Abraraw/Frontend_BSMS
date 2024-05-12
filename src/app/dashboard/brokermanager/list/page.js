@@ -225,7 +225,7 @@ function Homepage() {
     {
       field: "price",
       headerName: "Price ",
-      width: 120,
+      width: 150,
       renderHeader: (params) => (
         <strong className=" text-md">{"Price "}</strong>
       ),
@@ -268,7 +268,7 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price.toLocaleString(),
+    price: `${item.Price.toLocaleString()} ${item.Currency}`,
   }));
 
   return (

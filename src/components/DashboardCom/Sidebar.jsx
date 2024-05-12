@@ -56,7 +56,7 @@ const Sidebar = () => {
       id: 1,
       label: "Dashboard",
       icon: <RxDashboard size={25} className="text-green" />,
-      link: "/dashboard",
+      link: "/dashboard/seller",
     },
     {
       id: 3,

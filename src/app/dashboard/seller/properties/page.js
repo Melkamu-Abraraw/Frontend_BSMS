@@ -90,6 +90,10 @@ function Homepage() {
       style.backgroundColor = "#1ecab826";
       style.color = "#1ecab8";
       style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Assigned") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "rgb(0, 167, 111)";
+      style.boxShadow = "0 0 13px #f1646c0d";
     }
 
     return style;
@@ -182,7 +186,7 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price.toLocaleString(),
+    price: `${item.Price.toLocaleString()} ${item.Currency}`,
   }));
 
   return (

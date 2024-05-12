@@ -142,7 +142,7 @@ function Homepage() {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/Allproperty/assigned`,
+          `http://localhost:3001/api/Allproperty/approved`,
           {
             method: "GET",
             headers: {
@@ -150,7 +150,6 @@ function Homepage() {
             },
           }
         );
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -209,6 +208,10 @@ function Homepage() {
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
     } else if (status === "Assigned") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "rgb(0, 167, 111)";
+      style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Approved") {
       style.backgroundColor = "#1ecab826";
       style.color = "rgb(0, 167, 111)";
       style.boxShadow = "0 0 13px #f1646c0d";
@@ -303,7 +306,7 @@ function Homepage() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 300,
+      width: 100,
       renderHeader: (params) => (
         <strong className=" text-md">{"Actions "}</strong>
       ),
@@ -343,13 +346,15 @@ function Homepage() {
       ),
     },
   ];
-  const propertyRows = myProperties.map((item, index) => ({
-    id: item._id,
-    image: item.imageUrls[0],
-    propertyType: item.PropertyType,
-    status: item.Status,
-    price: item.Price.toLocaleString(),
-  }));
+  const propertyRows = myProperties
+    .sort((a, b) => b.createdAt - a.createdAt) // Sort properties by createdAt in descending order
+    .map((item, index) => ({
+      id: item._id,
+      image: item.imageUrls[0],
+      propertyType: item.PropertyType,
+      status: item.Status,
+      price: `${item.Price.toLocaleString()} ${item.Currency}`,
+    }));
 
   const handleClick = async (formData) => {
     if (pdfs.length === 0) {
