@@ -686,8 +686,8 @@ function Homepage() {
               <option value="" disabled>
                 Select option
               </option>
-              <option value="sale">For Sale</option>
-              <option value="rent">For Rent</option>
+              <option value="For Sale">For Sale</option>
+              <option value="For Rent">For Rent</option>
             </select>
             <p className="p-1 text-red-600 text-sm">
               {errors.ContractType?.message}

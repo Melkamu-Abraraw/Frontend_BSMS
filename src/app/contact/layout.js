@@ -1,9 +1,9 @@
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const robot = Roboto({ subsets: ["latin"], weight: "400" });
 
 export const metadata = {
   title: "BSMS",
@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={robot.className}>
         <Navbar />
         {children}
         <Footer />

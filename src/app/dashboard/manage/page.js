@@ -40,10 +40,8 @@ export default function DataTable() {
     lastName: "",
     status: "",
   });
-
   const [selectedModal, setSelectedModal] = React.useState("");
   const [openEditModal, setOpenEditModal] = React.useState(false);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
 
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -52,9 +50,6 @@ export default function DataTable() {
     try {
       const response = await fetch(`http://localhost:3001/api/User/manager`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${persistedState.token}`,
-        },
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -75,9 +70,6 @@ export default function DataTable() {
         `http://localhost:3001/api/User/remove/${userId}`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${persistedState.token}`,
-          },
         }
       );
       if (!response.ok) {
@@ -126,8 +118,8 @@ export default function DataTable() {
   }));
 
   const handleDeleteUser = (userId) => {
-    handleAlertClickOpen(); // Open the confirmation dialog
-    setUserIdToDelete(userId); // Set the user ID to be deleted
+    handleAlertClickOpen();
+    setUserIdToDelete(userId);
   };
 
   const handleAlertClickOpen = () => {
@@ -150,7 +142,7 @@ export default function DataTable() {
 
   const handleEdit = (user) => {
     setSelectedModal("Update");
-    setSelectedUser(user); // Update selectedUser state with the user data
+    setSelectedUser(user);
   };
 
   const handleCloseEditModal = () => {
@@ -167,7 +159,7 @@ export default function DataTable() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(user), // Convert formData to JSON string
+            body: JSON.stringify(user),
           }
         );
         if (!response.ok) {
@@ -309,7 +301,7 @@ export default function DataTable() {
   const handleFirstNameChange = (event) => {
     setSelectedUser({
       ...selectedUser,
-      firstName: event.target.value, // Update the lastName field of selectedUser
+      firstName: event.target.value,
     });
     if (!event.target.value) {
       setErrors({
@@ -331,7 +323,7 @@ export default function DataTable() {
   const handleLastNameChange = (event) => {
     setSelectedUser({
       ...selectedUser,
-      lastName: event.target.value, // Update the lastName field of selectedUser
+      lastName: event.target.value,
     });
     if (!event.target.value) {
       setErrors({
@@ -354,7 +346,7 @@ export default function DataTable() {
   const handleStatusChange = (event) => {
     setSelectedUser({
       ...selectedUser,
-      status: event.target.value, // Update the lastName field of selectedUser
+      status: event.target.value,
     });
     if (!event.target.value) {
       setErrors({
@@ -677,7 +669,10 @@ export default function DataTable() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle
+          id="alert-dialog-title"
+          className="text-sm font-bold text-black"
+        >
           {"Are you sure to Delete user permanently?"}
         </DialogTitle>
         <DialogContent>
@@ -689,14 +684,14 @@ export default function DataTable() {
               handleAlertClose();
               deleteUser(userIdToDelete);
             }}
-            className="text-white  mt-2"
+            className="text-white  mt-2 px-6"
             style={{ backgroundColor: "red" }}
           >
             Yes
           </Button>
           <Button
             onClick={handleAlertClose}
-            className="text-white  mt-2"
+            className="text-white  mt-2 px-6"
             style={{ backgroundColor: "green" }}
           >
             No

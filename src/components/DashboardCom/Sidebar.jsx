@@ -39,11 +39,18 @@ const Sidebar = () => {
   const [activeItem, setActiveItem] = useState(null);
   const menuRef = useRef(null);
   const [toggleChildCollapse, setToggleChildCollapse] = useState(false);
-  const user = useSelector((state) => state.auth.value);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
+  const [userData, setUserData] = React.useState({});
+
+  React.useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
+
+  if (!userData) {
     return null;
   }
+  const userRole = userData.user ? userData.user.Role : "";
+
   const menuItems_user = [
     {
       id: 1,
@@ -87,12 +94,6 @@ const Sidebar = () => {
       label: "Payment",
       icon: <MdOutlinePayment size={25} className="text-green" />,
       link: "/dashboard/seller/payment",
-    },
-    {
-      id: 4,
-      label: "Job-Seekers",
-      icon: <BiUserPlus size={25} className="text-green" />,
-      link: "/dashboard/seller/job-seeker",
     },
     {
       id: 5,
@@ -271,13 +272,13 @@ const Sidebar = () => {
   ];
 
   let activeSidebarItems = (() => {
-    if (persistedState.role === "Admin") {
+    if (userRole === "Admin") {
       return menuItems_admin;
-    } else if (persistedState.role === "User") {
+    } else if (userRole === "User") {
       return menuItems_user;
-    } else if (persistedState.role === "BrokerAdmin") {
+    } else if (userRole === "BrokerAdmin") {
       return menuItems_brokerManager;
-    } else if (persistedState.role === "Broker") {
+    } else if (userRole === "Broker") {
       return menuItems_broker;
     }
 

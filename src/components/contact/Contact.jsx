@@ -8,12 +8,11 @@ const Contact = () => {
   return (
     <>
       <section className="contact mb mt-20">
-        <h4 className="my-6 text-3xl font-semibold bg-green w-10/12 mx-auto py-1 rounded-sm text-center text-veryDarkBlue">
-          Contact Us
-        </h4>
         <div className="container">
+          <h4 className="text-2xl font-semibold mb-4 text-center">
+            Fillup The Form
+          </h4>
           <form className="shadow">
-            <h4>Fillup The Form</h4> <br />
             <div>
               <div className="w-full">
                 <Input type="text" id="password" placeholder="Name" />

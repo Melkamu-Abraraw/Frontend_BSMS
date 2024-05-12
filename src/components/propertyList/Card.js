@@ -11,6 +11,8 @@ import { BsFuelPumpDieselFill } from "react-icons/bs";
 import Link from "next/link";
 import React from "react";
 import "./property.css";
+import { useRouter } from "next/navigation";
+
 const Home = ({ property }) => {
   const propertyValues = { ...property };
   const createdAt = new Date(propertyValues.createdAt);
@@ -18,7 +20,20 @@ const Home = ({ property }) => {
   const differenceInMs = currentDate - createdAt;
   const millisecondsPerDay = 1000 * 60 * 60 * 24;
   const daysSincePublication = Math.floor(differenceInMs / millisecondsPerDay);
+  const storedUserData = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = React.useState(storedUserData);
 
+  const router = useRouter();
+
+  const handleViewProperty = () => {
+    if (userData) {
+      router.push(
+        `/listings/${propertyValues.PropertyType}/${propertyValues._id}`
+      );
+    } else {
+      router.push("/login");
+    }
+  };
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  p-4 mt-7 w-806  gap-1">
       <div
@@ -42,28 +57,29 @@ const Home = ({ property }) => {
           <div className="price-overlay mt-3">
             <div className="mx-2">
               <h2 className="green-color rounded text-green px-2 font-bold">
-                {propertyValues.Price.toLocaleString()} ETB
+                {`${propertyValues.Price.toLocaleString()} ${
+                  propertyValues.Currency
+                }`}
               </h2>
             </div>
           </div>
-          <Link
-            href={`/listings/${propertyValues.PropertyType}/${propertyValues._id}`}
+          <button
+            className="hidden bg-green btn-hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:block hover:bg-white hover:text-black p-2 rounded text-white text-sm"
+            onClick={handleViewProperty}
           >
-            <button className="hidden bg-green btn-hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:block hover:bg-white hover:text-black p-2 rounded text-white text-sm">
-              View Property
-            </button>
-          </Link>
+            View Property
+          </button>
         </div>
 
         <div className="mt-3 text-left ">
           {propertyValues.PropertyType === "House" && (
             <h3 className="text-darkBlue ml-4 mb-1 mt-1">
-              {propertyValues.HouseType}
+              {propertyValues.PropertyType}
             </h3>
           )}
           {propertyValues.PropertyType === "Vehicle" && (
             <h3 className="text-darkBlue ml-4 mb-1 mt-1">
-              {propertyValues.VehiclesType}
+              {propertyValues.PropertyType}
             </h3>
           )}
           {propertyValues.PropertyType === "Land" && (

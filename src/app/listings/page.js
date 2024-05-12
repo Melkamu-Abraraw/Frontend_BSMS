@@ -109,10 +109,52 @@ export default function SelectSmall() {
   };
 
   const onSubmit = (data) => {
-    propertiesPerPage = 2;
+    propertiesPerPage = 3;
     const filteredProperties = originalProperties.filter((property) => {
       let score = 0;
       if (propType === "All" && contractType == "All" && city === "All") {
+        score += 3;
+      }
+      if (
+        propType === "All" &&
+        contractType == "All" &&
+        property.City === city
+      ) {
+        score += 3;
+      }
+      if (
+        propType === "All" &&
+        property.ContractType === contractType &&
+        city === "All"
+      ) {
+        score += 3;
+      }
+      if (
+        property.PropertyType === propType &&
+        contractType == "All" &&
+        property.City === city
+      ) {
+        score += 3;
+      }
+      if (
+        propType === "All" &&
+        property.ContractType === contractType &&
+        property.City === city
+      ) {
+        score += 3;
+      }
+      if (
+        property.PropertyType === propType &&
+        property.ContractType === contractType &&
+        city === "All"
+      ) {
+        score += 3;
+      }
+      if (
+        property.PropertyType === propType &&
+        contractType == "All" &&
+        city === "All"
+      ) {
         score += 3;
       }
       if (propType !== "All" && property.PropertyType === propType) {
@@ -130,11 +172,11 @@ export default function SelectSmall() {
       ) {
         score += 1;
       }
-      return score >= 1;
+      return score >= 3;
     });
     setProperties(filteredProperties);
     setSearchPerformed(true);
-    setPropertiesPerPage(searchPerformed ? 3 : 2);
+    setPropertiesPerPage(searchPerformed ? 3 : 3);
   };
 
   return (
@@ -144,7 +186,7 @@ export default function SelectSmall() {
       {/* Main content */}
       <div>
         <div className="mt-20">
-          <Map height={400} width={1100} />
+          <Map height={400} width={1100} properties={properties} />
         </div>
         <div className="bg-white flex flex-col md:flex-row justify-center items-center mx-28 ">
           <div className="flex flex-wrap justify-center md:justify-start">
@@ -177,7 +219,7 @@ export default function SelectSmall() {
               <InputLabel>City</InputLabel>
               <Select value={city} label="City" onChange={handleCityChange}>
                 <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Addis Ababa">Addis Abeba</MenuItem>
+                <MenuItem value="Addis Abeba">Addis Abeba</MenuItem>
                 <MenuItem value="Adama">Adama</MenuItem>
                 <MenuItem value="Jimma">Jimma</MenuItem>
                 <MenuItem value="Ambo">Ambo</MenuItem>
@@ -220,13 +262,11 @@ export default function SelectSmall() {
           </div>
         </section>
         <section className="px-24  mb-20 flex flex-row">
-          {searchPerformed && (
+          {/* {searchPerformed && (
             <div className="mr-8 mt-9">
-              {/* Add your filter components here */}
-              {/* Example: */}
+           
               <div>
                 <h2 className="text-lg ml-8 font-semibold mb-1">Filters</h2>
-                {/* Add your filter components here */}
                 <div className="ml-6  mt-2">
                   <FormControl sx={{ m: 1, minWidth: 175 }} size="small">
                     <InputLabel>House Category</InputLabel>
@@ -319,12 +359,12 @@ export default function SelectSmall() {
                 </div>
 
                 {/* Add more filter components as needed */}
-              </div>
-            </div>
-          )}
+          {/* </div>
+            </div> */}
+
           {searchPerformed && (
             <div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 ">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ">
                 {currentProperties.map((property) => (
                   <Card key={property.id} property={property} />
                 ))}

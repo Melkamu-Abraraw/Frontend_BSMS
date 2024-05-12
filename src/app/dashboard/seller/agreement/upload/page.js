@@ -8,8 +8,14 @@ export default function DialogDemo() {
   const [users, setUsers] = useState([]);
   const [pdfError, setPdfError] = useState(false); // State to track PDF selection
   const [url, setUrl] = useState("");
-  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = useState({});
 
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
+
+  const userInfo = userData.user ? userData.user : "";
   const handlePdfChange = (event) => {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
@@ -23,11 +29,10 @@ export default function DialogDemo() {
           `http://localhost:3001/api/docs/send-envelope`,
           {
             method: "POST",
-            body: JSON.stringify(persistedState), // Send persistedState directly
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${persistedState.token}`,
             },
+            body: JSON.stringify(userInfo), // Send persistedState directly
           }
         );
 
@@ -42,7 +47,7 @@ export default function DialogDemo() {
       }
     };
 
-    if (persistedState) {
+    if (userInfo) {
       fetchUserList();
     }
   }, []); // Empty dependency array, so it only runs once when component mounts
@@ -59,7 +64,9 @@ export default function DialogDemo() {
           </a>
         </div>
       ) : (
-        <p className="font-semibold mb-2">No Agreement Document</p>
+        <p className="text-1xl font-bold mb-2">
+          No Agreement Document is Available
+        </p>
       )}
     </div>
   );

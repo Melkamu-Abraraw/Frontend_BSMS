@@ -14,17 +14,12 @@ const ICON = icon({
   iconSize: [30, 30],
 });
 
-const coordinates = {
-  lat: 9.0238,
-  lng: 38.7460
-};
-
-const Map = ({ width, height }) => {
+const Map = ({ width, height, coordinates, propName }) => {
   return (
     <div className="flex justify-center items-center mt-8 mb-5">
       <MapContainer
         center={[coordinates.lat, coordinates.lng]}
-        zoom={13}
+        zoom={7}
         scrollWheelZoom={false}
         style={{ height: height, width: width }}
         className="rounded-md shadow-md"
@@ -34,7 +29,7 @@ const Map = ({ width, height }) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Marker icon={ICON} position={[coordinates.lat, coordinates.lng]}>
-          <Popup>You are here</Popup>
+          <Popup>{propName}</Popup>
         </Marker>
       </MapContainer>
     </div>

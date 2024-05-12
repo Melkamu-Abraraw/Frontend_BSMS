@@ -4,8 +4,8 @@ import Image from "next/image";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { MdOutlineAssignmentInd } from "react-icons/md";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useDispatch } from "react-redux";
 import { setValue } from "@/redux/features/auth-slice";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const style = {
   position: "absolute",
@@ -39,7 +41,6 @@ function Homepage() {
   const [brokerEmail, setBrokerEmail] = useState("");
   const [propType, setPropType] = useState("");
   const [id, setId] = useState(1);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
   const [pdfs, setPdfs] = useState([]);
 
   const showToastMessage = (message, type) => {
@@ -53,10 +54,10 @@ function Homepage() {
     });
   };
 
-  const onAssign = async (prop) => {
+  const handleReject = async (prop) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/${prop.propertyType}/approve/${prop.id}/`,
+        `http://localhost:3001/api/${prop.propertyType}/reject/${prop.id}`,
         {
           method: "PUT",
           headers: {
@@ -72,74 +73,68 @@ function Homepage() {
       const res = await response.json();
       if (res.success) {
         showToastMessage(res.message);
-        // Filter out the property with the same status as the updated one
-        const updatedPropList = myProperties.filter(
-          (property) => property._id != res.data._id
-        );
-        console.log(updatedPropList);
-        setMyProperties(updatedPropList);
         showToastMessage();
+        fetchListings();
       } else {
-        showToastError("Invalid email or password!");
+        showToastError(res.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      showToastError("An error occurred. Please try again."); // Show error toast message
+      showToastError("An error occurred. Please try again.");
     }
   };
 
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/Allproperty/all`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${persistedState.token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-        setMyProperties(data.data);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
-        setLoadingProperties(false);
-      }
-    };
-
-    const fetchBrokers = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/api/User/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${persistedState.token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-        const brokers = data.response.filter((user) => user.Role === "Broker");
-        setBrokers(brokers);
-      } catch (error) {
-        console.error("Error fetching brokers:", error);
-      } finally {
-        setLoadingBrokers(false);
-      }
-    };
-
     fetchBrokers();
     fetchListings();
   }, []);
+
+  const fetchListings = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Allproperty/allProp`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setMyProperties(data.data);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setLoadingProperties(false);
+    }
+  };
+
+  const fetchBrokers = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/User/`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${persistedState.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      const brokers = data.response.filter((user) => user.Role === "Broker");
+      setBrokers(brokers);
+      console.log(brokers);
+    } catch (error) {
+      console.error("Error fetching brokers:", error);
+    } finally {
+      setLoadingBrokers(false);
+    }
+  };
 
   const getStatusCellStyle = (status) => {
     let style = {
@@ -152,19 +147,26 @@ function Homepage() {
 
     if (status === "Pending") {
       style.backgroundColor = "#1ecab826";
-      style.color = "#1ecab8";
+      style.color = "yellow";
       style.boxShadow = "0 0 13px #1ecab80d";
     } else if (status === "Rejected") {
       style.backgroundColor = "#f1646c26";
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Approved") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "#1ecab8";
+      style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Assigned") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "rgb(0, 167, 111)";
+      style.boxShadow = "0 0 13px #f1646c0d";
     }
-
     return style;
   };
   const handleVisibilityClick = (property) => {
     const { propertyType, id } = property;
-    window.location.href = `/listings/${propertyType}/${id}`;
+    window.location.href = `/listings/${propertyType}/detail/${id}`;
   };
 
   const handleApproveChange = (property) => {
@@ -197,7 +199,7 @@ function Homepage() {
     {
       field: "propertyType",
       headerName: "Property Type",
-      width: 200,
+      width: 140,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Property Type"}</strong>
@@ -209,7 +211,7 @@ function Homepage() {
     {
       field: "status",
       headerName: "Status ",
-      width: 150,
+      width: 130,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Status "}</strong>
@@ -223,7 +225,7 @@ function Homepage() {
     {
       field: "price",
       headerName: "Price ",
-      width: 150,
+      width: 120,
       renderHeader: (params) => (
         <strong className=" text-md">{"Price "}</strong>
       ),
@@ -243,26 +245,19 @@ function Homepage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <IconButton
-                  aria-label="view"
-                  size="medium"
-                  onClick={() => handleVisibilityClick(params.row)}
+                <Link
+                  href={`/listings/${params.row.propertyType}/detail/${params.row.id}`}
                 >
-                  <VisibilityIcon className="text-black" />
-                </IconButton>
+                  <IconButton aria-label="view" size="medium">
+                    <VisibilityIcon className="text-black" />
+                  </IconButton>
+                </Link>
               </TooltipTrigger>
               <TooltipContent>
                 <p>View Detail</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button
-            className="text-sm hover:bg-green-500"
-            style={{ backgroundColor: "green" }}
-            onClick={() => onAssign(params.row)}
-          >
-            Accept
-          </Button>
         </div>
       ),
     },

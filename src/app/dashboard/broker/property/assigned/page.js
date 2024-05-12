@@ -158,6 +158,10 @@ function Homepage() {
       style.backgroundColor = "#f1646c26";
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Assigned") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "rgb(0, 167, 111)";
+      style.boxShadow = "0 0 13px #f1646c0d";
     }
 
     return style;

@@ -3,11 +3,8 @@ onmessage = function (e) {
   const Properties = e.data;
   let filteredProperties = [];
   if (Properties) {
-    Properties.forEach((property) => {
-      if (property.Rating >= 2) {
-        filteredProperties.push(property);
-      }
-    });
+    Properties.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    filteredProperties = Properties.slice(0, 4);
   }
   postMessage(filteredProperties);
 };

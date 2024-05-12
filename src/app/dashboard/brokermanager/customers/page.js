@@ -40,10 +40,8 @@ export default function DataTable() {
     lastName: "",
     status: "",
   });
-
   const [selectedModal, setSelectedModal] = React.useState("");
   const [openEditModal, setOpenEditModal] = React.useState(false);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
 
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -52,9 +50,6 @@ export default function DataTable() {
     try {
       const response = await fetch(`http://localhost:3001/api/User/`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${persistedState.token}`,
-        },
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -75,9 +70,6 @@ export default function DataTable() {
         `http://localhost:3001/api/User/remove/${userId}`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${persistedState.token}`,
-          },
         }
       );
       if (!response.ok) {
@@ -677,7 +669,10 @@ export default function DataTable() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle
+          id="alert-dialog-title"
+          className="text-sm font-bold text-black"
+        >
           {"Are you sure to Delete user permanently?"}
         </DialogTitle>
         <DialogContent>
@@ -689,14 +684,14 @@ export default function DataTable() {
               handleAlertClose();
               deleteUser(userIdToDelete);
             }}
-            className="text-white  mt-2"
+            className="text-white  mt-2 px-6"
             style={{ backgroundColor: "red" }}
           >
             Yes
           </Button>
           <Button
             onClick={handleAlertClose}
-            className="text-white  mt-2"
+            className="text-white  mt-2 px-6"
             style={{ backgroundColor: "green" }}
           >
             No

@@ -27,13 +27,11 @@ const Detail = () => {
             },
           }
         );
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
         const data = await response.json();
-        console.log(data);
         setPropertyDetail(data.mainHouse);
         setSimilarProperty(data.similarHouses);
         setLoading(false);
@@ -84,7 +82,7 @@ const Detail = () => {
             </div>
             <div className=" text-green text-2xl font-bold">
               {propertyDetail.Price.toLocaleString()}
-              <span className="ml-1"> ETB</span>
+              <span className="ml-1">{propertyDetail.Currency}</span>
             </div>
           </section>
         </div>
@@ -183,12 +181,16 @@ const Detail = () => {
           <hr className="mt-5 mb-6" />
           <div className="flex justify-evenly">
             <ul>
-              <li className="list-none flex justify-between">
-                <strong className="mr-4">Price:</strong>
-                <span>{`${propertyDetail.Price.toLocaleString()} ETB`}</span>
-              </li>
-              <hr className="mt-5 mb-6" />
-              {propertyDetail.PropertyType === "House" && (
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <div>
+                  <li className="list-none flex justify-between">
+                    <strong>Transmission:</strong>
+                    <span className="ml-1">{propertyDetail.Transmission}</span>
+                  </li>
+                </div>
+              )}
+              {(propertyDetail.PropertyType === "House" ||
+                propertyDetail.PropertyType === "Land") && (
                 <li className="list-none flex justify-between">
                   <strong>Area:</strong>
                   <span className="ml-1">
@@ -197,21 +199,55 @@ const Detail = () => {
                 </li>
               )}
               <hr className="mt-5 mb-6" />
-              {propertyDetail.PropertyType === "House" && (
-                <li className="list-none flex justify-between">
-                  <strong className="mr-12">Price Category:</strong>
-                  {propertyDetail.ContractType}
-                </li>
-              )}
+
+              <li className="list-none flex justify-between">
+                <strong className="mr-12">Price Category:</strong>
+                {propertyDetail.PriceCategory}
+              </li>
               <hr className="mt-5 mb-6" />
               {propertyDetail.PropertyType === "House" && (
                 <li className="list-none flex justify-between">
                   <strong>Property Category:</strong>
-                  <span className="ml-1">{propertyDetail.HouseType}</span>
+                  <span className="ml-1">
+                    {propertyDetail.PropertyCategory}
+                  </span>
                 </li>
               )}
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <li className="list-none flex justify-between">
+                  <strong>Fuel Type:</strong>
+                  <span className="ml-1">{propertyDetail.FuelType}</span>
+                </li>
+              )}
+              <hr className="mt-5 mb-6" />
             </ul>
             <ul>
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <div>
+                  <li className="list-none flex justify-between">
+                    <strong>Brand:</strong>
+                    <span className="ml-1">{propertyDetail.Brand}</span>
+                  </li>
+                  <hr className="mt-5 mb-6" />
+                </div>
+              )}
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <div>
+                  <li className="list-none flex justify-between">
+                    <strong>Model:</strong>
+                    <span className="ml-1">{propertyDetail.Model}</span>
+                  </li>
+                  <hr className="mt-5 mb-6" />
+                </div>
+              )}
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <div>
+                  <li className="list-none flex justify-between">
+                    <strong>Body Type:</strong>
+                    <span className="ml-1">{propertyDetail.BodyType}</span>
+                  </li>
+                </div>
+              )}
               {propertyDetail.PropertyType === "House" && (
                 <li className="list-none flex justify-between">
                   <strong>Bedrooms:</strong>
@@ -225,14 +261,8 @@ const Detail = () => {
                   <span className="ml-1">{propertyDetail.Bathroom}</span>
                 </li>
               )}
-              <hr className="mt-5 mb-6" />
-              <li className="list-none flex justify-between ">
-                <strong className="mr-12">Contract Type:</strong>
-                <span>{propertyDetail.ContractType}</span>
-              </li>
-
-              <hr className="mt-5 mb-6" />
             </ul>
+            <hr className="mt-5 mb-6" />
           </div>
         </section>
         <section className="shadow-lg bg-white rounded-lg p-6  mx-8 my-8 w-7/12 ">
@@ -248,23 +278,26 @@ const Detail = () => {
               <strong className="mr-4">Location:</strong>
             </li>
           </ul>
-          <Map height={350} width={1200} />
-          <Button variant="call" className="w-1/2 mt-6 bg-green text-white">
-            <MdOutlineFavoriteBorder color="white" size={25} className="mr-1" />
-            Favourite
-          </Button>
+          <Map
+            height={350}
+            width={1200}
+            coordinates={propertyDetail.Location}
+            propName={propertyDetail.Title}
+          />
         </section>
-        <section className="container p-6 mx-8 my-8 w-11/12 items-center">
-          <h5 className="text-2xl text-green font-bold text-center mb-2">
-            Recommended Properties
-          </h5>
-          <hr className="w-28 h-1 bg-black mx-auto mt-1"></hr>
-          <div className="grid grid-cols-3 gap-4">
-            {similarProperty.map((property, index) => (
-              <Card property={property} key={index} />
-            ))}
-          </div>
-        </section>
+        {similarProperty.length > 0 && (
+          <section className="container p-6 mx-8 my-8 w-11/12 items-center">
+            <h5 className="text-2xl text-green font-bold text-center mb-2">
+              Recommended Properties
+            </h5>
+            <hr className="w-28 h-1 bg-black mx-auto mt-1"></hr>
+            <div className="grid grid-cols-3 gap-4">
+              {similarProperty.map((property, index) => (
+                <Card property={property} key={index} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

@@ -41,7 +41,6 @@ function Homepage() {
   const [brokerEmail, setBrokerEmail] = useState("");
   const [propType, setPropType] = useState("");
   const [id, setId] = useState(1);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
   const [pdfs, setPdfs] = useState([]);
 
   const showToastMessage = (message, type) => {
@@ -96,9 +95,6 @@ function Homepage() {
         `http://localhost:3001/api/Allproperty/pending`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${persistedState.token}`,
-          },
         }
       );
 
@@ -118,9 +114,6 @@ function Homepage() {
     try {
       const response = await fetch(`http://localhost:3001/api/User/`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${persistedState.token}`,
-        },
       });
 
       if (!response.ok) {
@@ -198,7 +191,7 @@ function Homepage() {
     {
       field: "propertyType",
       headerName: "Property Type",
-      width: 200,
+      width: 140,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Property Type"}</strong>
@@ -210,7 +203,7 @@ function Homepage() {
     {
       field: "status",
       headerName: "Status ",
-      width: 150,
+      width: 130,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Status "}</strong>
@@ -224,7 +217,7 @@ function Homepage() {
     {
       field: "price",
       headerName: "Price ",
-      width: 150,
+      width: 120,
       renderHeader: (params) => (
         <strong className=" text-md">{"Price "}</strong>
       ),
@@ -244,13 +237,13 @@ function Homepage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <IconButton
-                  aria-label="view"
-                  size="medium"
-                  onClick={() => handleVisibilityClick(params.row)}
+                <Link
+                  href={`/listings/${params.row.propertyType}/detail/${params.row.id}`}
                 >
-                  <VisibilityIcon className="text-black" />
-                </IconButton>
+                  <IconButton aria-label="view" size="medium">
+                    <VisibilityIcon className="text-black" />
+                  </IconButton>
+                </Link>
               </TooltipTrigger>
               <TooltipContent>
                 <p>View Detail</p>

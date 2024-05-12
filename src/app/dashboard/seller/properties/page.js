@@ -9,35 +9,44 @@ function Homepage() {
   const [myProperties, setMyProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = React.useState({});
+
+  React.useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
+
+  const userToken = userData.user ? userData.token : "";
 
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/Allproperty/getProperty`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${persistedState.token}`,
-            },
+    if (userToken) {
+      const fetchListings = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/Allproperty/getProperty`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
           }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
 
-        const data = await response.json();
-        setMyProperties(data.data);
-      } catch (error) {
-        console.error("Error:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchListings();
-  }, []);
+          const data = await response.json();
+          setMyProperties(data.data);
+        } catch (error) {
+          console.error("Error:", error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchListings();
+    }
+  }, [userToken]);
 
   if (loading)
     return (
@@ -71,7 +80,6 @@ function Homepage() {
     };
 
     if (status === "Pending") {
-      style.backgroundColor = "#1ecab826";
       style.color = "yellow";
       style.boxShadow = "0 0 13px #1ecab80d";
     } else if (status === "Rejected") {

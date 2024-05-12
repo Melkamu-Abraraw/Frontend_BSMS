@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -20,12 +21,33 @@ import Tooltip from "@mui/material/Tooltip";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { logout } from "@/redux/features/auth-slice";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const pages = ["Home", "Listings", "Jobs", "Contact", "About Us"];
 
 function Navbar() {
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.auth.value.isLoggedIn);
+  const [userData, setUserData] = React.useState({});
+
+  React.useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
+
+  if (!userData) {
+    return null;
+  }
+  const user = userData.user ? userData.user : "";
+  const router = useRouter();
+
+  const handleAddProperty = () => {
+    if (userData) {
+      router.push(`/dashboard/seller/post`);
+    } else {
+      router.push("/login");
+    }
+  };
 
   const appBarStyle = {
     backgroundColor: "white",
@@ -53,12 +75,11 @@ function Navbar() {
     textTransform: "capitalize",
     fontWeight: "bold",
     backgroundColor: "rgb(0, 167, 111)",
-    // Adding hover effect
     ":hover": {
       backgroundColor: "rgba(0, 167, 111, 0.1)", // Adjust the opacity or any other properties for the hover effect
       cursor: "pointer",
-      // Change cursor to pointer on hover
     },
+    marginLeft: "10px",
   };
 
   const listStyle = {
@@ -66,11 +87,7 @@ function Navbar() {
   };
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -78,18 +95,8 @@ function Navbar() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
   const handleLogout = () => {
     dispatch(logout());
-  };
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   return (
@@ -113,67 +120,6 @@ function Navbar() {
           >
             BSMS
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="black"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ textTransform: "capitalize" }}
-                >
-                  <Typography textAlign="center">
-                    <Link href={`/${page.toLowerCase()}`}>{page}</Link>
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "hsl(228, 39%, 23%)",
-              textDecoration: "none",
-            }}
-            className="hover:text-veryDarkBlue"
-          >
-            BSMS
-          </Typography>
           <Box
             sx={{
               flexGrow: 1,
@@ -184,7 +130,6 @@ function Navbar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
                 sx={{
                   color: "black",
                   display: "block",
@@ -192,8 +137,11 @@ function Navbar() {
                   fontWeight: "bold",
                   fontSize: "15px",
                   textAlign: "center",
+                  "&:hover": {
+                    color: "white",
+                    backgroundColor: "rgb(0, 167, 111)",
+                  },
                 }}
-                className="hover:text-white hover:bg-green"
               >
                 <Link href={`/${page.toLowerCase()}`}>{page}</Link>
               </Button>
@@ -201,62 +149,84 @@ function Navbar() {
             <Button
               variant="contained"
               style={addBtnStyle}
-              className="bg-green text-center ml-5  hover:text-white"
+              className="bg-green text-center ml-10  hover:text-white"
+              onClick={handleAddProperty}
             >
-              <Link
-                href="/add-listing"
-                className="flex items-center"
-                style={{ textDecoration: "none" }}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5" // Note: Use camelCase for attribute names in JSX
+                stroke="currentColor"
+                className="w-6 h-6 ml-1 text-white mr-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5" // Note: Use camelCase for attribute names in JSX
-                  stroke="currentColor"
-                  className="w-6 h-6 ml-1 text-white mr-2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-                <span className="text-white font-bold inline-flex items-center capitalize">
-                  Add Property
-                </span>
-              </Link>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+              <span className="text-white font-bold inline-flex items-center capitalize">
+                Add Property
+              </span>
             </Button>
           </Box>
-          {!isLoggedIn && (
-            <Box sx={{ flexGrow: 0 }}>
-              <Button
-                variant="outlined"
-                style={btnStyle}
-                className=" text-center  hover:bg-green "
-              >
-                <Link href="/login">
-                  <span className=" text-black font-bold hover:text-white">
-                    Log In
+
+          <Box sx={{ flexGrow: 0 }}>
+            {user ? (
+              <div className="flex flex-row mt-4">
+                <div className="mt-2 flex flex-row">
+                  <Link href="/dashboard/seller">
+                    <Link href="/dashboard/seller">
+                      <span className=" text-green font-bold  mr-4">
+                        Dashboard
+                      </span>
+                    </Link>
+                  </Link>
+                  <span className="block">
+                    <span className="block text-sm font-medium text-black">
+                      {`${user.FirstName} ${user.LastName}`}
+                    </span>
+                    <span className="block text-xs">{user.Role}</span>
                   </span>
-                </Link>
-              </Button>
-              <Button
-                variant="outlined"
-                style={signUpBtnStyle}
-                className=" text-center hover:text-white"
-              >
-                <Link href="/register">
-                  <span className=" text-black font-bold hover:text-white">
-                    Sign Up
-                  </span>
-                </Link>
-              </Button>
-            </Box>
-          )}
+                </div>
+                <div className="rounded-full overflow-hidden h-12 w-12 pb-1">
+                  <Image
+                    src={user.imageUrls[0]}
+                    alt="Profile Picture"
+                    height={70}
+                    width={70}
+                    className="rounded-full ml-1"
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <Button variant="outlined" style={btnStyle}>
+                  <Link href="/login">
+                    <span className=" text-black font-bold hover:text-black">
+                      Log In
+                    </span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="outlined"
+                  style={signUpBtnStyle}
+                  className=" text-center hover:text-white"
+                >
+                  <Link href="/register">
+                    <span className=" text-black font-bold hover:text-white">
+                      Sign Up
+                    </span>
+                  </Link>
+                </Button>
+              </>
+            )}
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
+
 export default Navbar;

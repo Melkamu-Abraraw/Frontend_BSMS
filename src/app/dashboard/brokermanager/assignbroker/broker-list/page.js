@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 function DataTable() {
   const property = useSelector((state) => state.setPropertyInfo.value);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
   const [broker, setBroker] = React.useState([]);
 
   const showToastMessage = (message, type) => {
@@ -29,11 +28,7 @@ function DataTable() {
       try {
         const response = await fetch(`http://localhost:3001/api/User/broker`, {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${persistedState.token}`,
-          },
         });
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -55,7 +50,7 @@ function DataTable() {
       field: "no",
       headerName: "No",
       width: 70,
-      renderHeader: (params) => <strong className=" text-lg">{"No "}</strong>,
+      renderHeader: (params) => <strong className=" text-md">{"No "}</strong>,
     },
     {
       field: "firstName",
@@ -91,7 +86,10 @@ function DataTable() {
 
       renderCell: (params) => (
         <div>
-          <Button className="ml-2" onClick={() => handleAssign(params.row)}>
+          <Button
+            className="ml-2 bg-green hover:bg-green/90"
+            onClick={() => handleAssign(params.row)}
+          >
             Assign
           </Button>
         </div>

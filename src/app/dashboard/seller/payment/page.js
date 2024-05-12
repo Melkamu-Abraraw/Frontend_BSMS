@@ -1,51 +1,201 @@
 "use client";
+import * as yup from "yup";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ToastContainer, toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import React from "react";
 
 const Payement = () => {
-  const transferMoney = () => {
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer CHASECK-xxxxxxxxxxxxxxxx");
-    myHeaders.append("Content-Type", "application/json");
+  const [pendingPayment, setPendingPayment] = React.useState(false);
+  const [doc, setDoc] = React.useState(null);
+  const [userData, setUserData] = React.useState({});
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+  const schema = yup.object().shape({
+    Name: yup.string().required("Account Owner Name is required"),
+    Number: yup
+      .number()
+      .typeError("Account Number required and must be a number")
+      .required("Account Number")
+      .test(
+        "is-positive",
+        "Account Number must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+  });
 
-    var raw = JSON.stringify({
-      account_name: "Israel Goytom",
-      account_number: "32423423",
-      amount: "1",
-      currency: "ETB",
-      reference: "3241342142sfdd",
-      bank_code: "fe087651-4910-43af-b666-bbd393d8e81f",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const showToastMessage = (msg) => {
+    toast.success(msg, {
+      position: "top-right",
     });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
-    fetch("https://api.chapa.co/v1/transfers", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
   };
+
+  const router = useRouter();
+  const onSubmit = async (formData) => {
+    formData.Price = doc.price - doc.price * (2 / 100);
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/payment/transfer`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      if (data.success) {
+        showToastMessage(data.message);
+        setTimeout(() => {
+          router.push("/dashboard/seller");
+        }, 1500);
+      }
+      console.log("Success:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
+
+  const userToken = userData.user ? userData.token : "";
+  React.useEffect(() => {
+    if (userToken) {
+      const fetchDocs = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/docs/getDocs`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+          setDoc(data.data[0]);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+      fetchDocs();
+    }
+  }, [userToken]);
+
   return (
     <>
-      <div className="container flex flex-row items-end gap-2">
-        <p className="text-green text-2xl font-semibold">Balance : </p>
-        <p className="text-veryDarkBlue text-2xl">1,000,000 ETB</p>
-      </div>
-      <div className="container mt-4">
-        <Link href="/dashboard/seller/payment/info">
-          <Button
-            className="bg-green hover:bg-green/65 "
-            onClick={transferMoney}
-          >
-            Withdraw
-          </Button>
-        </Link>
-      </div>
+      {doc && doc.paymentWithdraw === "Not Done" && (
+        <>
+          <div className="mx-auto my-auto mb-3" style={{ width: "45%" }}>
+            <div className="container flex flex-row items-end gap-2">
+              <p className="text-green text-2xl font-semibold">Balance : </p>
+              <p className="text-veryDarkBlue text-2xl">{`${(
+                doc.price -
+                doc.price * (2 / 100)
+              ).toLocaleString()}`}</p>
+            </div>
+            <form
+              className="grid grid-cols-1 gap-3 p-6 bg-white shadow-lg rounded-lg"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className="grid grid-cols-1 gap-6">
+                <div className="w-full">
+                  <div className="mb-2">
+                    <Label htmlFor="email" className="font-bold">
+                      Account Owner Full Name:
+                    </Label>
+                  </div>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Full Name"
+                    {...register("Name")}
+                  />
+                  <p className="p-1 text-red-600 text-sm">
+                    {errors.Name?.message}
+                  </p>
+                </div>
+                <div className="w-full">
+                  <div className="mb-2">
+                    <Label htmlFor="email" className="font-bold">
+                      Account Number:
+                    </Label>
+                  </div>
+                  <Input
+                    type="text"
+                    id="account"
+                    name="account"
+                    placeholder="Account Number"
+                    {...register("Number")}
+                  />
+                  <p className="p-1 text-red-600 text-sm">
+                    {errors.Number?.message}
+                  </p>
+                  <div className="mb-2 mt-2">
+                    <Label htmlFor="Area" className="font-bold mb-1">
+                      Amount :
+                    </Label>
+                    <Input
+                      type="number"
+                      id="Area"
+                      value={doc.price - doc.price * (2 / 100).toLocaleString()}
+                      disabled
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="container mt-4">
+                <Button className="bg-green hover:bg-green/65 ">
+                  Withdraw
+                </Button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+      {!doc && (
+        <>
+          <div className="flex justify-center mt-6">
+            <p className=" text-1xl font-bold">
+              No Payment Available To Process Transaction
+            </p>
+          </div>
+        </>
+      )}
+      {doc && doc.paymentWithdraw === "Done" && (
+        <>
+          <div className="flex justify-center mt-6">
+            <p className=" text-1xl font-bold">
+              No Payment Available To Process Transaction
+            </p>
+          </div>
+        </>
+      )}
+      <ToastContainer />
     </>
   );
 };

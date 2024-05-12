@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as React from "react";
 import {
   Carousel,
@@ -92,9 +92,7 @@ function Trending() {
 
   return (
     <section className="text-center " style={{ width: "95%" }}>
-      <h4 className="text-black text-3xl mt-10 font-light">
-        Featured Listings
-      </h4>
+      <h4 className="text-black text-3xl mt-10 font-light">Latest Listings</h4>
       <Carousel
         className="ml-16"
         plugins={[plugin.current]}

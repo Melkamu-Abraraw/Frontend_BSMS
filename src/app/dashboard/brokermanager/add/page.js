@@ -1,55 +1,344 @@
 "use client";
+import * as yup from "yup";
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Map from "@/components/Maps/Map";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: value,
-  }));
-};
-
-const handleImageChange = (e) => {
-  const files = Array.from(e.target.files);
-  const images = files.map((file) => URL.createObjectURL(file));
-  setFormData((prevData) => ({
-    ...prevData,
-    images: [...prevData.images, ...images],
-  }));
-};
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-  // Send formData to backend or perform any other necessary action
-  console.log(formData);
-};
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
+import { setAmount } from "@/redux/features/auth-slice";
+import Link from "next/link";
 
 function Homepage() {
-  const [propertyType, setPropertyType] = useState("");
+  const [propertyType, setPropertyType] = useState("House");
+  const [ContractType, setContractTypee] = useState("sale");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [location, setLocation] = useState(null);
+  const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
+  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [pdfError, setPdfError] = useState(false); // State to track PDF selection
+  const [imageError, setImageError] = useState(false); // State to track PDF selection
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const Houseschema = yup.object().shape({
+    title: yup
+      .string()
+      .required("Title is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    description: yup
+      .string()
+      .required("Description is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    ContractType: yup.string().required("Contract Type is required"),
+    propertyType: yup.string().required("Property Type is required"),
+    Color: yup.string().required("Color is required"),
+    Currency: yup.string().required("Currency is required"),
+    City: yup.string().required("City is required"),
+    Brand: yup.string().required("Brand is required"),
+    FuelType: yup.string().required("Fuel Type is required"),
+    BodyType: yup.string().required("Body Type is required"),
+    PriceCategory: yup.string().required("Price Category is required"),
+    // PricePrefix: yup.string().required("Price Prefix is required"),
+    Mileage: yup
+      .number()
+      .typeError("Mileage required and must be a number")
+      .required("Mileage is required")
+      .test(
+        "is-positive",
+        "Mileage must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Year: yup
+      .number()
+      .typeError("Year required and must be a number")
+      .required("Year is required")
+      .test(
+        "is-positive",
+        "Year must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+  });
+
+  const vehicleSchema = yup.object().shape({
+    title: yup
+      .string()
+      .required("Title is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    description: yup
+      .string()
+      .required("Description is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    ContractType: yup.string().required("Contract Type is required"),
+    propertyType: yup.string().required("Contract Type is required"),
+    Currency: yup.string().required("Currency is required"),
+    City: yup.string().required("City is required"),
+    Bedrooms: yup
+      .number()
+      .typeError("Bedrooms required and must be a number")
+      .required("Bedrooms is required")
+      .test(
+        "is-positive",
+        "Bedrooms must be a positive number",
+        (value) => parseFloat(value) >= 0
+      ),
+    PriceCategory: yup.string().required("Price Category is required"),
+    Bathrooms: yup
+      .number()
+      .typeError("Bathrooms required and must be a number")
+      .required("Bathrooms is required")
+      .test(
+        "is-positive",
+        "Bathrooms must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Area: yup
+      .number()
+      .typeError("Area required and must be a number")
+      .required("Area is required")
+      .test(
+        "is-positive",
+        "Area must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    AreaPrefix: yup.string(),
+  });
+
+  const landSchema = yup.object().shape({
+    title: yup
+      .string()
+      .required("Title is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Title must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    description: yup
+      .string()
+      .required("Description is required")
+      .matches(
+        /^(?=.*[a-zA-Z])[a-zA-Z0-9]+(?:[ _-][a-zA-Z0-9]+)*$/,
+        "Description must contain at least one letter and may include numbers, spaces, underscores, or hyphens"
+      ),
+    ContractType: yup.string().required("Contract Type is required"),
+    propertyType: yup.string().required("Contract Type is required"),
+    Currency: yup.string().required("Currency is required"),
+    City: yup.string().required("City is required"),
+    PriceCategory: yup.string().required("Price Category is required"),
+    Price: yup
+      .number()
+      .typeError("Price required and must be a number")
+      .required("Price is required")
+      .test(
+        "is-positive",
+        "Price must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    Area: yup
+      .number()
+      .typeError("Area required and must be a number")
+      .required("Area is required")
+      .test(
+        "is-positive",
+        "Area must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
+    AreaPrefix: yup.string(),
+  });
+
+  const schema = (propertyType) => {
+    if (propertyType === "House") {
+      return vehicleSchema;
+    } else if (propertyType === "Vehicle") {
+      return Houseschema;
+    } else return landSchema;
+  };
+
+  const selectedSchema = schema(propertyType);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(selectedSchema),
+  });
 
   const [formData, setFormData] = useState({
-    propertyType: "",
-    location: "",
-    price: "",
+    title: "",
     description: "",
-    images: [],
+    PropretyType: "",
+    Brand: "",
+    Model: "",
+    Transmission: "",
+    BodyType: "",
+    FuelType: "",
+    Mileage: "",
+    ContractType: "",
+    Year: 1,
+    Color: "",
+    Currency: "",
+    City: "",
+    PriceCategory: "",
+    Price: "",
+    PricePrefix: "",
+    Bedrooms: "",
+    Bathrooms: "",
+    Area: "",
+    AreaPrefix: "",
   });
+
+  const handleLocationChange = ({ lat, lng }) => {
+    setLocation({ lat, lng });
+    console.log({ lat, lng });
+  };
+
+  const showToastMessage = (message, type) => {
+    console.log(message);
+    toast.success(message, {
+      position: "top-right",
+    });
+  };
+  const showToastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+    });
+  };
+
+  function calculateListingFee(propertyType, ContractType) {
+    const pricingStructure = {
+      House: {
+        sale: 500,
+        rent: 300,
+      },
+      Vehicle: {
+        sale: 300,
+        rent: 200,
+      },
+      Land: {
+        sale: 1000,
+        rent: 500,
+      },
+    };
+
+    const fee = pricingStructure[propertyType][ContractType];
+    dispatch(setAmount(fee));
+    router.push("/checkout");
+  }
+
+  const Payment = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/payment/pay`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      router.push(res.data.data.checkout_url);
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = async (formData) => {
+    if (pdfs.length === 0) {
+      setPdfError(true);
+      if (images.length === 0) {
+        setImageError(true);
+      }
+    }
+    if (images.length === 0) {
+      setImageError(true);
+      return;
+    }
+
+    const formDataToSend = new FormData();
+
+    // Append each key-value pair from original formData
+    for (const key in formData) {
+      if (formData.hasOwnProperty(key)) {
+        formDataToSend.append(key, formData[key]);
+      }
+    }
+    // Assuming images is an array of File objects representing images
+
+    images.forEach((image, index) => {
+      formDataToSend.append("images[]", image);
+    });
+    formDataToSend.append("documents[]", pdfs[0]);
+    const locationString = JSON.stringify(location);
+    formDataToSend.append("Location", locationString);
+
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/${propertyType}/upload`,
+        {
+          method: "POST",
+          body: formDataToSend,
+          headers: {
+            Authorization: `Bearer ${persistedState.token}`, // Assuming your token is named `token`
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        showToastMessage(data.message);
+        setTimeout(() => {
+          router.push("/dashboard/seller/properties"); // Redirect to login page after a delay
+        }, 1000); // Adjust the delay time as needed
+      }
+      console.log("Success:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   const colors = [
     { name: "Red", value: "#FF0000" },
     { name: "Green", value: "#00FF00" },
@@ -59,28 +348,23 @@ function Homepage() {
     { name: "Black", value: "#000" },
     { name: "White", value: "#FFF" },
     { name: "Mix", value: "    #4F1396" },
-    // Add more colors as needed
   ];
   const handlePdfChange = (event) => {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
+    setPdfError(false);
   };
-
   const handleRemovePdf = (indexToRemove) => {
     setPdfs((prevPdfs) =>
       prevPdfs.filter((_, index) => index !== indexToRemove)
     );
   };
-
-  // State to store the selected color
-  const [selectedColor, setSelectedColor] = useState("");
-  const [images, setImages] = useState([]);
-
   const handleImageChange = (event) => {
     const selectedImages = Array.from(event.target.files);
     setImages((prevImages) => [...prevImages, ...selectedImages]);
+    setImageError(false);
   };
-  // Event handler for when a color is selected
+
   const handleColorChange = (e) => {
     setSelectedColor(e.target.value);
   };
@@ -89,27 +373,37 @@ function Homepage() {
       prevImages.filter((_, index) => index !== indexToRemove)
     );
   };
-  const handlePropertyTypeChange = (e) => {
-    console.log(e.target);
-    console.log(propertyType);
+  const handlePropertyTypeChange = (value) => {
+    setPropertyType(value);
+  };
+  const handleContractTypeChange = (value) => {
+    setContractTypee(value);
   };
   return (
     <>
       <form
-        onSubmit={handleSubmit}
-        className="w-full bg-white shadow-2xl rounded-lg px-8  "
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full bg-white shadow-2xl rounded-lg px-8  mb-4"
       >
         <div className="mb-2">
-          <Label htmlFor="title" className="font-bold">
+          <Label htmlFor="title" className="font-bold ">
             Property Title :
           </Label>
-          <Input type="text" id="title" placeholder="Title" className="mt-3" />
+          <Input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Title"
+            {...register("title")}
+            className="mt-2"
+          />
+          <p className="p-1 text-red-600 text-sm">{errors.title?.message}</p>
         </div>
         <div className="mb-2">
           <Label htmlFor="location" className="font-bold">
             Property Location :
           </Label>
-          <Map height="300px" width="100%" />
+          <Map height="350px" width="100%" onClick={handleLocationChange} />
         </div>
         <div className="mb-3">
           <Label htmlFor="location" className="font-bold">
@@ -118,7 +412,11 @@ function Homepage() {
           <Textarea
             placeholder="Type your property Description here."
             className="mt-3"
+            {...register("description")}
           />
+          <p className="p-1 text-red-600 text-sm">
+            {errors.description?.message}
+          </p>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-3">
           <div>
@@ -127,21 +425,21 @@ function Homepage() {
                 Proprety Type :
               </Label>
             </div>
-            <Select id="propertyType" onValueChange={(e) => setPropertyType(e)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="House">House</SelectItem>
-                  <SelectItem value="Vehicle">Vehicle</SelectItem>
-                  <SelectItem value="Land">Land</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register("propertyType")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              onChange={(e) => handlePropertyTypeChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="House">House</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Land">Land</option>
+            </select>
+            <p className="p-1 text-red-600 text-sm">
+              {errors.propertyType?.message}
+            </p>
           </div>
           {propertyType === "House" && (
             <div>
@@ -150,26 +448,23 @@ function Homepage() {
                   Property Category :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Villa">Villa</SelectItem>
-                    <SelectItem value="Condominium">Condominium</SelectItem>
-                    <SelectItem value="Apartment">Apartment</SelectItem>
-                    <SelectItem value="Office">Office</SelectItem>
-                    <SelectItem value="Single Familiy">
-                      Single Familiy
-                    </SelectItem>
-                    <SelectItem value="G+">G+</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+                {...register("PropertyCategory")}
+                className="block appearance-none w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Villa">Villa</option>
+                <option value="Condominium">Condominium</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Office">Office</option>
+                <option value="Studio">Studio</option>
+                <option value="Single Familiy">Single Familiy</option>
+              </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.PropertyCategory?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -179,32 +474,25 @@ function Homepage() {
                   Brand :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Toyota">Toyota</SelectItem>
-                    <SelectItem value="Suzuki">Suzuki</SelectItem>
-                    <SelectItem value="Sinotruck">Sinotruck</SelectItem>
-                    <SelectItem value="Scania">Scania</SelectItem>
-                    <SelectItem value="Renault">Renault</SelectItem>
-                    <SelectItem value="Jetour">Jetour</SelectItem>
-                    <SelectItem value="Nissan">Nissan</SelectItem>
-                    <SelectItem value="Scannia">Scannia</SelectItem>
-                    <SelectItem value="Lifan">Lifan</SelectItem>
-                    <SelectItem value="Mercedes">Mercedes</SelectItem>
-                    <SelectItem value="Isuzu">Isuzu</SelectItem>
-                    <SelectItem value="Hundai">Hundai</SelectItem>
-                    <SelectItem value="Chevrolet">Chevrolet</SelectItem>
-                    <SelectItem value="Ford">Ford</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+                {...register("Brand")}
+                className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Toyota">Toyota</option>
+                <option value="Suzuki">Suzuki</option>
+                <option value="Scania">Scania</option>
+                <option value="Renault">Renault</option>
+                <option value="Jetour">Jetour</option>
+                <option value="Scania">Scannia</option>
+                <option value="Lifan">Lifan</option>
+                <option value="Chevrolet">Chevrolet</option>
+              </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Brand?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -214,27 +502,24 @@ function Homepage() {
                   Model :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Corolla">Corolla</SelectItem>
-                    <SelectItem value="Yaris">Yaris</SelectItem>
-                    <SelectItem value="Hilux">Hilux</SelectItem>
-                    <SelectItem value="Platz">Platz</SelectItem>
-                    <SelectItem value="Rava4">Rava4</SelectItem>
-                    <SelectItem value="Tacomma">Tacomma</SelectItem>
-                    <SelectItem value="Vitz">Vitz</SelectItem>
-                    <SelectItem value="Highlander">Highlander</SelectItem>
-                    <SelectItem value="Carina">Carina</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+                {...register("Model")}
+                className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Corolla">Corolla</option>
+                <option value="Yaris">Yaris</option>
+                <option value="Hilux">Hilux</option>
+                <option value="Platz">Platz</option>
+                <option value="Rava4">Rava4</option>
+                <option value="Vitz">Vitz</option>
+                <option value="Highlander">Highlander</option>
+              </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Model?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -244,21 +529,20 @@ function Homepage() {
                   Transmission :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Manual">Manual</SelectItem>
-                    <SelectItem value="Automatic">Automatic</SelectItem>
-                    <SelectItem value="Both">Both</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+
+              <select
+                {...register("Transmission")}
+                className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Manual">Manual</option>
+                <option value="Automatic">Automatic</option>
+              </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Transmission?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -268,24 +552,23 @@ function Homepage() {
                   Body Type :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Sedan">Sedan</SelectItem>
-                    <SelectItem value="Truck">Truck</SelectItem>
-                    <SelectItem value="Compact">Compact</SelectItem>
-                    <SelectItem value="Minibus">Minibus</SelectItem>
-                    <SelectItem value="SUV">SUV</SelectItem>
-                    <SelectItem value="Pickup">Pickup</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+                {...register("BodyType")}
+                className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Sedan">Sedan</option>
+                <option value="Truck">Truck</option>
+                <option value="Compact">Compact</option>
+                <option value="Minibus">Minibus</option>
+                <option value="SUV">SUV</option>
+                <option value="Pickup">Pickup</option>
+              </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.BodyType?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -295,54 +578,21 @@ function Homepage() {
                   Fuel Type :
                 </Label>
               </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="Benzine">Benzine</SelectItem>
-                    <SelectItem value="Diesel">Diesel</SelectItem>
-                    <SelectItem value="Hybrid">Hybrid</SelectItem>
-                    <SelectItem value="Electric">Electric</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          {propertyType === "Vehicle" && (
-            <div>
-              <div className="mb-4">
-                <Label htmlFor="type" className="font-bold">
-                  Engine Size :
-                </Label>
-              </div>
-              <Select id="propertyType">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue
-                    placeholder="Select an Option"
-                    className="font-bold"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="0,8">0,8</SelectItem>
-                    <SelectItem value="0,9">0,9</SelectItem>
-                    <SelectItem value="1,0">1,0</SelectItem>
-                    <SelectItem value="1,2">1,2</SelectItem>
-                    <SelectItem value="1,3">1,3</SelectItem>
-                    <SelectItem value="1,4">1,4</SelectItem>
-                    <SelectItem value="1,5">1,5</SelectItem>
-                    <SelectItem value="1,6">1,6</SelectItem>
-                    <SelectItem value="1,7">1,7</SelectItem>
-                    <SelectItem value="1,8">1,8</SelectItem>
-                    <SelectItem value="1,9">1,9</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+                {...register("FuelType")}
+                className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option value="" disabled>
+                  Select option
+                </option>
+                <option value="Benzine">Benzine</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Electric">Electric</option>
+              </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.FuelType?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
@@ -355,12 +605,16 @@ function Homepage() {
                 id="mileage"
                 placeholder="Mileage"
                 className="mt-3 w-44"
+                {...register("Mileage")}
               />
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Mileage?.message}
+              </p>
             </div>
           )}
           {propertyType === "Vehicle" && (
             <div className="mb-2">
-              <Label htmlFor="title" className="font-bold">
+              <Label htmlFor="year" className="font-bold">
                 Year :
               </Label>
               <Input
@@ -368,21 +622,22 @@ function Homepage() {
                 id="year"
                 placeholder="Year"
                 className="mt-3 w-44"
+                {...register("Year")}
               />
+              <p className="p-1 text-red-600 text-sm">{errors.Year?.message}</p>
             </div>
           )}
           {propertyType === "Vehicle" && (
             <div>
-              <Label htmlFor="title" className="font-bold">
-                Color :
+              <Label htmlFor="Color" className="font-bold">
+                Color
               </Label>
               <select
-                value={selectedColor}
-                onChange={handleColorChange}
                 className="block w-44 py-2 px-3 border focus:border-black rounded-md shadow-sm"
                 style={{
                   backgroundColor: "transparent", // Remove green background on hover
                 }}
+                {...register("Color")}
               >
                 <option value="">Select an Option</option>
                 {colors.map((color) => (
@@ -411,73 +666,72 @@ function Homepage() {
                   </option>
                 ))}
               </select>
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Color?.message}
+              </p>
             </div>
           )}
 
           <div>
             <div className="mb-4">
-              <Label htmlFor="type" className="font-bold">
+              <Label htmlFor="ContractType" className="font-bold">
                 Contract Type :
               </Label>
             </div>
-            <Select className="mt-4">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="For Sale">For Sale</SelectItem>
-                  <SelectItem value="For Rent">For Rent</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register("ContractType")}
+              onChange={(e) => handleContractTypeChange(e.target.value)}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="For Sale">For Sale</option>
+              <option value="For Rent">For Rent</option>
+            </select>
+            <p className="p-1 text-red-600 text-sm">
+              {errors.ContractType?.message}
+            </p>
           </div>
           <div>
             <div className="mb-4">
-              <Label htmlFor="type" className="font-bold">
+              <Label htmlFor="Currency" className="font-bold">
                 Currency :
               </Label>
             </div>
-            <Select className="mt-6">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="ETB">ETB</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register("Currency")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="USD">USD</option>
+              <option value="ETB">ETB</option>
+            </select>
+            <p className="p-1 text-red-600 text-sm">
+              {errors.Currency?.message}
+            </p>
           </div>
           <div>
             <div className="mb-4">
-              <Label htmlFor="type" className="font-bold">
+              <Label htmlFor="City" className="font-bold">
                 City :
               </Label>
             </div>
-            <Select className="mt-4">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Addis Abeba">Addis Abeba</SelectItem>
-                  <SelectItem value="Adama">Adama</SelectItem>
-                  <SelectItem value="Jimma">Jimma</SelectItem>
-                  <SelectItem value="Ambo">Ambo</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              {...register("City")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Addis Abeba">Addis Abeba</option>
+              <option value="Adama">Adama</option>
+              <option value="Jimma">Jimma</option>
+              <option value="Ambo">Ambo</option>
+            </select>
+            <p className="p-1 text-red-600 text-sm">{errors.City?.message}</p>
           </div>
           <div>
             <div className="mb-4">
@@ -485,21 +739,21 @@ function Homepage() {
                 Price Category :
               </Label>
             </div>
-            <Select className="mt-4">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Select an Option"
-                  className="font-bold"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Negotiable">Negotiable</SelectItem>
-                  <SelectItem value="Adama">Slightliy Negotiable</SelectItem>
-                  <SelectItem value="Jimma">Fixed</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+
+            <select
+              {...register("PriceCategory")}
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Negotiable">Negotiable</option>
+              <option value="Adama">Slightliy Negotiable</option>
+              <option value="Jimma">Fixed</option>
+            </select>
+            <p className="p-1 text-red-600 text-sm">
+              {errors.PriceCategory?.message}
+            </p>
           </div>
           <div className="mb-2">
             <Label htmlFor="title" className="font-bold">
@@ -510,20 +764,27 @@ function Homepage() {
               id="title"
               placeholder="Price"
               className="mt-3 w-44"
+              {...register("Price")}
             />
+            <p className="p-1 text-red-600 text-sm">{errors.Price?.message}</p>
           </div>
 
-          <div className="mb-2">
+          {/* <div className="mb-2">
             <Label htmlFor="title" className="font-bold">
               Price Prefix :
             </Label>
             <Input
               type="text"
               id="title"
-              placeholder="Price"
+              placeholder="Price Prefix"
               className="mt-3 w-44"
+              {...register("PricePrefix")}
+              
             />
-          </div>
+            <p className="p-1 text-red-600 text-sm">
+                {errors.PricePrefix?.message}
+              </p> 
+          </div> */}
           {propertyType === "House" && (
             <div className="mb-2">
               <Label htmlFor="title" className="font-bold">
@@ -532,9 +793,13 @@ function Homepage() {
               <Input
                 type="number"
                 id="title"
-                placeholder="Price"
+                placeholder="Bedrooms"
                 className="mt-3 w-44"
+                {...register("Bedrooms")}
               />
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Bedrooms?.message}
+              </p>
             </div>
           )}
           {propertyType === "House" && (
@@ -545,39 +810,31 @@ function Homepage() {
               <Input
                 type="number"
                 id="title"
-                placeholder="Price"
+                placeholder="Bathrooms"
                 className="mt-3 w-44"
+                {...register("Bathrooms")}
               />
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Bathrooms?.message}
+              </p>
             </div>
           )}
-          {propertyType === "House" && (
+          {(propertyType === "House" || propertyType === "Land") && (
             <div className="mb-2">
-              <Label htmlFor="title" className="font-bold">
-                Year Built :
+              <Label htmlFor="Area" className="font-bold">
+                Area :
               </Label>
               <Input
                 type="number"
-                id="title"
-                placeholder="Price"
+                id="Area"
+                placeholder="Area in sq/metre"
                 className="mt-3 w-44"
+                {...register("Area")}
               />
+              <p className="p-1 text-red-600 text-sm">{errors.Area?.message}</p>
             </div>
           )}
-          {propertyType === "House" ||
-            (propertyType === "Land" && (
-              <div className="mb-2">
-                <Label htmlFor="title" className="font-bold">
-                  Area :
-                </Label>
-                <Input
-                  type="number"
-                  id="title"
-                  placeholder="Price"
-                  className="mt-3 w-44"
-                />
-              </div>
-            ))}
-          {propertyType === "House" ||
+          {/* {propertyType === "House" ||
             (propertyType === "Land" && (
               <div className="mb-2">
                 <Label htmlFor="title" className="font-bold">
@@ -586,11 +843,15 @@ function Homepage() {
                 <Input
                   type="text"
                   id="title"
-                  placeholder="Price"
+                  placeholder="Area Prefix"
                   className="mt-3 w-44"
+                  {...register(" AreaPrefix")}
                 />
+                <p className="p-1 text-red-600 text-sm">
+                {errors.AreaPrefix?.message}
+              </p> 
               </div>
-            ))}
+            ))} */}
         </div>
         <div>
           <label htmlFor="title" className="font-bold">
@@ -647,63 +908,13 @@ function Homepage() {
               ))}
             </div>
           </div>
+          {imageError && (
+            <p className="text-red-500 mt-2">
+              Please select at least one Image file
+            </p>
+          )}
         </div>
-        <div className="mt-4">
-          <label htmlFor="title" className="font-bold">
-            Personal ID :
-          </label>
-          <div className="w-full rounded-lg border border-gray-300 p-4">
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            <label
-              htmlFor="image-upload"
-              className="custom-file-upload block  mx-auto text-center  text-black rounded-lg p-2 cursor-pointer mt-4"
-            >
-              Click to Select files
-            </label>
-            <label
-              htmlFor="image-upload"
-              className="custom-file-upload block w-36 mx-auto text-center bg-green text-white rounded-lg p-2 cursor-pointer mt-1"
-            >
-              Browse files
-            </label>
-            <div className="flex flex-wrap">
-              {images.map((image, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <img
-                    src={URL.createObjectURL(image)}
-                    alt={`Image ${index}`}
-                    style={{ maxWidth: "200px", margin: "10px" }}
-                  />
-                  <button
-                    aria-label="delete"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-0 right-0 text-red-500 bg-transparent border-none cursor-pointer mb-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M15.293 4.293a1 1 0 0 1 1.414 1.414L11.414 12l5.293 5.293a1 1 0 1 1-1.414 1.414L10 13.414l-5.293 5.293a1 1 0 1 1-1.414-1.414L8.586 12 3.293 6.707a1 1 0 0 1 1.414-1.414L10 10.586l5.293-5.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+
         <div className="mt-4">
           <label htmlFor="title" className="font-bold">
             Property Ownership Documents :
@@ -758,12 +969,18 @@ function Homepage() {
                 </div>
               ))}
             </div>
+            {pdfError && (
+              <p className="text-red-500 mt-2">
+                Please select at least one PDF file
+              </p>
+            )}
           </div>
           <Button className="bg-green  mb-3 mt-4 px-6 hover:bg-green/90">
             Submit
           </Button>
         </div>
       </form>
+      <ToastContainer />
     </>
   );
 }

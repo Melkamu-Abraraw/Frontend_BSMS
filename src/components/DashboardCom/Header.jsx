@@ -9,6 +9,15 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Cloud,
   CreditCard,
   Github,
@@ -24,15 +33,6 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const ShadowedIconButton = ({ children }) => (
   <IconButton
@@ -53,15 +53,21 @@ const ShadowedIconButton = ({ children }) => (
 
 const Header = () => {
   const user = useSelector((state) => state.auth.value);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = React.useState({});
   const router = useRouter();
-  console.log(persistedState);
+
+  React.useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
 
   const handleLogout = async () => {
-    localStorage.removeItem("user"); // Remove persisted state data
-    // Wait for the redirection to complete
+    localStorage.removeItem("user");
     router.push("/login");
   };
+
+  // Check if userData.user is defined before accessing its properties
+  const userRole = userData.user ? userData.user.Role : "";
 
   return (
     <div className="flex flex-row justify-between px-12 pt-6">
@@ -78,22 +84,28 @@ const Header = () => {
             <SearchIcon />
           </IconButton>
         </Box>
+        {userRole === "User" && (
+          <Link href="/home">
+            <p className="text-green font-semibold ml-2">Home</p>
+          </Link>
+        )}
       </div>
       <Box display="flex" alignItems="center">
-        {/* ICONS */}
         <ShadowedIconButton>
           <NotificationsOutlinedIcon className="mb-1" />
         </ShadowedIconButton>
         <span className="block">
           <span className="block text-sm font-medium text-black">
-            {`${persistedState.user.FirstName} ${persistedState.user.LastName}`}
+            {`${userData.user ? userData.user.FirstName : ""} ${
+              userData.user ? userData.user.LastName : ""
+            }`}
           </span>
-          <span className="block text-xs">{persistedState.user.Role}</span>
+          <span className="block text-xs">{userRole}</span>
         </span>
         <div className="ml-2">
           <div className="rounded-full overflow-hidden h-12 w-12">
             <Image
-              src={persistedState.user.imageUrls[0]}
+              src={userData.user ? userData.user.imageUrls[0] : ""}
               alt="Profile Picture"
               height={70}
               width={70}

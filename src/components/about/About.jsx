@@ -1,14 +1,9 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
-import AOS from "aos";
-import "aos/dist/aos.css";
 
+import "./about.css";
 const About = () => {
-  useEffect(() => {
-    AOS.init({}); // Initialize AOS with default options
-  }, []);
-
   return (
     <div className="mt-5">
       <section className="container mt-28">
@@ -19,14 +14,12 @@ const About = () => {
       </section>
       <section className="container mt-4">
         <div className="flex flex-row justify-start mx-auto">
-          <div className="mr-6 ml-10" data-aos="fade-right">
+          <div className="mr-6 ml-10">
             <Image
               src="/../images/work.jpg"
               width={400}
               height={400}
               alt="About Us Image"
-              objectFit="cover"
-              layout="fixed"
             />
           </div>
           <div className="w-1/2 mt-12 ml-12 mr-12">
@@ -49,7 +42,7 @@ const About = () => {
       </section>
       <section className="container mt-4">
         <div className="flex flex-row justify-start mx-auto">
-          <div className="w-1/2 mt-12 ml-6 mr-6" data-aos="fade-right">
+          <div className="w-1/2 mt-12 ml-6 mr-6">
             <p>
               Betdelala is reimagining real estate to make it easier to unlock
               life’s next chapter. We live in an always-on world, and we believe
@@ -59,14 +52,12 @@ const About = () => {
               new home.
             </p>
           </div>
-          <div className="mr-6 ml-10 mb-10" data-aos="fade-left">
+          <div className="mr-6 ml-10 mb-10">
             <Image
               src="/../images/work.jpg"
               width={400}
               height={400}
               alt="About Us Image"
-              objectFit="cover"
-              layout="fixed"
             />
           </div>
         </div>

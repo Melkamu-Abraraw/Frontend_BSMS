@@ -13,15 +13,16 @@ import "react-toastify/dist/ReactToastify.css";
 const Register = () => {
   const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
   const schema = yup.object().shape({
-    Email: yup
-      .string()
-      .required("Email is required")
-      .matches(emailRegex, "Invalid email format"),
-    Password: yup.string().required("Password is required").min(8),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("Password"), null], "Passwords Does Not Match")
-      .required("Confirm Password is required"),
+    Name: yup.string().required("Account Owner Name is required"),
+    Number: yup
+      .number()
+      .typeError("Account Number required and must be a number")
+      .required("Account Number")
+      .test(
+        "is-positive",
+        "Account Number must be a positive number",
+        (value) => parseFloat(value) > 0
+      ),
   });
 
   const {
@@ -33,73 +34,34 @@ const Register = () => {
   });
 
   const router = useRouter();
+  console.log(router.query);
 
-  const showToastMessage = () => {
-    toast.success("Manager is Successfully Registered!", {
+  const showToastMessage = (msg) => {
+    toast.success(msg, {
       position: "top-right",
     });
   };
 
   const onSubmit = async (formData) => {
-    const formDataToSend = new FormData();
-    for (const key in formData) {
-      if (formData.hasOwnProperty(key)) {
-        formDataToSend.append(key, formData[key]);
-      }
-    }
     try {
       const response = await fetch(
-        `http://localhost:3001/api/User/brokerAdminRegister`,
+        `http://localhost:3001/api/payment/transfer`,
         {
           method: "POST",
-          body: formDataToSend,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      if (data.data) {
-        showToastMessage();
-        setTimeout(() => {
-          router.push("/dashboard/manage");
-        }, 3000);
+      if (data.success) {
+        showToastMessage(data.message);
       }
       console.log("Success:", data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const fetchPaymentData = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:3001/api/payment/transfer`,
-        {
-          method: "POST",
-          body: JSON.stringify(persistedState),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const responseData = await response.json();
-      console.log(responseData);
-
-      if (responseData.paymentStatus === "Not Paid") {
-        setPaymentStatus("Not Paid");
-        setRedirectUrl(responseData.url);
-      } else if (responseData.paymentStatus === "Paid") {
-        setPaymentStatus("Paid");
-        const pdfBlob = base64toBlob(responseData.pdfBase64Data);
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        setRedirectUrl(pdfUrl);
-      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -124,7 +86,9 @@ const Register = () => {
                 id="name"
                 name="name"
                 placeholder="Full Name"
+                {...register("Name")}
               />
+              <p className="p-1 text-red-600 text-sm">{errors.Name?.message}</p>
             </div>
             <div className="w-full">
               <div className="mb-2">
@@ -137,58 +101,27 @@ const Register = () => {
                 id="account"
                 name="account"
                 placeholder="Account Number"
+                {...register("Number")}
               />
-            </div>
-            <div className="flex flex-row">
-              <div className="w-full">
-                <div className="mb-2">
-                  <Label htmlFor="email" className="font-bold">
-                    Currency:
-                  </Label>
-                </div>
-                <Input
-                  type="number"
-                  id="currency"
-                  name="currency"
-                  placeholder="Currency"
-                />
-              </div>
-              <div className="w-full ml-2">
-                <div className="mb-2">
-                  <Label htmlFor="email" className="font-bold">
-                    Amount:
-                  </Label>
-                </div>
-                <Input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  placeholder="Amount"
-                />
-              </div>
-            </div>
-
-            <div className="w-full">
+              <p className="p-1 text-red-600 text-sm">
+                {errors.Number?.message}
+              </p>
               <div className="mb-2">
-                <Label htmlFor="email" className="font-bold">
-                  Reference:
+                <Label htmlFor="Area" className="font-bold">
+                  Amount :
                 </Label>
+                <Input
+                  type="number"
+                  id="Area"
+                  value={price}
+                  disabled
+                  className="mt-3 w-44"
+                />
               </div>
-              <Input
-                type="number"
-                id="reference"
-                name="reference"
-                placeholder="Reference"
-              />
             </div>
           </div>
-          <Button
-            type="submit"
-            variant="login"
-            className="w-full"
-            onClick={fetchPaymentData}
-          >
-            Register
+          <Button type="submit" variant="login" className="w-full">
+            Withdraw
           </Button>
         </form>
       </div>

@@ -18,18 +18,13 @@ const coordinates = {
   lat: 9.0238,
   lng: 38.746,
 };
-const locations = [
-  { lat: 9.0238, lng: 38.746 },
-  { lat: 9.0273, lng: 38.736 },
-  { lat: 9.0156, lng: 38.768 },
-  { lat: 9.0294, lng: 38.746 },
-];
-const Map = ({ width, height }) => {
+
+const Map = ({ width, height, properties }) => {
   return (
     <div className="flex justify-center items-center mt-8 mb-5">
       <MapContainer
         center={[coordinates.lat, coordinates.lng]}
-        zoom={13}
+        zoom={5}
         scrollWheelZoom={false}
         style={{ height: height, width: width }}
         className="rounded-md shadow-md"
@@ -38,13 +33,13 @@ const Map = ({ width, height }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {locations.map((location, index) => (
+        {properties.map((property, index) => (
           <Marker
             key={index}
             icon={ICON}
-            position={[location.lat, location.lng]}
+            position={[property.Location.lat, property.Location.lng]}
           >
-            <Popup>Marker {index + 1}</Popup>
+            <Popup>{property.name}</Popup>
           </Marker>
         ))}
       </MapContainer>
