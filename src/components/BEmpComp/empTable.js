@@ -32,7 +32,15 @@ const EmpTable = () => {
     fetchData();
   }, [dispatch]);
 
-  if (isLoading) return <div>Loading Please wait...</div>;
+  if (isLoading)
+    return (
+      <div
+        className="text-center font-bold "
+        style={{ marginTop: "50px", color: "green" }}
+      >
+        Loading Please wait...
+      </div>
+    );
   if (isError) return <div>Error{error}</div>;
 
   const empUpdate = (_id) => {
@@ -63,29 +71,109 @@ const EmpTable = () => {
       field: "EmpAvatar",
       headerName: "E_ID",
       width: 70,
+      renderHeader: (params) => <strong className=" text-md">{"E_ID "}</strong>,
       renderCell: ImageField,
     },
-    { field: "FullName", headerName: "FullName", width: 130 },
-    { field: "Age", headerName: "Age", width: 20 },
-    { field: "Gender", headerName: "Gender", width: 60 },
-    { field: "Phone", headerName: "Phone", width: 100 },
-    { field: "Address", headerName: "Address", width: 100 },
-    { field: "JobType", headerName: "JobType", width: 90 },
-    { field: "Experience", headerName: "Experience", width: 80 },
+    {
+      field: "FullName",
+      headerName: "FullName",
+      width: 120,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"FullName "}</strong>
+      ),
+    },
+    {
+      field: "Age",
+      headerName: "Age",
+      width: 20,
+      renderHeader: (params) => <strong className=" text-md">{"Age "}</strong>,
+    },
+    {
+      field: "Gender",
+      headerName: "Gender",
+      width: 60,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Gender "}</strong>
+      ),
+    },
+    {
+      field: "Phone",
+      headerName: "Phone",
+      width: 100,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Phone "}</strong>
+      ),
+    },
+    {
+      field: "Address",
+      headerName: "Address",
+      width: 100,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Address "}</strong>
+      ),
+    },
+    {
+      field: "JobType",
+      headerName: "JobType",
+      width: 90,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"JobType "}</strong>
+      ),
+    },
+    {
+      field: "Experience",
+      headerName: "Experience",
+      width: 95,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Experience"}</strong>
+      ),
+    },
     {
       field: "RelAvatar",
       headerName: "R_ID",
       width: 70,
+      renderHeader: (params) => <strong className=" text-md">{"R_ID "}</strong>,
       renderCell: ImageField,
     },
-    { field: "RelativeName", headerName: "RelativeName", width: 130 },
-    { field: "RelativePhone", headerName: "RelativePhone", width: 100 },
-    { field: "RelativeAddress", headerName: "RelativeAddress", width: 90 },
-    { field: "Relationship", headerName: "Relationship", width: 90 },
+    {
+      field: "RelativeName",
+      headerName: "RelativeName",
+      width: 120,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"RelativeName "}</strong>
+      ),
+    },
+    {
+      field: "RelativePhone",
+      headerName: "Rel_Phone",
+      width: 100,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Rel_Phone "}</strong>
+      ),
+    },
+    {
+      field: "RelativeAddress",
+      headerName: "Rel_Address",
+      width: 90,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Rel_Address "}</strong>
+      ),
+    },
+    {
+      field: "Relationship",
+      headerName: "Relationship",
+      width: 100,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Relationship "}</strong>
+      ),
+    },
     {
       field: "actions",
       headerName: "Actions",
       width: 90,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Actions "}</strong>
+      ),
       renderCell: empActionButton,
     },
   ];

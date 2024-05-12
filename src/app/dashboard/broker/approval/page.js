@@ -1,11 +1,10 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Button from "@mui/material/Button";
 import { IconButton, Modal, Box, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
-import { MdOutlineAssignmentInd } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import { MdOutlineAppRegistration } from "react-icons/md";
 
@@ -49,14 +48,17 @@ function Homepage() {
   };
   const onApprove = async () => {
     const formDataToSend = new FormData();
-    formDataToSend.append('agreementDocUrl[]', pdfs[0]);
-    formDataToSend.append('Status', "Approved");
+    formDataToSend.append("agreementDocUrl[]", pdfs[0]);
+    formDataToSend.append("Status", "Approved");
 
     try {
-      const response = await fetch(`http://localhost:3001/api/${propType}/approve/${id}`, {
-        method: "PUT",
-        body:formDataToSend,
-      });
+      const response = await fetch(
+        `http://localhost:3001/api/${propType}/approve/${id}`,
+        {
+          method: "PUT",
+          body: formDataToSend,
+        }
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -65,7 +67,6 @@ function Homepage() {
       if (res.success) {
         showToastMessage(res.message);
         showToastMessage();
-       
       } else {
         showToastError(res.message);
       }
@@ -133,18 +134,16 @@ function Homepage() {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
     console.log([pdfs, ...selectedPdfs]); // Log the updated state immediately after setting it
-
   };
   const handleRemovePdf = (indexToRemove) => {
     setPdfs((prevPdfs) =>
       prevPdfs.filter((_, index) => index !== indexToRemove)
     );
-  }; 
+  };
   const handleAssignClick = (property) => {
     setOpen(true);
-    setId(property.id)
-    setPropType(property.propertyType)
-
+    setId(property.id);
+    setPropType(property.propertyType);
   };
   const columns = [
     {
@@ -170,7 +169,9 @@ function Homepage() {
       headerName: "Property Type",
       width: 150,
       headerAlign: "bold-header",
-      renderCell: (params) => <div style={{ marginBottom: 100 }}>{params.value}</div>,
+      renderCell: (params) => (
+        <div style={{ marginBottom: 100 }}>{params.value}</div>
+      ),
     },
     {
       field: "status",
@@ -187,7 +188,9 @@ function Homepage() {
       field: "price",
       headerName: "Price ",
       width: 150,
-      renderCell: (params) => <div style={{ paddingBottom: 100 }}>{params.value}</div>,
+      renderCell: (params) => (
+        <div style={{ paddingBottom: 100 }}>{params.value}</div>
+      ),
     },
     {
       field: "actions",
@@ -202,8 +205,12 @@ function Homepage() {
           >
             <VisibilityIcon />
           </IconButton>
-          <IconButton aria-label="view" size="small" onClick={()=>handleAssignClick(params.row)}>
-          <MdOutlineAppRegistration />
+          <IconButton
+            aria-label="view"
+            size="small"
+            onClick={() => handleAssignClick(params.row)}
+          >
+            <MdOutlineAppRegistration />
           </IconButton>
         </div>
       ),
@@ -259,73 +266,83 @@ function Homepage() {
       >
         <Box sx={style} className="rounded">
           <Typography id="modal-modal-title" variant="h4" component="h2">
-           Approve Property
+            Approve Property
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          <div className="mt-4">
-          <label htmlFor="title" className="font-bold">
-            Property Agreement Documents :
-          </label>
-          <div className="w-full rounded-lg border border-gray-300 p-4">
-            <input
-              id="pdf-upload"
-              type="file"
-              accept=".pdf" // Accepts only PDF files
-              multiple
-              onChange={handlePdfChange}
-              className="hidden"
-            />
-            <label
-              htmlFor="pdf-upload"
-              className="custom-file-upload block mx-auto text-center text-black rounded-lg p-2 cursor-pointer mt-4"
-            >
-              Click to Select PDF files
-            </label>
-            <label
-              htmlFor="pdf-upload"
-              className="custom-file-upload block w-36 mx-auto text-center bg-green text-white rounded-lg p-2 cursor-pointer mt-1"
-            >
-              Browse PDF files
-            </label>
-            <div className="flex flex-wrap">
-              {pdfs.map((pdf, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <embed
-                    src={URL.createObjectURL(pdf)}
-                    type="application/pdf"
-                    className="max-w-200px m-2"
-                  />
-                  <button
-                    aria-label="delete"
-                    onClick={() => handleRemovePdf(index)}
-                    className="absolute top-0 right-0 text-red-500 bg-transparent border-none cursor-pointer mb-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M15.293 4.293a1 1 0 0 1 1.414 1.414L11.414 12l5.293 5.293a1 1 0 1 1-1.414 1.414L10 13.414l-5.293 5.293a1 1 0 1 1-1.414-1.414L8.586 12 3.293 6.707a1 1 0 0 1 1.414-1.414L10 10.586l5.293-5.293z"
-                        clipRule="evenodd"
+            <div className="mt-4">
+              <label htmlFor="title" className="font-bold">
+                Property Agreement Documents :
+              </label>
+              <div className="w-full rounded-lg border border-gray-300 p-4">
+                <input
+                  id="pdf-upload"
+                  type="file"
+                  accept=".pdf" // Accepts only PDF files
+                  multiple
+                  onChange={handlePdfChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="pdf-upload"
+                  className="custom-file-upload block mx-auto text-center text-black rounded-lg p-2 cursor-pointer mt-4"
+                >
+                  Click to Select PDF files
+                </label>
+                <label
+                  htmlFor="pdf-upload"
+                  className="custom-file-upload block w-36 mx-auto text-center bg-green text-white rounded-lg p-2 cursor-pointer mt-1"
+                >
+                  Browse PDF files
+                </label>
+                <div className="flex flex-wrap">
+                  {pdfs.map((pdf, index) => (
+                    <div key={index} style={{ position: "relative" }}>
+                      <embed
+                        src={URL.createObjectURL(pdf)}
+                        type="application/pdf"
+                        className="max-w-200px m-2"
                       />
-                    </svg>
-                  </button>
+                      <button
+                        aria-label="delete"
+                        onClick={() => handleRemovePdf(index)}
+                        className="absolute top-0 right-0 text-red-500 bg-transparent border-none cursor-pointer mb-2"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M15.293 4.293a1 1 0 0 1 1.414 1.414L11.414 12l5.293 5.293a1 1 0 1 1-1.414 1.414L10 13.414l-5.293 5.293a1 1 0 1 1-1.414-1.414L8.586 12 3.293 6.707a1 1 0 0 1 1.414-1.414L10 10.586l5.293-5.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </div>
             <div className="mt-10 text-right">
               <Button
-                style={{ color: "white", fontWeight: "bolder", backgroundColor: "green", marginRight: 15 }} onClick={onApprove}
+                style={{
+                  color: "white",
+                  fontWeight: "bolder",
+                  backgroundColor: "green",
+                  marginRight: 15,
+                }}
+                onClick={onApprove}
               >
                 Approve
               </Button>
               <Button
-                style={{ color: "white", fontWeight: "bolder", backgroundColor: "red" }}
+                style={{
+                  color: "white",
+                  fontWeight: "bolder",
+                  backgroundColor: "red",
+                }}
                 onClick={() => setOpen(false)}
               >
                 Cancel
@@ -335,7 +352,6 @@ function Homepage() {
         </Box>
       </Modal>
       <ToastContainer />
-
     </>
   );
 }

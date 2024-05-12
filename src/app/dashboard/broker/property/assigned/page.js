@@ -39,9 +39,17 @@ function Homepage() {
   const [brokerEmail, setBrokerEmail] = useState("");
   const [propType, setPropType] = useState("");
   const [id, setId] = useState(1);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = useState({});
+  // const userData = JSON.parse(localStorage.getItem("user"));
   const [pdfs, setPdfs] = useState([]);
 
+  //For Notification
+  const Role = "User";
+
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
   const showToastMessage = (message, type) => {
     toast.success(message, {
       position: "top-right",
@@ -79,12 +87,41 @@ function Homepage() {
         console.log(updatedPropList);
         setMyProperties(updatedPropList);
         showToastMessage();
+        // Trigger notification to the assigned broker
+        triggerNotificationToUsers(Role);
       } else {
         showToastError("Invalid email or password!");
       }
     } catch (error) {
       console.error("Error:", error);
       showToastError("An error occurred. Please try again."); // Show error toast message
+    }
+  };
+
+  const triggerNotificationToUsers = async (userRole) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Notification/sendPropertyPostedNotification/${userRole}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        console.log("Notification sent to broker");
+      } else {
+        console.error("Failed to send notification to broker");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -96,7 +133,7 @@ function Homepage() {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${persistedState.token}`,
+              Authorization: `Bearer ${userData.user.token}`,
             },
           }
         );
@@ -119,7 +156,7 @@ function Homepage() {
         const response = await fetch(`http://localhost:3001/api/User/`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${persistedState.token}`,
+            Authorization: `Bearer ${userData.user.token}`,
           },
         });
 
@@ -265,7 +302,7 @@ function Homepage() {
             style={{ backgroundColor: "green" }}
             onClick={() => onAssign(params.row)}
           >
-            Accept
+            Approve
           </Button>
         </div>
       ),

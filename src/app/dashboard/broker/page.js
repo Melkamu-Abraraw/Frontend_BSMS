@@ -1,11 +1,6 @@
 "use client";
-import Head from "next/head";
-import Image from "next/image";
-import Header from "@/components/DashboardCom/Header";
-import Sidebar from "@/components/DashboardCom/Sidebar";
+
 import Cards from "@/components/DashboardCom/Cards";
-import Layout from "@/components/DashboardCom/layout";
-import RecentActivities from "@/components/DashboardCom/RecentActivities";
 import HouseIcon from "@mui/icons-material/House";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";

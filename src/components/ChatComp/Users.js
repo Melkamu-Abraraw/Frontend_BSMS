@@ -10,12 +10,32 @@ const Users = () => {
   const [currentUser, setCurrentUser] = useState();
   const [search, setSearch] = useState("");
 
-  const getAllUsers = async () => {
+  useEffect(() => {
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      getAllUsers(currentUser.Role);
+    }
+  }, [currentUser, search]);
+
+  const getAllUsers = async (userRole) => {
     try {
       const res = await fetch(
         search !== ""
           ? `http://localhost:3001/api/User/searchUsers?query=${search}`
-          : `http://localhost:3001/api/User/allChatUsers`
+          : `http://localhost:3001/api/User/allChatUsers`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            userrole: userRole,
+          },
+        }
       );
       const data = await res.json();
 
@@ -30,19 +50,6 @@ const Users = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (currentUser) {
-      getAllUsers();
-    }
-  }, [currentUser, search]);
 
   //select Users to start chat
   const [selectedUsers, setSelectedUsers] = useState([]);

@@ -1,12 +1,20 @@
 "use client";
-import React from "react";
-import { Box, InputBase, IconButton } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  InputBase,
+  IconButton,
+  Modal,
+  Typography,
+  Button,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import Image from "next/image";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import { LogOut, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -17,27 +25,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Cloud,
-  CreditCard,
-  Github,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { pusherClient } from "@/lib/pusher";
 
-const ShadowedIconButton = ({ children }) => (
+const ShadowedIconButton = ({ children, onClick }) => (
   <IconButton
     style={{
-      marginRight: "10px",
+      marginRight: "15px",
       backgroundColor: "white",
       "&:focus": {
         outline: "none",
@@ -46,6 +39,7 @@ const ShadowedIconButton = ({ children }) => (
         backgroundColor: "white",
       },
     }}
+    onClick={onClick}
   >
     {children}
   </IconButton>
@@ -53,20 +47,105 @@ const ShadowedIconButton = ({ children }) => (
 
 const Header = () => {
   const user = useSelector((state) => state.auth.value);
-  const [userData, setUserData] = React.useState({});
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [userData, setUserData] = useState({});
   const router = useRouter();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("user"));
     setUserData(storedUserData || {});
   }, []);
+
+  //useEffect Route To fetch all notifications from backend conditionally
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        let notificationEndPoints;
+
+        if (userData.user.Role === "Broker") {
+          notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Email}`;
+        } else if (userData.user.Role === "User") {
+          notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Role}`;
+        } else if (userData.user.Role === "BrokerAdmin") {
+          notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Role}`;
+        } else {
+          throw new Error("Invalid user role");
+        }
+
+        const response = await fetch(notificationEndPoints, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log(data);
+        const unreadNotifications = data.notifications.filter(
+          (notification) => !notification.isRead
+        );
+        setNotifications(unreadNotifications);
+        setUnreadCount(unreadNotifications.length);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchNotifications();
+    pusherClient.subscribe("notifications");
+    pusherClient.bind("new-notification", fetchNotifications);
+    return () => {
+      pusherClient.unsubscribe("notifications");
+      pusherClient.unbind("new-notification", fetchNotifications);
+    };
+  }, [userData.user?.Role]);
+
+  // Send request to backend to mark read  notifications as read
+  const handleMarkAsReadAndModalClose = async () => {
+    try {
+      await Promise.all(
+        notifications.map(async (notification) => {
+          if (!notification.isRead) {
+            await fetch(
+              `http://localhost:3001/api/Notification/markAllSeenNotificationAsRead/${notification._id}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+          }
+        })
+      );
+      setNotifications([]);
+      setShowNotifications(false);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleClickAndViewNotification = () => {
+    setShowNotifications(true);
+    setUnreadCount(0);
+  };
+
+  const handelClose = () => {
+    setShowNotifications(false);
+    setUnreadCount(0);
+  };
 
   const handleLogout = async () => {
     localStorage.removeItem("user");
     router.push("/login");
   };
 
-  // Check if userData.user is defined before accessing its properties
   const userRole = userData.user ? userData.user.Role : "";
 
   return (
@@ -90,10 +169,85 @@ const Header = () => {
           </Link>
         )}
       </div>
+
       <Box display="flex" alignItems="center">
-        <ShadowedIconButton>
-          <NotificationsOutlinedIcon className="mb-1" />
+        {/* Bage */}
+        <ShadowedIconButton onClick={handleClickAndViewNotification}>
+          <div style={{ position: "relative" }}>
+            <NotificationsOutlinedIcon
+              className="mb-1"
+              style={{ fontSize: "35px" }}
+            />
+            {unreadCount > 0 && !showNotifications && (
+              <span
+                className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs absolute top-3 right-3 transform translate-x-1/2 -translate-y-1/2"
+                style={{ fontWeight: "bold" }}
+              >
+                {unreadCount}
+              </span>
+            )}
+          </div>
         </ShadowedIconButton>
+        {/* Notification Modal */}
+        <Modal
+          open={showNotifications}
+          onClose={handelClose}
+          aria-labelledby="notification-modal"
+          aria-describedby="notification-modal-description"
+        >
+          <div
+            className=" h-full p-4 bg-white shadow-lg rounded-md absolute top-1/2 right-3 transform -translate-y-1/2"
+            style={{
+              width: "320px",
+              marginTop: "2rem",
+              maxHeight: "calc(100vh - 5rem)",
+              overflowY: "auto",
+            }}
+          >
+            <div className="mb-5 text-blue text-center font-bold text-xl">
+              New Notifications
+            </div>
+            {/* Render notifications */}
+            {notifications.length > 0 ? (
+              <>
+                {notifications.map((notification, index) => (
+                  <div key={index} className="mb-5">
+                    <Typography variant="body1">
+                      <div className="items-center">
+                        <div className="font-bold text-black">
+                          {notification.title}
+                        </div>
+                        <div className="bg-green-200 p-2">
+                          {notification.message}
+                        </div>
+                      </div>
+                    </Typography>
+                  </div>
+                ))}
+                {/* Mark As Read Button */}
+                <div className="relative w-1/2 mb-2 top-5 rounded bg-gray-300 left-1/2 transform -translate-x-1/2">
+                  <Button
+                    onClick={handleMarkAsReadAndModalClose}
+                    style={{
+                      color: "black",
+                      fontWeight: "bold",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Mark As Read
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div
+                className="text-center font-bold"
+                style={{ marginTop: "250px", color: "red" }}
+              >
+                No new notifications
+              </div>
+            )}
+          </div>
+        </Modal>
         <span className="block">
           <span className="block text-sm font-medium text-black">
             {`${userData.user ? userData.user.FirstName : ""} ${

@@ -36,6 +36,7 @@ const Chats = ({ currentChatId }) => {
       setCurrentUser(JSON.parse(storedUser));
     }
   }, []);
+
   useEffect(() => {
     if (currentUser) {
       getAllChats();
