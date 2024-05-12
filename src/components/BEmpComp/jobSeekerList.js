@@ -25,7 +25,15 @@ const JobSeekerTable = () => {
     fetchData();
   }, [dispatch]);
 
-  if (isLoading) return <div>Loading Please wait...</div>;
+  if (isLoading)
+    return (
+      <div
+        className="text-center font-bold "
+        style={{ marginTop: "50px", marginLeft: "30px", color: "green" }}
+      >
+        Loading Please wait...
+      </div>
+    );
   if (isError) return <div>Error{error}</div>;
 
   const EmpHeader = [
@@ -33,21 +41,84 @@ const JobSeekerTable = () => {
       field: "id",
       headerName: "ID",
       width: 60,
+      renderHeader: (params) => <strong className=" text-md">{"ID"}</strong>,
     },
     {
       field: "FullName",
       headerName: "FullName",
       width: 140,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"FullName"}</strong>
+      ),
     },
-    { field: "Age", headerName: "Age", width: 40 },
-    { field: "Gender", headerName: "Gender", width: 70 },
-    { field: "Address", headerName: "Address", width: 130 },
-    { field: "JobType", headerName: "JobType", width: 130 },
-    { field: "Experience", headerName: "Experience", width: 130 },
-    { field: "RelativeName", headerName: "RelativeName", width: 140 },
-    { field: "RelativeAddress", headerName: "RelativeAddress", width: 140 },
-    { field: "Relationship", headerName: "Relationship", width: 130 },
-    { field: "Agent", headerName: "AgentName", width: 130 },
+    {
+      field: "Age",
+      headerName: "Age",
+      width: 40,
+      renderHeader: (params) => <strong className=" text-md">{"Age"}</strong>,
+    },
+    {
+      field: "Gender",
+      headerName: "Gender",
+      width: 70,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Gender"}</strong>
+      ),
+    },
+    {
+      field: "Address",
+      headerName: "Address",
+      width: 130,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Address"}</strong>
+      ),
+    },
+    {
+      field: "JobType",
+      headerName: "JobType",
+      width: 130,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"JobType"}</strong>
+      ),
+    },
+    {
+      field: "Experience",
+      headerName: "Experience",
+      width: 130,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Experience"}</strong>
+      ),
+    },
+    {
+      field: "RelativeName",
+      headerName: "RelativeName",
+      width: 140,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"RelativeName"}</strong>
+      ),
+    },
+    {
+      field: "RelativeAddress",
+      headerName: "RelativeAddress",
+      width: 140,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"RelativeAddress"}</strong>
+      ),
+    },
+    {
+      field: "Relationship",
+      headerName: "Relationship",
+      width: 130,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Relationship"}</strong>
+      ),
+    },
+    {
+      field: "Agent",
+      headerName: "Agent",
+      width: 130,
+      renderHeader: (params) => <strong className=" text-md">{"Agent"}</strong>,
+    },
   ];
   const EmpList = data.response.map((empObj, index) => ({
     ...empObj,

@@ -1,25 +1,19 @@
 "use client";
 import * as React from "react";
-import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
+
 import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
+
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
+
 import Link from "next/link";
-import Avatar from "@mui/material/Avatar";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
-import Settings from "@mui/icons-material/Settings";
-import Logout from "@mui/icons-material/Logout";
+
 import { Box } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
+
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+
 import { logout } from "@/redux/features/auth-slice";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

@@ -42,7 +42,15 @@ const EmpUpdate = ({ formId }) => {
     }
   );
 
-  if (isLoading) return <div>Loading !</div>;
+  if (isLoading)
+    return (
+      <div
+        className="text-center font-bold "
+        style={{ marginTop: "50px", marginLeft: "30px", color: "green" }}
+      >
+        Loading !
+      </div>
+    );
   if (isError) return <div>Error !{error} </div>;
 
   const {

@@ -71,6 +71,8 @@ const Register = () => {
     }
   };
 
+
+  
   return (
     <>
       <div className="mx-auto my-auto mb-3" style={{ width: "45%" }}>

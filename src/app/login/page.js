@@ -64,7 +64,7 @@ const Login = () => {
       }
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (data.responseData.token) {
         showToastMessage("Login successful!");
         showToastMessage();

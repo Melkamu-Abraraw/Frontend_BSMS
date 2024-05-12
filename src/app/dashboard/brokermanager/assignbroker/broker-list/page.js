@@ -125,12 +125,40 @@ function DataTable() {
       if (res.success) {
         showToastMessage(res.message);
         showToastMessage();
+        // Trigger notification to the assigned broker
+        triggerNotificationToBroker(broker.email);
       } else {
         showToastError("Invalid email or password!");
       }
     } catch (error) {
       console.error("Error:", error);
       showToastError("An error occurred. Please try again.");
+    }
+  };
+  const triggerNotificationToBroker = async (brokerEmail) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Notification/sendPropertyAssignmentNotification/${brokerEmail}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        console.log("Notification sent to broker");
+      } else {
+        console.error("Failed to send notification to broker");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
   return (

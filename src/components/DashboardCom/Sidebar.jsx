@@ -4,26 +4,25 @@ import Link from "next/link";
 import React, { useState, useRef } from "react";
 import { RxDashboard } from "react-icons/rx";
 import { FaHouseChimney } from "react-icons/fa6";
-import { TbLogout } from "react-icons/tb";
+
 import { CollapsIcon } from "../icons";
 import { CiChat2 } from "react-icons/ci";
-import { CgProfile } from "react-icons/cg";
+
 import {
   MdOutlineSupportAgent,
   MdOutlineRealEstateAgent,
   MdOutlineFeedback,
 } from "react-icons/md";
 import { MdOutlineManageAccounts } from "react-icons/md";
-import { FaRegUser } from "react-icons/fa";
-import { FiUserCheck } from "react-icons/fi";
+
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
 import { IoIosList } from "react-icons/io";
-import { useSelector } from "react-redux";
+
 import { BiListPlus, BiUserPlus } from "react-icons/bi";
 import { VscDiffAdded } from "react-icons/vsc";
 import { TbBuildingWarehouse } from "react-icons/tb";
-import { usePathname } from "next/navigation";
+
 import { CiSettings } from "react-icons/ci";
 import { IoDocumentsOutline } from "react-icons/io5";
 import { PiSignature } from "react-icons/pi";
@@ -33,7 +32,6 @@ import { FaUsers } from "react-icons/fa";
 import { RiUserStarLine } from "react-icons/ri";
 import { PiUploadSimple } from "react-icons/pi";
 import { FaCloudDownloadAlt } from "react-icons/fa";
-
 const Sidebar = () => {
   const [toggleCollapse, setToggleCollapse] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
@@ -51,6 +49,7 @@ const Sidebar = () => {
   }
   const userRole = userData.user ? userData.user.Role : "";
 
+  //Users Item
   const menuItems_user = [
     {
       id: 1,
@@ -96,19 +95,20 @@ const Sidebar = () => {
       link: "/dashboard/seller/payment",
     },
     {
-      id: 5,
+      id: 6,
+      label: "Job-Seekers",
+      icon: <BiUserPlus size={25} className="text-green" />,
+      link: "/dashboard/seller/job-seeker",
+    },
+    {
+      id: 7,
       label: "Conversation",
       icon: <CiChat2 size={25} className="text-green" />,
       link: "/dashboard/seller/conversation/RootChat/chats",
     },
-    {
-      id: 6,
-      label: "Settings",
-      icon: <CiSettings size={25} className="text-green" />,
-      link: "/dashboard/seller/profile",
-    },
   ];
 
+  //Admin Item
   const menuItems_admin = [
     {
       id: 1,
@@ -131,14 +131,9 @@ const Sidebar = () => {
         },
       ],
     },
-    {
-      id: 5,
-      label: "Settings",
-      icon: <CiSettings size={25} className="text-green" />,
-      link: "/dashboard/seller/profile",
-    },
   ];
 
+  //BrokerManager Item
   const menuItems_brokerManager = [
     {
       id: 1,
@@ -205,7 +200,7 @@ const Sidebar = () => {
     },
   ];
 
-  //brokers
+  //Brokers Item
   const menuItems_broker = [
     {
       id: 1,

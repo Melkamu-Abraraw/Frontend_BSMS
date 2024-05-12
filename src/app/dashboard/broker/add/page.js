@@ -22,10 +22,13 @@ function Homepage() {
   const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
   const persistedState = JSON.parse(localStorage.getItem("user"));
-  const [pdfError, setPdfError] = useState(false); // State to track PDF selection
-  const [imageError, setImageError] = useState(false); // State to track PDF selection
+  const [pdfError, setPdfError] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+
+  // For Notification
+  const Role = "BrokerAdmin";
 
   const Houseschema = yup.object().shape({
     title: yup
@@ -334,11 +337,41 @@ function Homepage() {
           router.push("/dashboard/seller/properties"); // Redirect to login page after a delay
         }, 3000); // Adjust the delay time as needed
       }
+      // Trigger notification to the assigned broker
+      triggerNotificationToBrokerAdmin(Role);
       console.log("Success:", data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
+
+  const triggerNotificationToBrokerAdmin = async (brokerAdminRole) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Notification/sendPropertyRegistrationNotification/${brokerAdminRole}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        console.log("Notification sent to broker");
+      } else {
+        console.error("Failed to send notification to broker");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const colors = [
     { name: "Red", value: "#FF0000" },
     { name: "Green", value: "#00FF00" },
