@@ -14,8 +14,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { login } from "@/redux/features/auth-slice";
 import { useSelector } from "react-redux";
+import { IoIosArrowBack } from "react-icons/io";
 
-const Login = () => {
+const Forgot = () => {
   const dispatch = useDispatch();
 
   const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
@@ -25,7 +26,8 @@ const Login = () => {
       .string()
       .required("Email is required")
       .matches(emailRegex, "Invalid email format"),
-    Password: yup.string().required("Password is required").min(8),
+    token: yup.string().required("Password is required").min(8),
+    newPassword: yup.string().required("Password is required").min(8),
   });
 
   const {
@@ -51,7 +53,7 @@ const Login = () => {
 
   const onSubmit = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/User/login`, {
+      const response = await fetch(`http://localhost:3001/api/User/resetpass`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,35 +66,9 @@ const Login = () => {
       }
 
       const data = await response.json();
-      // console.log(data);
-      if (data.responseData.token) {
-        showToastMessage("Login successful!");
-        showToastMessage();
-        setTimeout(() => {
-          localStorage.setItem("token", data.responseData.token);
-          dispatch(login(data.responseData));
-
-          //For Chat Page
-          localStorage.setItem(
-            "currentUser",
-            JSON.stringify(data.responseData.user)
-          );
-          if (data.responseData.user.Role === "Admin") {
-            router.push("/dashboard/companies");
-          } else if (data.responseData.user.Role === "BrokerAdmin") {
-            router.push("/dashboard/brokermanager");
-          } else if (data.responseData.user.Role === "User") {
-            router.push("/dashboard/seller");
-          } else if (data.responseData.user.Role === "Broker") {
-            router.push("/dashboard/broker");
-          }
-        }, 1500);
-      } else {
-        showToastError("Invalid Email or Password");
-      }
+      console.log(data);
     } catch (error) {
       console.error("Error:", error);
-      showToastError("Invalid Email or Password"); // Show error toast message
     }
   };
 
@@ -103,11 +79,11 @@ const Login = () => {
           className="grid grid-cols-1 gap-6 p-6 bg-white shadow-2xl rounded-lg"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <h1 className="text-2xl font-semibold mx-auto">Sign In</h1>
+          <h1 className="text-2xl font-semibold mx-auto">Reset Password</h1>
+          <h1 className="text-sm font-light mx-auto">
+            Enter Your Email Address and Token to reset your password.
+          </h1>
           <div className="w-full">
-            <div className="mb-3">
-              <Label htmlFor="email">Email</Label>
-            </div>
             <Input
               type="email"
               id="email"
@@ -118,15 +94,22 @@ const Login = () => {
             <p className="p-1 text-red-600">{errors.Email?.message}</p>
           </div>
           <div className="w-full">
-            <div className="mb-3">
-              <Label htmlFor="password">Password</Label>
-            </div>
+            <Input
+              type="text"
+              id="token"
+              name="token"
+              placeholder="Reset Token"
+              {...register("token")}
+            />
+            <p className="p-1 text-red-600">{errors.Email?.message}</p>
+          </div>
+          <div className="w-full">
             <Input
               type="password"
               id="password"
               name="password"
-              placeholder="Password"
-              {...register("Password")}
+              placeholder="New Password"
+              {...register("newPassword")}
             />
             <p className="p-1 text-red-600">{errors.Password?.message}</p>
           </div>
@@ -136,21 +119,9 @@ const Login = () => {
               variant="login"
               className="w-full text-1xl font-semibold text-white hover:bg-green/80"
             >
-              Login
+              Reset
             </Button>
           </div>
-          <div className="flex justify-end">
-            <Link href="/forgetpassword">
-              <p className="text-red-600 text-sm">Forgot Password?</p>
-            </Link>
-          </div>
-
-          <p className="flex justify-center md:flex-col lg:flex-row ">
-            Don't have an account?
-            <Link href="/register">
-              <span className="font-bold ml-1 mb-1 text-green"> SignUp</span>
-            </Link>
-          </p>
         </form>
       </div>
       <ToastContainer />
@@ -158,4 +129,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Forgot;

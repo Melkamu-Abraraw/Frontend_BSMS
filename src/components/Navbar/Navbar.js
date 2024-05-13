@@ -36,7 +36,7 @@ function Navbar() {
   const router = useRouter();
 
   const handleAddProperty = () => {
-    if (userData) {
+    if (user) {
       router.push(`/dashboard/seller/post`);
     } else {
       router.push("/login");
@@ -150,7 +150,7 @@ function Navbar() {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                strokeWidth="1.5" // Note: Use camelCase for attribute names in JSX
+                strokeWidth="1.5"
                 stroke="currentColor"
                 className="w-6 h-6 ml-1 text-white mr-2"
               >

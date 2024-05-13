@@ -135,7 +135,7 @@ const Register = () => {
 
   return (
     <>
-      <div className="mx-auto my-auto mb-3" style={{ width: "45%" }}>
+      <div className="mx-auto my-auto mb-3 mt-2" style={{ width: "45%" }}>
         <form
           className="grid grid-cols-1 gap-3 p-6 bg-white shadow-lg rounded-lg"
           onSubmit={handleSubmit(onSubmit)}
