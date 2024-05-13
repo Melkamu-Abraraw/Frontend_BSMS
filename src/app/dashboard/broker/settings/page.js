@@ -9,7 +9,12 @@ import { Button } from "@/components/ui/button";
 const MyProfile = () => {
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -34,7 +39,7 @@ const MyProfile = () => {
               <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer ml-3">
                 {image ? (
                   <img
-                    src={persistedState.user.imageUrls[0]}
+                    src={userData.user.imageUrls[0]}
                     alt="Uploaded"
                     className="w-full h-full rounded-full"
                   />
@@ -45,7 +50,7 @@ const MyProfile = () => {
             </label>
             <div className="px-3">
               <h4 className="text-white text-1xl font-bold pb-3">
-                {`${persistedState.user.FirstName} ${persistedState.user.LastName}`}
+                {`${userData.user.FirstName} ${userData.user.LastName}`}
               </h4>
             </div>
           </div>

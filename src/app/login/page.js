@@ -82,7 +82,7 @@ const Login = () => {
           } else if (data.responseData.user.Role === "BrokerAdmin") {
             router.push("/dashboard/brokermanager");
           } else if (data.responseData.user.Role === "User") {
-            router.push("/dashboard/seller");
+            router.push("/home");
           } else if (data.responseData.user.Role === "Broker") {
             router.push("/dashboard/broker");
           }

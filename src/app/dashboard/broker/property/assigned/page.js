@@ -5,7 +5,6 @@ import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -40,6 +39,12 @@ function Homepage() {
   const [propType, setPropType] = useState("");
   const [id, setId] = useState(1);
   const persistedState = JSON.parse(localStorage.getItem("user"));
+  // const [userData, setUserData] = useState({});
+
+  // useEffect(() => {
+  //   const storedUserData = JSON.parse(localStorage.getItem("user"));
+  //   setUserData(storedUserData || {});
+  // }, []);
   const [pdfs, setPdfs] = useState([]);
 
   const showToastMessage = (message, type) => {
@@ -79,6 +84,7 @@ function Homepage() {
         console.log(updatedPropList);
         setMyProperties(updatedPropList);
         showToastMessage();
+        triggerNotificationToUploader(prop.uploadBy);
       } else {
         showToastError("Invalid email or password!");
       }
@@ -87,7 +93,32 @@ function Homepage() {
       showToastError("An error occurred. Please try again."); // Show error toast message
     }
   };
+  const triggerNotificationToUploader = async (uploadedBy) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Notification/sendPropertyPostedNotification/${uploadedBy}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        console.log("Notification sent to broker");
+      } else {
+        console.error("Failed to send notification to broker");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -240,6 +271,17 @@ function Homepage() {
       ),
     },
     {
+      field: "uploadBy",
+      headerName: "Upload By",
+      width: 200,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Upload By "}</strong>
+      ),
+      renderCell: (params) => (
+        <div style={{ paddingBottom: 100 }}>{params.value}</div>
+      ),
+    },
+    {
       field: "actions",
       headerName: "Actions",
       width: 200,
@@ -283,6 +325,7 @@ function Homepage() {
     propertyType: item.PropertyType,
     status: item.Status,
     price: `${item.Price.toLocaleString()} ${item.Currency}`,
+    uploadBy: item.uploadedby,
   }));
 
   return (

@@ -36,6 +36,7 @@ const ChatDetails = ({ chatId }) => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
