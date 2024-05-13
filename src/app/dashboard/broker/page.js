@@ -1,20 +1,20 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Head from "next/head";
-import Image from "next/image";
-import Header from "@/components/DashboardCom/Header";
-import Sidebar from "@/components/DashboardCom/Sidebar";
+
 import Cards from "@/components/DashboardCom/Cards";
 import HouseIcon from "@mui/icons-material/House";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 function Homepage() {
-  const persistedState = JSON.parse(localStorage.getItem("user"));
-  const [loading, setLoading] = useState(true);
   const [myProperties, setMyProperties] = useState([]);
-  const [error, setError] = React.useState(null);
   const [loadingProperties, setLoadingProperties] = useState(true);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
 
   const [propertyCounts, setPropertyCounts] = useState({
     total: 0,
@@ -30,7 +30,7 @@ function Homepage() {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${persistedState.token}`,
+              Authorization: `Bearer ${userData.user.token}`,
             },
           }
         );

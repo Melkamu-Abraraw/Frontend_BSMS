@@ -67,7 +67,7 @@ const Header = () => {
         if (userData.user.Role === "Broker") {
           notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Email}`;
         } else if (userData.user.Role === "User") {
-          notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Role}`;
+          notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Email}`;
         } else if (userData.user.Role === "BrokerAdmin") {
           notificationEndPoints = `http://localhost:3001/api/Notification/fetchAllNotification/${userData.user.Role}`;
         } else {
@@ -143,7 +143,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem("user");
-    router.push("/login");
+    router.push("/");
   };
 
   const userRole = userData.user ? userData.user.Role : "";

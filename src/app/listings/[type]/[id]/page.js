@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import Map from "@/components/Maps/MapShow";
 import Card from "@/components/propertyList/Card";
 import { MdOutlineFavoriteBorder } from "react-icons/md";
+import Link from "next/link";
 
 const Detail = () => {
   const [propertyDetail, setPropertyDetail] = React.useState([]);
@@ -125,14 +126,14 @@ const Detail = () => {
               </div>
             ))}
           </Carousel>
-          <div className="container   p-2 bg-white rounded shadow-lg items-center">
+          <div className="container  p-2 bg-white rounded shadow-lg items-center">
             <h1 className="text-2xl font-normal mb-4 text-center mx-auto mt-2">
               Agent Information
             </h1>
             <div className=" mb-4 w-72 p-4 items-center">
               <div className="flex flex-row">
                 {propertyDetail.Broker.imageUrls &&
-                  propertyDetail.Broker.imageUrls[0] && ( // Check if broker.imageUrls exists and has at least one element
+                  propertyDetail.Broker.imageUrls[0] && (
                     <div className="relative rounded-full overflow-hidden h-12 w-12">
                       <Image
                         src={propertyDetail.Broker.imageUrls[0]}
@@ -143,29 +144,27 @@ const Detail = () => {
                       />
                     </div>
                   )}
-                <h2 className=" font-light mt-3 ml-2">{`${propertyDetail.Broker.FirstName} ${propertyDetail.Broker.LastName}`}</h2>
+                <div className="flex flex-col gap-4">
+                  <h2 className=" font-light mt-3 ml-2">{`${propertyDetail.Broker.FirstName} ${propertyDetail.Broker.LastName}`}</h2>
+                  <h2 className=" font-light mt-3 ml-2">{`${propertyDetail.Broker.Email}`}</h2>
+                </div>
               </div>
               <div>
-                <div className="mt-3">
+                <div className="mt-6">
                   <input
-                    type="email"
+                    type="phone"
                     className="w-full p-2 border border-gray-300 rounded"
                     disabled
                     value={`+251${propertyDetail.Broker.Phone}`}
                   />
-                  <textarea
-                    placeholder="Enter your message"
-                    className="w-full p-2 border border-gray-300 rounded mt-3"
-                  />
                 </div>
               </div>
-              <div className="mt-3">
-                <Button variant="send" className="w-full my-3">
-                  Send
-                </Button>
-                <Button variant="call" className="w-full">
-                  Call
-                </Button>
+              <div className="mt-8">
+                <Link href="/dashboard/seller/conversation/RootChat/chats">
+                  <Button variant="send" className="w-full my-3">
+                    Contact Broker
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

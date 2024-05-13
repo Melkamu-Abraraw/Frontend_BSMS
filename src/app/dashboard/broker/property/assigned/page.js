@@ -5,7 +5,6 @@ import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -39,17 +38,15 @@ function Homepage() {
   const [brokerEmail, setBrokerEmail] = useState("");
   const [propType, setPropType] = useState("");
   const [id, setId] = useState(1);
-  const [userData, setUserData] = useState({});
-  // const userData = JSON.parse(localStorage.getItem("user"));
+  const persistedState = JSON.parse(localStorage.getItem("user"));
+  // const [userData, setUserData] = useState({});
+
+  // useEffect(() => {
+  //   const storedUserData = JSON.parse(localStorage.getItem("user"));
+  //   setUserData(storedUserData || {});
+  // }, []);
   const [pdfs, setPdfs] = useState([]);
 
-  //For Notification
-  const Role = "User";
-
-  useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("user"));
-    setUserData(storedUserData || {});
-  }, []);
   const showToastMessage = (message, type) => {
     toast.success(message, {
       position: "top-right",
@@ -87,8 +84,7 @@ function Homepage() {
         console.log(updatedPropList);
         setMyProperties(updatedPropList);
         showToastMessage();
-        // Trigger notification to the assigned broker
-        triggerNotificationToUsers(Role);
+        triggerNotificationToUploader(prop.uploadBy);
       } else {
         showToastError("Invalid email or password!");
       }
@@ -97,11 +93,10 @@ function Homepage() {
       showToastError("An error occurred. Please try again."); // Show error toast message
     }
   };
-
-  const triggerNotificationToUsers = async (userRole) => {
+  const triggerNotificationToUploader = async (uploadedBy) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/Notification/sendPropertyPostedNotification/${userRole}`,
+        `http://localhost:3001/api/Notification/sendPropertyPostedNotification/${uploadedBy}`,
         {
           method: "POST",
           headers: {
@@ -124,16 +119,15 @@ function Homepage() {
       console.error("Error:", error);
     }
   };
-
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/Allproperty/assigned`,
+          `http://localhost:3001/api/Allproperty/assigned/approved`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${userData.user.token}`,
+              Authorization: `Bearer ${persistedState.token}`,
             },
           }
         );
@@ -156,7 +150,7 @@ function Homepage() {
         const response = await fetch(`http://localhost:3001/api/User/`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${userData.user.token}`,
+            Authorization: `Bearer ${persistedState.token}`,
           },
         });
 
@@ -196,6 +190,10 @@ function Homepage() {
       style.color = "#f1646c";
       style.boxShadow = "0 0 13px #f1646c0d";
     } else if (status === "Assigned") {
+      style.backgroundColor = "#1ecab826";
+      style.color = "green";
+      style.boxShadow = "0 0 13px #f1646c0d";
+    } else if (status === "Approved") {
       style.backgroundColor = "#1ecab826";
       style.color = "rgb(0, 167, 111)";
       style.boxShadow = "0 0 13px #f1646c0d";
@@ -273,9 +271,20 @@ function Homepage() {
       ),
     },
     {
+      field: "uploadBy",
+      headerName: "Upload By",
+      width: 200,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Upload By "}</strong>
+      ),
+      renderCell: (params) => (
+        <div style={{ paddingBottom: 100 }}>{params.value}</div>
+      ),
+    },
+    {
       field: "actions",
       headerName: "Actions",
-      width: 300,
+      width: 200,
       renderHeader: (params) => (
         <strong className=" text-md">{"Actions "}</strong>
       ),
@@ -315,7 +324,8 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price.toLocaleString(),
+    price: `${item.Price.toLocaleString()} ${item.Currency}`,
+    uploadBy: item.uploadedby,
   }));
 
   return (

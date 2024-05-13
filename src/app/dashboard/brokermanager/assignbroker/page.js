@@ -75,6 +75,8 @@ function Homepage() {
         showToastMessage(res.message);
         showToastMessage();
         fetchListings();
+        // Trigger notification to the assigned broker
+        triggerNotificationToUploader(prop.uploadBy);
       } else {
         showToastError(res.message);
       }
@@ -83,7 +85,32 @@ function Homepage() {
       showToastError("An error occurred. Please try again.");
     }
   };
+  const triggerNotificationToUploader = async (uploadedBy) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Notification/sendPropertyRejectionNotification/${uploadedBy}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        console.log("Notification sent to broker");
+      } else {
+        console.error("Failed to send notification to broker");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   useEffect(() => {
     fetchBrokers();
     fetchListings();
@@ -226,6 +253,17 @@ function Homepage() {
       ),
     },
     {
+      field: "uploadBy",
+      headerName: "Upload By",
+      width: 200,
+      renderHeader: (params) => (
+        <strong className=" text-md">{"Upload By "}</strong>
+      ),
+      renderCell: (params) => (
+        <div style={{ paddingBottom: 100 }}>{params.value}</div>
+      ),
+    },
+    {
       field: "actions",
       headerName: "Actions",
       width: 300,
@@ -287,6 +325,7 @@ function Homepage() {
     propertyType: item.PropertyType,
     status: item.Status,
     price: item.Price.toLocaleString(),
+    uploadBy: item.uploadedby,
   }));
 
   return (
