@@ -5,6 +5,7 @@ import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -236,7 +237,7 @@ function Homepage() {
     {
       field: "propertyType",
       headerName: "Property Type",
-      width: 200,
+      width: 120,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Property Type"}</strong>
@@ -248,7 +249,7 @@ function Homepage() {
     {
       field: "status",
       headerName: "Status ",
-      width: 150,
+      width: 100,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Status "}</strong>
@@ -317,8 +318,6 @@ function Homepage() {
       ),
     },
   ];
-
-  console.log(myProperties);
   const propertyRows = myProperties.map((item, index) => ({
     id: item._id,
     image: item.imageUrls[0],

@@ -66,33 +66,37 @@ const Login = () => {
       const data = await response.json();
       // console.log(data);
       if (data.responseData.token) {
-        showToastMessage("Login successful!");
-        showToastMessage();
-        setTimeout(() => {
-          localStorage.setItem("token", data.responseData.token);
-          dispatch(login(data.responseData));
+        if (data.responseData.user.Status === "Active") {
+          showToastMessage("Login successful!");
+          showToastMessage();
+          setTimeout(() => {
+            localStorage.setItem("token", data.responseData.token);
+            dispatch(login(data.responseData));
 
-          //For Chat Page
-          localStorage.setItem(
-            "currentUser",
-            JSON.stringify(data.responseData.user)
-          );
-          if (data.responseData.user.Role === "Admin") {
-            router.push("/dashboard/companies");
-          } else if (data.responseData.user.Role === "BrokerAdmin") {
-            router.push("/dashboard/brokermanager");
-          } else if (data.responseData.user.Role === "User") {
-            router.push("/home");
-          } else if (data.responseData.user.Role === "Broker") {
-            router.push("/dashboard/broker");
-          }
-        }, 1500);
+            //For Chat Page
+            localStorage.setItem(
+              "currentUser",
+              JSON.stringify(data.responseData.user)
+            );
+            if (data.responseData.user.Role === "Admin") {
+              router.push("/dashboard/companies");
+            } else if (data.responseData.user.Role === "BrokerAdmin") {
+              router.push("/dashboard/brokermanager");
+            } else if (data.responseData.user.Role === "User") {
+              router.push("/home");
+            } else if (data.responseData.user.Role === "Broker") {
+              router.push("/dashboard/broker");
+            }
+          }, 1500);
+        } else if (data.responseData.user.Status === "Deactive") {
+          showToastError("User Status is Deactive");
+        }
       } else {
         showToastError("Invalid Email or Password");
       }
     } catch (error) {
       console.error("Error:", error);
-      showToastError("Invalid Email or Password"); // Show error toast message
+      showToastError("Invalid Email or Password");
     }
   };
 

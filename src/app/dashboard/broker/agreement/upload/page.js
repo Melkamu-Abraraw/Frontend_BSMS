@@ -365,6 +365,7 @@ function Homepage() {
     formDataToSend.append("file", pdfs[0]);
     formDataToSend.append("sellerEmail", sellerEmail);
     formDataToSend.append("buyerEmail", buyerEmail);
+    formDataToSend.append("Price", formData.Price);
     formDataToSend.append("Id", selectedProperty.id);
 
     try {

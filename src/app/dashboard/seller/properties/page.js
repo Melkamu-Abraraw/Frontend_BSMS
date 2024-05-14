@@ -4,6 +4,7 @@ import Image from "next/image";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
+import Link from "next/link";
 
 function Homepage() {
   const [myProperties, setMyProperties] = useState([]);
@@ -169,13 +170,13 @@ function Homepage() {
       ),
       renderCell: (params) => (
         <div>
-          <IconButton
-            aria-label="view"
-            size="small"
-            onClick={() => handleVisibilityClick(params.row)}
+          <Link
+            href={`/listings/${params.row.propertyType}/detail/${params.row.id}`}
           >
-            <VisibilityIcon color="black" />
-          </IconButton>
+            <IconButton aria-label="view" size="small">
+              <VisibilityIcon color="black" />
+            </IconButton>
+          </Link>
         </div>
       ),
     },

@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { pusherClient } from "@/lib/pusher";
-const pages = ["Home", "Listings", "Jobs", "Contact", "About Us"];
+const pages = ["Home", "Listings", "Contact", "About Us"];
 
 function Navbar() {
   const [showNotifications, setShowNotifications] = useState(false);
@@ -277,7 +277,6 @@ function Navbar() {
                       )}
                     </div>
                   </ShadowedIconButton>
-                  {/* Notification Modal */}
                   <Modal
                     open={showNotifications}
                     onClose={handelClose}

@@ -1,17 +1,17 @@
 "use client";
 import React from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
 import { useParams } from "next/navigation";
 import Map from "@/components/Maps/MapShow";
-import Card from "@/components/propertyList/Card";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 const Detail = () => {
   const [propertyDetail, setPropertyDetail] = React.useState([]);
   const [similarProperty, setSimilarProperty] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [viewUrls, setViewUrls] = React.useState([]);
   const params = useParams();
 
   React.useEffect(() => {
@@ -43,6 +43,13 @@ const Detail = () => {
     };
     fetchDetail();
   }, []);
+
+  const handleView = (url) => {
+    window.open(url, "_blank");
+  };
+  React.useEffect(() => {
+    setViewUrls(propertyDetail.documentUrls || []);
+  }, [propertyDetail.documentUrls]);
 
   if (loading) {
     return (
@@ -82,39 +89,16 @@ const Detail = () => {
 
             <div className=" text-green text-2xl font-bold">
               {propertyDetail.Price.toLocaleString()}
-              <span className="ml-1"> {propertyDetail.Currency}</span>
+              <span className="ml-1">{propertyDetail.Currency}</span>
+              <span className="ml-1">
+                {propertyDetail.PricePrefix &&
+                  `/ ${propertyDetail.PricePrefix}`}
+              </span>
             </div>
           </section>
         </div>
         <div className="container flex flex-row">
           <Carousel width="45%" className="mt-2 ">
-            {propertyDetail.imageUrls.map((imageUrl, index) => (
-              <div className="h-80  ">
-                <img
-                  key={index}
-                  src={imageUrl}
-                  className="object-contain rounded"
-                />
-              </div>
-            ))}
-            {propertyDetail.imageUrls.map((imageUrl, index) => (
-              <div className="h-80  ">
-                <img
-                  key={index}
-                  src={imageUrl}
-                  className="object-contain rounded"
-                />
-              </div>
-            ))}
-            {propertyDetail.imageUrls.map((imageUrl, index) => (
-              <div className="h-80  ">
-                <img
-                  key={index}
-                  src={imageUrl}
-                  className="object-contain rounded"
-                />
-              </div>
-            ))}
             {propertyDetail.imageUrls.map((imageUrl, index) => (
               <div className="h-80  ">
                 <img
@@ -196,7 +180,22 @@ const Detail = () => {
                   <span className="ml-1">{propertyDetail.BodyType}</span>
                 </li>
               )}
-
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <div>
+                  <li className="list-none flex justify-between">
+                    <strong>Color:</strong>
+                    <span
+                      className="ml-1"
+                      style={{
+                        backgroundColor: propertyDetail.Colour,
+                        width: "20px",
+                        height: "20px",
+                        display: "inline-block",
+                      }}
+                    ></span>
+                  </li>
+                </div>
+              )}
               <hr className="mt-5 mb-6" />
               {propertyDetail.PropertyType === "House" && (
                 <li className="list-none flex justify-between">
@@ -222,6 +221,23 @@ const Detail = () => {
               <strong className="mr-4">City:</strong>
               <span>{propertyDetail.City}</span>
             </li>
+            <li className="list-none flex ">
+              <strong className="mr-4">Documents:</strong>
+              {viewUrls.map((url, index) => (
+                <span
+                  key={index}
+                  onClick={() => handleView(url)}
+                  style={{
+                    cursor: "pointer",
+                    marginRight: "10px",
+                    fontSize: "24px",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faFilePdf} style={{ color: "red" }} />
+                </span>
+              ))}
+            </li>
+
             <hr className="mt-5 mb-6" />
             <li className="list-none flex ">
               <strong className="mr-4">Location:</strong>

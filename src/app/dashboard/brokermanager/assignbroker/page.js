@@ -218,7 +218,7 @@ function Homepage() {
     {
       field: "propertyType",
       headerName: "Property Type",
-      width: 140,
+      width: 110,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Property Type"}</strong>
@@ -230,7 +230,7 @@ function Homepage() {
     {
       field: "status",
       headerName: "Status ",
-      width: 130,
+      width: 100,
       headerAlign: "bold-header",
       renderHeader: (params) => (
         <strong className=" text-md">{"Status "}</strong>
@@ -266,7 +266,7 @@ function Homepage() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 300,
+      width: 250,
       renderHeader: (params) => (
         <strong className=" text-md">{"Actions "}</strong>
       ),
@@ -324,7 +324,7 @@ function Homepage() {
     image: item.imageUrls[0],
     propertyType: item.PropertyType,
     status: item.Status,
-    price: item.Price.toLocaleString(),
+    price: `${item.Price.toLocaleString()} ${item.Currency}`,
     uploadBy: item.uploadedby,
   }));
 

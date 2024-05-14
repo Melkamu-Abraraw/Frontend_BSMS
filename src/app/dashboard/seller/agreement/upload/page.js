@@ -16,6 +16,8 @@ export default function DialogDemo() {
   }, []);
 
   const userInfo = userData.user ? userData.user : "";
+  console.log(userInfo);
+
   const handlePdfChange = (event) => {
     const selectedPdfs = Array.from(event.target.files);
     setPdfs((prevPdfs) => [...prevPdfs, ...selectedPdfs]);
@@ -23,34 +25,36 @@ export default function DialogDemo() {
   };
 
   useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/docs/send-envelope`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userInfo), // Send persistedState directly
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const res = await response.json();
-        setUrl(res.url);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      }
-    };
-
     if (userInfo) {
+      const fetchUserList = async () => {
+        console.log(userInfo);
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/docs/send-envelope`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(userInfo),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const res = await response.json();
+          console.log(res);
+          setUrl(res.url);
+        } catch (error) {
+          console.error("Error fetching properties:", error);
+        }
+      };
+
       fetchUserList();
     }
-  }, []); // Empty dependency array, so it only runs once when component mounts
+  }, [userInfo]);
 
   return (
     <div className="flex justify-center flex-col items-center mt-20">

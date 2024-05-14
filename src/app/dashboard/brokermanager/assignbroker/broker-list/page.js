@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 function DataTable() {
   const property = useSelector((state) => state.setPropertyInfo.value);
@@ -22,6 +23,8 @@ function DataTable() {
       position: "top-right",
     });
   };
+
+  const router = useRouter();
 
   React.useEffect(() => {
     const fetchUserList = async () => {
@@ -125,7 +128,6 @@ function DataTable() {
       if (res.success) {
         showToastMessage(res.message);
         showToastMessage();
-        // Trigger notification to the assigned broker
         triggerNotificationToBroker(broker.email);
       } else {
         showToastError("Invalid email or password!");

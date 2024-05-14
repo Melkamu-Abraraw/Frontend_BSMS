@@ -139,9 +139,12 @@ const Users = () => {
                   alt="img"
                   className="profilePhoto"
                 />
-                <p className="text-base-bold">
-                  {user.FirstName} {user.LastName}
-                </p>
+                <div className="flex flex-col ml-1">
+                  <p className="text-base-bold">
+                    {user.FirstName} {user.LastName}
+                  </p>
+                  <p className="text-base-bold">{user.Email}</p>
+                </div>
               </div>
             ))}
           </div>

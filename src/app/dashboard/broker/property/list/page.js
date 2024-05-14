@@ -92,7 +92,7 @@ function Homepage() {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/Allproperty/assigned/approved`,
+          `http://localhost:3001/api/Allproperty/approved`,
           {
             method: "GET",
             headers: {

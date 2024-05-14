@@ -48,7 +48,7 @@ export default function DialogDemo() {
           if (responseData.docAvailable) {
             setDocAvailable(true);
             if (responseData.paymentStatus === "Not Paid") {
-              if (responseData.Doc.sellerEmail === userInfo.Email) {
+              if (responseData.Doc.brokerEmail === userInfo.Email) {
                 setDocAvailable(false);
               }
               setPaymentStatus("Not Paid");

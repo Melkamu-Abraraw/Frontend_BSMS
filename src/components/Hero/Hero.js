@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import "./Hero.css";
+import Link from "next/link";
 
 const Hero = () => {
   const btnStyle = {
@@ -100,11 +101,14 @@ const Hero = () => {
                 </p>
               </div>
             </div>
-            <button className="flex items-center justify-center bg-green rounded h-10 mt-10 pr-2 ">
-              <span className="ml-2  text-black font-bold hover:text-white">
-                Search
-              </span>
-            </button>
+            <Link href="/listings">
+              <button className="flex items-center justify-center bg-green rounded h-10 mt-10 pr-2 ">
+                <span className="ml-2  text-black font-bold hover:text-white">
+                  Search
+                </span>
+              </button>
+            </Link>
+
             <button
               className="flex items-center justify-center rounded h-10 mt-10 pr-2 ml-2 hover:bg-green "
               style={btnStyle}

@@ -9,10 +9,14 @@ import {
 import "leaflet/dist/leaflet.css";
 import { icon } from "leaflet";
 
-const ICON = icon({
-  iconUrl: "/mark.png",
-  iconSize: [90, 90],
-});
+const leafletAvailable =
+  typeof window !== "undefined" ? require("leaflet") : null;
+const ICON = leafletAvailable
+  ? leafletAvailable.icon({
+      iconUrl: "/mark.png",
+      iconSize: [90, 90],
+    })
+  : null;
 
 function LocationMarker({ onClick }) {
   const [position, setPosition] = useState(null);

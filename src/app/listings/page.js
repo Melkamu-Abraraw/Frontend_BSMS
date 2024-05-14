@@ -181,9 +181,6 @@ export default function SelectSmall() {
 
   return (
     <div className="flex justify-center">
-      {/* Side section for filtering */}
-
-      {/* Main content */}
       <div>
         <div className="mt-20">
           <Map height={400} width={1100} properties={properties} />

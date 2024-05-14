@@ -22,11 +22,20 @@ function Homepage() {
   const [location, setLocation] = useState(null);
   const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
-  const persistedState = JSON.parse(localStorage.getItem("user"));
   const [pdfError, setPdfError] = useState(false); // State to track PDF selection
   const [imageError, setImageError] = useState(false); // State to track PDF selection
+  const [userData, setUserData] = useState({});
   const router = useRouter();
+
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    setUserData(storedUserData || {});
+  }, []);
   const dispatch = useDispatch();
+
+  //For Notification
+  const Role = "BrokerAdmin";
+  const currentYear = new Date().getFullYear();
 
   const Houseschema = yup.object().shape({
     title: yup
@@ -52,7 +61,7 @@ function Homepage() {
     FuelType: yup.string().required("Fuel Type is required"),
     BodyType: yup.string().required("Body Type is required"),
     PriceCategory: yup.string().required("Price Category is required"),
-    // PricePrefix: yup.string().required("Price Prefix is required"),
+    PricePrefix: yup.string().required("Price Prefix is required"),
     Mileage: yup
       .number()
       .typeError("Mileage required and must be a number")
@@ -79,6 +88,11 @@ function Homepage() {
         "is-positive",
         "Year must be a positive number",
         (value) => parseFloat(value) > 0
+      )
+      .test(
+        "is-valid-year",
+        "Year must be between 1990 and current year",
+        (value) => value >= 1990 && value <= currentYear
       ),
   });
 
@@ -129,6 +143,8 @@ function Homepage() {
         "Price must be a positive number",
         (value) => parseFloat(value) > 0
       ),
+    PricePrefix: yup.string(),
+
     Area: yup
       .number()
       .typeError("Area required and must be a number")
@@ -170,6 +186,8 @@ function Homepage() {
         "Price must be a positive number",
         (value) => parseFloat(value) > 0
       ),
+    PricePrefix: yup.string(),
+
     Area: yup
       .number()
       .typeError("Area required and must be a number")
@@ -296,14 +314,11 @@ function Homepage() {
     }
 
     const formDataToSend = new FormData();
-
-    // Append each key-value pair from original formData
     for (const key in formData) {
       if (formData.hasOwnProperty(key)) {
         formDataToSend.append(key, formData[key]);
       }
     }
-    // Assuming images is an array of File objects representing images
 
     images.forEach((image, index) => {
       formDataToSend.append("images[]", image);
@@ -319,7 +334,7 @@ function Homepage() {
           method: "POST",
           body: formDataToSend,
           headers: {
-            Authorization: `Bearer ${persistedState.token}`, // Assuming your token is named `token`
+            Authorization: `Bearer ${userData.token}`, // Assuming your token is named `token`
           },
         }
       );
@@ -334,7 +349,35 @@ function Homepage() {
           router.push("/dashboard/seller/properties"); // Redirect to login page after a delay
         }, 1000); // Adjust the delay time as needed
       }
+      //reigire notification to BrokerAdmin
+      triggerNotificationToBrokerAdmin(Role);
       console.log("Success:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const triggerNotificationToBrokerAdmin = async (brokerAdminRole) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/Notification/sendPropertyRegistrationNotification/${brokerAdminRole}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        console.log("Notification sent to broker");
+      } else {
+        console.error("Failed to send notification to broker");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -603,7 +646,7 @@ function Homepage() {
               <Input
                 type="number"
                 id="mileage"
-                placeholder="Mileage"
+                placeholder="Mileage in KM"
                 className="mt-3 w-44"
                 {...register("Mileage")}
               />
@@ -769,22 +812,24 @@ function Homepage() {
             <p className="p-1 text-red-600 text-sm">{errors.Price?.message}</p>
           </div>
 
-          {/* <div className="mb-2">
-            <Label htmlFor="title" className="font-bold">
-              Price Prefix :
+          <div className="mb-2">
+            <Label htmlFor="title" className="font-bold mb-3">
+              Price Prefix:
             </Label>
-            <Input
-              type="text"
-              id="title"
-              placeholder="Price Prefix"
-              className="mt-3 w-44"
+            <select
               {...register("PricePrefix")}
-              
-            />
+              className="block appearance-none marker w-[180px] bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 rounded shadow leading-tight focus:outline-none focus:bg-white focus:border-gray-500 mt-3"
+            >
+              <option value="" disabled>
+                Select option
+              </option>
+              <option value="Per Month">Per Month</option>
+              <option value="Per Year">Per Year</option>
+            </select>
             <p className="p-1 text-red-600 text-sm">
-                {errors.PricePrefix?.message}
-              </p> 
-          </div> */}
+              {errors.PricePrefix?.message}
+            </p>
+          </div>
           {propertyType === "House" && (
             <div className="mb-2">
               <Label htmlFor="title" className="font-bold">

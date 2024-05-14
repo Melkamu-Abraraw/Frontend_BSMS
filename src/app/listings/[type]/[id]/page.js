@@ -33,6 +33,7 @@ const Detail = () => {
         }
 
         const data = await response.json();
+        console.log(data.mainHouse);
         setPropertyDetail(data.mainHouse);
         setSimilarProperty(data.similarHouses);
         setLoading(false);
@@ -84,38 +85,15 @@ const Detail = () => {
             <div className=" text-green text-2xl font-bold">
               {propertyDetail.Price.toLocaleString()}
               <span className="ml-1">{propertyDetail.Currency}</span>
+              <span className="ml-1">
+                {propertyDetail?.PricePrefix &&
+                  `/ ${propertyDetail.PricePrefix}`}
+              </span>
             </div>
           </section>
         </div>
         <div className="container flex flex-row">
           <Carousel width="59%" className="mt-2 ">
-            {propertyDetail.imageUrls.map((imageUrl, index) => (
-              <div className="h-80  ">
-                <img
-                  key={index}
-                  src={imageUrl}
-                  className="object-cover rounded"
-                />
-              </div>
-            ))}
-            {propertyDetail.imageUrls.map((imageUrl, index) => (
-              <div className="h-80  ">
-                <img
-                  key={index}
-                  src={imageUrl}
-                  className="object-cover rounded"
-                />
-              </div>
-            ))}
-            {propertyDetail.imageUrls.map((imageUrl, index) => (
-              <div className="h-80  ">
-                <img
-                  key={index}
-                  src={imageUrl}
-                  className="object-cover rounded"
-                />
-              </div>
-            ))}
             {propertyDetail.imageUrls.map((imageUrl, index) => (
               <div className="h-80  ">
                 <img
@@ -245,6 +223,23 @@ const Detail = () => {
                     <strong>Body Type:</strong>
                     <span className="ml-1">{propertyDetail.BodyType}</span>
                   </li>
+                  <hr className="mt-5 mb-6" />
+                </div>
+              )}
+              {propertyDetail.PropertyType === "Vehicle" && (
+                <div>
+                  <li className="list-none flex justify-between">
+                    <strong>Color:</strong>
+                    <span
+                      className="ml-1"
+                      style={{
+                        backgroundColor: propertyDetail.Colour,
+                        width: "20px",
+                        height: "20px",
+                        display: "inline-block",
+                      }}
+                    ></span>
+                  </li>
                 </div>
               )}
               {propertyDetail.PropertyType === "House" && (
@@ -283,6 +278,10 @@ const Detail = () => {
             coordinates={propertyDetail.Location}
             propName={propertyDetail.Title}
           />
+        </section>
+        <section className="shadow-lg bg-white rounded-lg p-6  mx-8 my-8 w-7/12 ">
+          <h5 className="mt-5 mb-6 font-bold">Uploaded By:</h5>
+          <p className="mt-5 mb-6 font-semibold">{`Email: ${propertyDetail.uploadedby}`}</p>
         </section>
         {similarProperty.length > 0 && (
           <section className="container p-6 mx-8 my-8 w-11/12 items-center">

@@ -185,19 +185,6 @@ const Sidebar = () => {
         },
       ],
     },
-    {
-      id: 4,
-      title: "Feedback",
-      icon: <MdOutlineFeedback size={25} className="text-green" />,
-      children: [
-        {
-          id: 10,
-          title: " Feedback List",
-          icon: <IoIosList size={15} className="text-green" />,
-          link: "/dashboard/brokermanager/feedback",
-        },
-      ],
-    },
   ];
 
   //Brokers Item
@@ -254,7 +241,7 @@ const Sidebar = () => {
           id: 8,
           title: "Download",
           icon: <FaCloudDownloadAlt size={15} className="text-green" />,
-          link: "/dashboard/brokermanager/assignbroker",
+          link: "/dashboard/broker/agreement/download",
         },
       ],
     },
